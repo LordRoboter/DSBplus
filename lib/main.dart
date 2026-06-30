@@ -1,8 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'dsb_api.dart';
 import 'settings.dart';
 import 'sorter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'room_text.dart';
+
+Color typeColor(String type) {
+  switch (type.toLowerCase()) {
+    case "entfall" || "eigenverantwortliches arbeiten":
+      return Colors.red.shade100;
+
+    case "vertretung":
+      return Colors.orange.shade100;
+
+    case "unterricht geändert":
+      return Colors.purple.shade100;
+
+    case "sondereinsatz" || "sondereins.":
+      return Colors.blue.shade50;
+
+    case "raum-vertretung" || "raum-vtr.":
+      return Colors.orange.shade50;
+
+    case "veranstaltung" || "veranst.":
+      return Colors.green.shade100;
+
+    case "trotz absenz" || "trotzabsenz":
+      return Colors.yellow.shade100;
+
+    case "statt-vertretung":
+      return Colors.amber.shade100;
+
+    case "betreuung":
+      return Colors.orangeAccent.shade100;
+
+    default:
+      return Colors.grey.shade200;
+  }
+}
 
 void main() {
   runApp(const MyApp());
@@ -194,12 +230,35 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                "${entry['lesson']} • ${entry['subject']}",
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
+                                                "${entry['lesson']}. Std${entry["subject"] != "---" ? " • " + entry["subject"] : ""}",
+                                                style: TextStyle(
+                                                  fontWeight:
+                                                      ((entry["type"] ==
+                                                              "Entfall") ||
+                                                          (entry["type"] ==
+                                                              "Eigenverantwortliches Arbeiten"))
+                                                      ? FontWeight.bold
+                                                      : FontWeight.bold,
+                                                  decoration:
+                                                      ((entry["type"] ==
+                                                              "Entfall") ||
+                                                          (entry["type"] ==
+                                                              "Eigenverantwortliches Arbeiten"))
+                                                      ? TextDecoration
+                                                            .lineThrough
+                                                      : TextDecoration.none,
+                                                  fontStyle:
+                                                      ((entry["type"] ==
+                                                              "Entfall") ||
+                                                          (entry["type"] ==
+                                                              "Eigenverantwortliches Arbeiten"))
+                                                      ? FontStyle.italic
+                                                      : FontStyle.normal,
                                                 ),
                                               ),
-                                              Text(entry["teacher"] ?? ""),
+                                              teacherText(
+                                                entry["teacher"] ?? "",
+                                              ),
 
                                               if ((entry["text"] ?? "")
                                                   .toString()
@@ -232,15 +291,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                               label: Text(entry["type"] ?? ""),
                                               visualDensity:
                                                   VisualDensity.compact,
+                                              backgroundColor: typeColor(
+                                                entry["type"],
+                                              ),
                                             ),
-                                            Text(entry["room"] ?? ""),
+                                            roomText(entry["room"].toString()),
                                           ],
                                         ),
                                       ],
                                     ),
-
-                                    if (item.key != group.value.length - 1)
-                                      const Divider(height: 24),
                                   ],
                                 );
                               }),
