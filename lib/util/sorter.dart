@@ -1,4 +1,4 @@
-import 'maps.dart';
+import '../res/maps.dart';
 
 Map<String, List<Map<String, dynamic>>> groupEntries(
   List<Map<String, dynamic>> entries,

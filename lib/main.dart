@@ -1,47 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:planner/screens/plan_screen.dart';
+import 'package:provider/provider.dart';
 
-import 'dsb_api.dart';
-import 'settings.dart';
-import 'sorter.dart';
-import 'room_text.dart';
-
-Color typeColor(String type) {
-  switch (type.toLowerCase()) {
-    case "entfall" || "eigenverantwortliches arbeiten":
-      return Colors.red.shade100;
-
-    case "vertretung":
-      return Colors.orange.shade100;
-
-    case "unterricht geändert":
-      return Colors.purple.shade100;
-
-    case "sondereinsatz" || "sondereins.":
-      return Colors.blue.shade50;
-
-    case "raum-vertretung" || "raum-vtr.":
-      return Colors.orange.shade50;
-
-    case "veranstaltung" || "veranst.":
-      return Colors.green.shade100;
-
-    case "trotz absenz" || "trotzabsenz":
-      return Colors.yellow.shade100;
-
-    case "statt-vertretung":
-      return Colors.amber.shade100;
-
-    case "betreuung":
-      return Colors.orangeAccent.shade100;
-
-    default:
-      return Colors.grey.shade200;
-  }
-}
+import 'screens/settings_screen.dart';
+import 'services/plan_repository.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => PlanRepository()..init(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 /// Root of the app
@@ -54,112 +24,32 @@ class MyApp extends StatelessWidget {
       title: 'Vertretungsplan',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true),
-      home: const HomeScreen(),
+      home: const NavigatorScreen(),
     );
   }
 }
 
-/// Home screen
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class NavigatorScreen extends StatefulWidget {
+  const NavigatorScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<NavigatorScreen> createState() => _NavigatorScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  Map<String, List<Map<String, dynamic>>> entries = {};
-  Map<String, Map<String, List<Map<String, dynamic>>>> groupedEntries = {};
-  bool loading = true;
-  String? error;
-  String? selectedDay;
-  List<String> availableDays = [];
-  bool ssimplify = true;
-  bool ggroup = true;
-  late SharedPreferences prefs;
+class _NavigatorScreenState extends State<NavigatorScreen> {
+  int index = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
-
-  Future<void> init() async {
-    prefs = await SharedPreferences.getInstance();
-    await loadData();
-  }
-
-  Future<void> loadData() async {
-    setState(() {
-      loading = true;
-      error = null;
-    });
-
-    try {
-      final simplify = prefs.getBool("simplify") ?? true;
-      final group = prefs.getBool("group") ?? true;
-      final clean = prefs.getBool("clean") ?? true;
-
-      final api = DSBApi(
-        "REMOVED",
-        "REMOVED",
-        tableMapper: ['type', 'lesson', 'teacher', 'subject', 'room', 'text'],
-      );
-
-      var result = await api.fetchEntries();
-      var dayResult = groupEntriesByDay(result);
-
-      final days = result.map((e) => e["day"] as String).toSet().toList();
-      final Map<String, Map<String, List<Map<String, dynamic>>>> groupedByDay =
-          {};
-
-      for (final entry in dayResult.entries) {
-        var res = entry.value;
-
-        if (clean) {
-          res = cleanupEntries(res);
-        }
-
-        if (simplify) {
-          res = simplifyEntries(res);
-        }
-
-        groupedByDay[entry.key] = groupEntries(res);
-      }
-
-      setState(() {
-        entries = dayResult;
-        groupedEntries = groupedByDay;
-        availableDays = days;
-
-        selectedDay ??= days.isNotEmpty ? days.first : null;
-
-        ssimplify = simplify;
-        ggroup = group;
-        loading = false;
-      });
-    } catch (e) {
-      setState(() {
-        error = e.toString();
-        loading = false;
-      });
-    }
-  }
+  final pages = const [Placeholder(), PlanScreen()];
 
   Future<void> openSettings() async {
     await Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const SettingsScreen()),
     );
-
-    // Reload data when returning from settings
-    loadData();
   }
 
   @override
   Widget build(BuildContext context) {
-    final visibleGroups = groupedEntries[selectedDay] ?? {};
-    final visibleEntries = entries[selectedDay] ?? <Map<String, dynamic>>[];
     return Scaffold(
       appBar: AppBar(
         title: const Text("Vertretungsplan"),
@@ -169,189 +59,10 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(icon: const Icon(Icons.settings), onPressed: openSettings),
         ],
       ),
-      body: loading
-          ? const Center(child: CircularProgressIndicator())
-          : error != null
-          ? Center(child: Text(error!))
-          : ggroup && groupedEntries.isNotEmpty
-          ? Column(
-              children: [
-                SizedBox(
-                  height: 50,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.all(8),
-                    itemCount: availableDays.length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 8),
-                    itemBuilder: (context, index) {
-                      final day = availableDays[index];
-
-                      return ChoiceChip(
-                        label: Text(day),
-                        selected: selectedDay == day,
-                        onSelected: (_) {
-                          setState(() {
-                            selectedDay = day;
-                          });
-                        },
-                      );
-                    },
-                  ),
-                ),
-
-                Expanded(
-                  child: ListView(
-                    children: visibleGroups.entries.map((group) {
-                      return Card(
-                        margin: const EdgeInsets.all(8),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                group.key,
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
-                              const Divider(),
-
-                              ...group.value.asMap().entries.map((item) {
-                                final entry = item.value;
-
-                                return Column(
-                                  children: [
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                "${entry['lesson']}. Std${entry["subject"] != "---" ? " • " + entry["subject"] : ""}",
-                                                style: TextStyle(
-                                                  fontWeight:
-                                                      ((entry["type"] ==
-                                                              "Entfall") ||
-                                                          (entry["type"] ==
-                                                              "Eigenverantwortliches Arbeiten"))
-                                                      ? FontWeight.bold
-                                                      : FontWeight.bold,
-                                                  decoration:
-                                                      ((entry["type"] ==
-                                                              "Entfall") ||
-                                                          (entry["type"] ==
-                                                              "Eigenverantwortliches Arbeiten"))
-                                                      ? TextDecoration
-                                                            .lineThrough
-                                                      : TextDecoration.none,
-                                                  fontStyle:
-                                                      ((entry["type"] ==
-                                                              "Entfall") ||
-                                                          (entry["type"] ==
-                                                              "Eigenverantwortliches Arbeiten"))
-                                                      ? FontStyle.italic
-                                                      : FontStyle.normal,
-                                                ),
-                                              ),
-                                              teacherText(
-                                                entry["teacher"] ?? "",
-                                              ),
-
-                                              if ((entry["text"] ?? "")
-                                                  .toString()
-                                                  .isNotEmpty)
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                        top: 4,
-                                                      ),
-                                                  child: Text(
-                                                    entry["text"],
-                                                    style: TextStyle(
-                                                      color: Colors.grey[700],
-                                                      fontStyle:
-                                                          FontStyle.italic,
-                                                    ),
-                                                  ),
-                                                ),
-                                            ],
-                                          ),
-                                        ),
-
-                                        const SizedBox(width: 12),
-
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          children: [
-                                            Chip(
-                                              label: Text(entry["type"] ?? ""),
-                                              visualDensity:
-                                                  VisualDensity.compact,
-                                              backgroundColor: typeColor(
-                                                entry["type"],
-                                              ),
-                                            ),
-                                            roomText(entry["room"].toString()),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                );
-                              }),
-                            ],
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ],
-            )
-          : Column(
-              children: [
-                SizedBox(
-                  height: 50,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.all(8),
-                    itemCount: availableDays.length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 8),
-                    itemBuilder: (context, index) {
-                      final day = availableDays[index];
-
-                      return ChoiceChip(
-                        label: Text(day),
-                        selected: selectedDay == day,
-                        onSelected: (_) {
-                          setState(() {
-                            selectedDay = day;
-                          });
-                        },
-                      );
-                    },
-                  ),
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: visibleEntries.length,
-                    itemBuilder: (context, index) {
-                      final entry = visibleEntries[index];
-
-                      return ListTile(
-                        title: Text("${entry['lesson']} - ${entry['subject']}"),
-                        subtitle: Text("${entry['class']} • ${entry['room']}"),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
+      body: pages[index],
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: index,
+        onTap: (i) => setState(() => index = i),
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(
