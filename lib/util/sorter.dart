@@ -93,15 +93,60 @@ List<Map<String, dynamic>> cleanupEntries(List<Map<String, dynamic>> entries) {
         .replaceFirst(RegExp(r'^\d+'), '')
         .replaceFirst(RegExp(r'\d.*$'), '');
 
-    if (subject.endsWith('_')) {
-      subject = subject.substring(0, subject.length - 1);
+    String suffix = "";
+
+    if (subject.contains("_")) {
+      final index = subject.lastIndexOf("_");
+      suffix = subject.substring(index); // "_LK"
+      subject = subject.substring(0, index); // "MATHE"
     }
 
-    entry["subject"] = subject;
-    entry["subject"] =
-        subjectMap[entry["subject"].toString().toLowerCase()] ??
-        entry["subject"];
+    subject = subjectMap[subject.toLowerCase()] ?? subject;
+
+    entry["subject"] = subject + suffix;
   }
 
   return entries;
+}
+
+List<Map<String, dynamic>> filterByClass(
+  List<Map<String, dynamic>> entries,
+  String classes,
+) {
+  final terms = classes
+      .toLowerCase()
+      .split(RegExp(r'[\s,]+'))
+      .where((t) => t.isNotEmpty)
+      .toSet();
+
+  if (terms.isEmpty) return entries;
+
+  return entries.where((entry) {
+    final entryClasses = (entry["class"] as String? ?? "")
+        .toLowerCase()
+        .split(RegExp(r'\s*,\s*'))
+        .where((c) => c.isNotEmpty);
+
+    return entryClasses.any(terms.contains);
+  }).toList();
+}
+
+bool matches(Map<String, dynamic> entry, String query) {
+  final terms = query
+      .toLowerCase()
+      .split(RegExp(r'[\s,]+'))
+      .where((t) => t.isNotEmpty)
+      .toList();
+
+  if (terms.isEmpty) return true;
+
+  final searchable = [
+    entry["subject"],
+    entry["teacher"],
+    entry["type"],
+    entry["text"],
+    entry["class"],
+  ].where((e) => e != null).join(" ").toLowerCase();
+
+  return terms.every((term) => searchable.contains(term));
 }

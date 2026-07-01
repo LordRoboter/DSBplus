@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:planner/screens/home_screen.dart';
 import 'package:planner/screens/plan_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import 'screens/settings_screen.dart';
 import 'services/plan_repository.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await initializeDateFormatting('de_DE');
+
   runApp(
     ChangeNotifierProvider(
       create: (_) => PlanRepository()..init(),
@@ -39,13 +45,16 @@ class NavigatorScreen extends StatefulWidget {
 class _NavigatorScreenState extends State<NavigatorScreen> {
   int index = 0;
 
-  final pages = const [Placeholder(), PlanScreen()];
+  final pages = const [HomeScreen(), PlanScreen()];
 
   Future<void> openSettings() async {
     await Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const SettingsScreen()),
     );
+
+    if (!mounted) return;
+    await context.read<PlanRepository>().reloadSettings();
   }
 
   @override
