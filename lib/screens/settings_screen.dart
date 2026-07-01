@@ -20,7 +20,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
 
-    classController.text = prefs.getString("class") ?? "";
+    classController.text = prefs.getString("classFilter") ?? "";
   }
 
   @override
@@ -40,7 +40,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             decoration: const InputDecoration(labelText: "Class"),
             onFieldSubmitted: (value) async {
               final prefs = await SharedPreferences.getInstance();
-              await prefs.setString("class", value);
+              await prefs.setString("classFilter", value);
             },
           ),
         ],
