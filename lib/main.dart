@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:planner/screens/home_screen.dart';
 import 'package:planner/screens/plan_screen.dart';
+import 'package:planner/services/data_repository.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -12,15 +13,22 @@ Future<void> main() async {
 
   await initializeDateFormatting('de_DE');
 
+  final dataRepository = DataRepository();
+  await dataRepository.init();
+
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => PlanRepository()..init(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: dataRepository),
+        ChangeNotifierProvider(
+          create: (_) => PlanRepository(dataRepository)..init(),
+        ),
+      ],
       child: const MyApp(),
     ),
   );
 }
 
-/// Root of the app
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -52,9 +60,6 @@ class _NavigatorScreenState extends State<NavigatorScreen> {
       context,
       MaterialPageRoute(builder: (_) => const SettingsScreen()),
     );
-
-    if (!mounted) return;
-    await context.read<PlanRepository>().reloadSettings();
   }
 
   @override

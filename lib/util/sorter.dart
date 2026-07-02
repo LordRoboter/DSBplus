@@ -125,7 +125,12 @@ List<Map<String, dynamic>> filterByClass(
     final entryClasses = (entry["class"] as String? ?? "")
         .toLowerCase()
         .split(RegExp(r'\s*,\s*'))
+        .map((c) => c.trim())
         .where((c) => c.isNotEmpty);
+
+    if (entryClasses.contains("alle")) {
+      return true;
+    }
 
     return entryClasses.any(terms.contains);
   }).toList();
@@ -149,4 +154,48 @@ bool matches(Map<String, dynamic> entry, String query) {
   ].where((e) => e != null).join(" ").toLowerCase();
 
   return terms.every((term) => searchable.contains(term));
+}
+
+bool matchesClass(Map<String, dynamic> entry, String query) {
+  if (entry["class"].toString().toLowerCase() == "alle") return true;
+
+  final terms = query
+      .toLowerCase()
+      .split(RegExp(r'[\s,]+'))
+      .where((t) => t.isNotEmpty)
+      .toList();
+
+  if (terms.isEmpty) return false;
+
+  final searchable = [
+    entry["class"],
+  ].where((e) => e != null).join(" ").toLowerCase();
+
+  return terms.any((term) => searchable.contains(term));
+}
+
+Map<String, Map<String, List<Map<String, dynamic>>>> sortEntries(
+  List<Map<String, dynamic>> entries,
+  bool clean,
+  bool simplify,
+) {
+  final dayResult = groupEntriesByDay(entries);
+
+  final groupedByDay = <String, Map<String, List<Map<String, dynamic>>>>{};
+
+  for (final entry in dayResult.entries) {
+    var res = entry.value;
+
+    if (clean) {
+      res = cleanupEntries(res);
+    }
+
+    if (simplify) {
+      res = simplifyEntries(res);
+    }
+
+    groupedByDay[entry.key] = groupEntries(res);
+  }
+
+  return groupedByDay;
 }

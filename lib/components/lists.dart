@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'texts.dart';
 import '../res/maps.dart';
+import '../util/sorter.dart';
 
 class EntryListNoScroll extends StatelessWidget {
   final Map<String, List<Map<String, dynamic>>> groups;
@@ -32,7 +33,7 @@ class EntryList extends StatelessWidget {
       ) {
         return EntryCard(
           group: group,
-          marked: group.value.first["class"] == classFilter,
+          marked: matchesClass(group.value.first, classFilter),
         );
       }).toList(),
     );

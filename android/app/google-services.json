@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "322230562387",
+    "project_id": "vertretungsplan-5aa7e",
+    "storage_bucket": "vertretungsplan-5aa7e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:322230562387:android:ac5a03e65b4135788460a6",
+        "android_client_info": {
+          "package_name": "com.example.planner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDE6k6k7wUn89qjI-iGMJfKPhhdSbCDw6s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:322230562387:android:142cda6f4d4d50d88460a6",
+        "android_client_info": {
+          "package_name": "com.plos.vertretungsplan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDE6k6k7wUn89qjI-iGMJfKPhhdSbCDw6s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
