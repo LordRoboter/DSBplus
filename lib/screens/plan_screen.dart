@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:planner/components/lists.dart';
+import 'package:planner/services/data_repository.dart';
 import 'package:planner/util/sorter.dart';
 import 'package:provider/provider.dart';
 
@@ -17,10 +18,29 @@ class _PlanScreenState extends State<PlanScreen> {
   String search = "";
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final repo = context.read<PlanRepository>();
+    final data = context.read<DataRepository>();
+
+    if (data.selectedDay == null && repo.availableDays.isNotEmpty) {
+      data.setSelectedDay(repo.availableDays.first);
+    }
+  }
+  
+  @override
   Widget build(BuildContext context) {
     final repo = context.watch<PlanRepository>();
+    final data = context.watch<DataRepository>();
 
-    final visibleGroups = repo.groupedEntries[repo.selectedDay] ?? {};
+
+
+    final sortedEntries = sortEntries(repo.entries, data.clean, data.simplify);
+    final visibleGroups = data.selectedDay != null
+        ? sortedEntries[data.selectedDay] ??
+              <String, List<Map<String, dynamic>>>{}
+        : <String, List<Map<String, dynamic>>>{};
 
     final filteredGroups = isSearching
         ? visibleGroups.map(
@@ -78,8 +98,10 @@ class _PlanScreenState extends State<PlanScreen> {
 
                                       return ChoiceChip(
                                         label: Text(day),
-                                        selected: repo.selectedDay == day,
-                                        onSelected: (_) => repo.selectDay(day),
+                                        selected: data.selectedDay == day,
+                                        onSelected: (_) {
+                                          data.setSelectedDay(day);
+                                        },
                                       );
                                     },
                                   ),
@@ -150,7 +172,7 @@ class _PlanScreenState extends State<PlanScreen> {
                   },
                   child: EntryList(
                     groups: filteredGroups,
-                    classFilter: repo.classFilter,
+                    classFilter: data.classFilter,
                   ),
                 ),
               ),

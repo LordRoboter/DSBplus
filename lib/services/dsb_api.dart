@@ -112,6 +112,8 @@ class DSBApi {
 
     final titles = document.querySelectorAll(".mon_title");
 
+    final infos = document.querySelectorAll("td.info");
+
     for (int t = 0; t < tables.length; t++) {
       final title = titles[t].text.trim();
 
@@ -121,11 +123,51 @@ class DSBApi {
 
       final day = split.length > 1 ? split[1].replaceAll(",", "") : "";
 
-      final updated = headers[t].text.replaceAll("Stand:", "").trim();
+      final match = RegExp(
+        r'Stand:\s*([\d.]+\s+\d{2}:\d{2})',
+      ).firstMatch(headers[t].text);
+
+      final updated = match?.group(1) ?? '';
 
       final rows = tables[t].querySelectorAll("tr");
 
       var classs = "Unknown";
+
+      //TODO: Display infos
+      final Map<String, dynamic> theInfos = {};
+
+      var field = "";
+
+      try {
+        for (int i = 0; i < infos.length; i++) {
+          if (i % 2 == 1) {
+            if (field.replaceFirst(RegExp(r'&.*'), '').toLowerCase().trim() ==
+                "unterrichtsfrei") {
+              final entry = {
+                "class": "Alle",
+                "day": day,
+                "date": date,
+                "updated": "updated",
+                "type": "Eigenverantwortliches Arbeiten",
+
+                "lesson": infos[i].text.replaceAll("Std.", "").trim(),
+              };
+              for (final item in tableMapper) {
+                if (!entry.containsKey(item)) {
+                  entry[item] = "---";
+                }
+              }
+              results.add(entry);
+            } else {
+              theInfos[field] = infos[i].text;
+            }
+          } else {
+            field = infos[i].text;
+          }
+        }
+      } catch (e) {
+        print(e);
+      }
 
       for (int r = 1; r < rows.length; r++) {
         final cells = rows[r].querySelectorAll("td");

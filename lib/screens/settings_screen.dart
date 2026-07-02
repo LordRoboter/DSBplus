@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:planner/services/data_repository.dart';
+
+import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -10,6 +12,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final classController = TextEditingController();
+  late DataRepository data;
 
   @override
   void initState() {
@@ -18,9 +21,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> loadSettings() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    classController.text = prefs.getString("classFilter") ?? "";
+    data = context.read<DataRepository>();
+    classController.text = data.classFilter;
   }
 
   @override
@@ -39,8 +41,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             controller: classController,
             decoration: const InputDecoration(labelText: "Class"),
             onFieldSubmitted: (value) async {
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.setString("classFilter", value);
+              data.setClassFilter(value);
             },
           ),
         ],
