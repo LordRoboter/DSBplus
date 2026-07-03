@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:planner/services/dsb_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DataRepository extends ChangeNotifier {
@@ -14,6 +16,9 @@ class DataRepository extends ChangeNotifier {
   String? selectedDay;
 
   List<Map<String, dynamic>> cachedEntries = [];
+
+  List<String> get availableDays =>
+      cachedEntries.map((e) => e["day"] as String).toSet().toList();
 
   Future<void> init() async {
     prefs = await SharedPreferences.getInstance();
@@ -32,6 +37,29 @@ class DataRepository extends ChangeNotifier {
     selectedDay = prefs.getString("selectedDay");
 
     notifyListeners();
+  }
+
+  Future<List<Map<String, dynamic>>> sync() async {
+    final api = DSBApi(
+      "166162",
+      "20Bueffel21",
+      tableMapper: ['type', 'lesson', 'teacher', 'subject', 'room', 'text'],
+    );
+
+    final oldEntries = cachedEntries;
+    final entries = await api.fetchEntries();
+
+    await validateSelectedDay(
+      entries.map((e) => e["day"] as String).toSet().toList(),
+    );
+
+    await saveEntries(entries);
+
+    await saveUpdated(
+      DateFormat('dd.MM. HH:mm', 'de_DE').format(DateTime.now()),
+    );
+
+    return oldEntries;
   }
 
   Future<void> setSelectedDay(String day) async {

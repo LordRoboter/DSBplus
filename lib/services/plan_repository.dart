@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
-import 'dsb_api.dart';
 import 'data_repository.dart';
 
 class PlanRepository extends ChangeNotifier {
@@ -30,21 +28,9 @@ class PlanRepository extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final api = DSBApi(
-        "166162",
-        "20Bueffel21",
-        tableMapper: ['type', 'lesson', 'teacher', 'subject', 'room', 'text'],
-      );
+      await data.sync();
 
-      entries = await api.fetchEntries();
-
-      await data.validateSelectedDay(availableDays);
-
-      await data.saveEntries(entries);
-
-      await data.saveUpdated(
-        DateFormat('dd.MM. HH:mm', 'de_DE').format(DateTime.now()),
-      );
+      entries = data.cachedEntries;
 
       loading = false;
       notifyListeners();

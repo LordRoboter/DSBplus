@@ -31,6 +31,27 @@ Map<String, List<Map<String, dynamic>>> groupEntriesByDay(
   return grouped;
 }
 
+Map<String, List<Map<String, dynamic>>> groupEntriesByAllowedDays(
+  List<Map<String, dynamic>> entries,
+  List<String> allowedDays,
+) {
+  // Start with all allowed days as empty lists
+  final grouped = <String, List<Map<String, dynamic>>>{
+    for (final day in allowedDays) day: [],
+  };
+
+  for (final entry in entries) {
+    final day = entry["day"] as String?;
+
+    // Only accept entries whose day is in the allowed list
+    if (day != null && grouped.containsKey(day)) {
+      grouped[day]!.add(entry);
+    }
+  }
+
+  return grouped;
+}
+
 List<Map<String, dynamic>> simplifyEntries(List<Map<String, dynamic>> entries) {
   final grouped = <String, Map<String, dynamic>>{};
 
@@ -128,9 +149,7 @@ List<Map<String, dynamic>> filterByClass(
         .map((c) => c.trim())
         .where((c) => c.isNotEmpty);
 
-    if (entryClasses.contains("alle")) {
-      return true;
-    }
+    if (entryClasses.contains("alle")) return true;
 
     return entryClasses.any(terms.contains);
   }).toList();
@@ -198,4 +217,55 @@ Map<String, Map<String, List<Map<String, dynamic>>>> sortEntries(
   }
 
   return groupedByDay;
+}
+
+ClassDiff diffByClass(
+  List<Map<String, dynamic>> oldEntries,
+  List<Map<String, dynamic>> newEntries,
+  String classes,
+) {
+  final oldFiltered = filterByClass(oldEntries, classes);
+  final newFiltered = filterByClass(newEntries, classes);
+
+  final oldMap = {for (var e in oldFiltered) entryKey(e): e};
+  final newMap = {for (var e in newFiltered) entryKey(e): e};
+
+  final added = <Map<String, dynamic>>[];
+  final removed = <Map<String, dynamic>>[];
+
+  // check removed + unchanged
+  for (final key in oldMap.keys) {
+    if (!newMap.containsKey(key)) {
+      removed.add(oldMap[key]!);
+    }
+  }
+
+  // check added
+  for (final key in newMap.keys) {
+    if (!oldMap.containsKey(key)) {
+      added.add(newMap[key]!);
+    }
+  }
+
+  return ClassDiff(added: added, removed: removed);
+}
+
+String entryKey(Map<String, dynamic> e) {
+  return [
+    e["day"] ?? "",
+    e["lesson"] ?? "",
+    e["subject"] ?? "",
+    e["teacher"] ?? "",
+    e["room"] ?? "",
+    e["type"] ?? "",
+  ].join("|");
+}
+
+class ClassDiff {
+  final List<Map<String, dynamic>> added;
+  final List<Map<String, dynamic>> removed;
+
+  bool get hasChanges => added.isNotEmpty || removed.isNotEmpty;
+
+  ClassDiff({required this.added, required this.removed});
 }
