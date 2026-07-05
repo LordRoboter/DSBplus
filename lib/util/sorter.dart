@@ -90,7 +90,12 @@ bool isDigit(String c) {
   return c.length == 1 && c.codeUnitAt(0) >= 48 && c.codeUnitAt(0) <= 57;
 }
 
-List<Map<String, dynamic>> cleanupEntries(List<Map<String, dynamic>> entries) {
+List<Map<String, dynamic>> cleanupEntries(
+  List<Map<String, dynamic>> entries, {
+  bool cleanClassNames = true,
+  bool remapTypes = true,
+  bool disposeCourseNumbers = true,
+}) {
   for (final entry in entries) {
     var classs = entry["class"] as String;
     classs = classs.split("_")[0].split(" ")[0];
@@ -118,8 +123,8 @@ List<Map<String, dynamic>> cleanupEntries(List<Map<String, dynamic>> entries) {
 
     if (subject.contains("_")) {
       final index = subject.lastIndexOf("_");
-      suffix = subject.substring(index); // "_LK"
-      subject = subject.substring(0, index); // "MATHE"
+      suffix = subject.substring(index);
+      subject = subject.substring(0, index);
     }
 
     subject = subjectMap[subject.toLowerCase()] ?? subject;
@@ -232,15 +237,21 @@ ClassDiff diffByClass(
 
   final added = <Map<String, dynamic>>[];
   final removed = <Map<String, dynamic>>[];
+  final modified = <Map<String, dynamic>>[];
 
-  // check removed + unchanged
   for (final key in oldMap.keys) {
     if (!newMap.containsKey(key)) {
       removed.add(oldMap[key]!);
+    } else {
+      final oldE = oldMap[key]!;
+      final newE = newMap[key]!;
+
+      if (isModified(oldE, newE)) {
+        modified.add(newE);
+      }
     }
   }
 
-  // check added
   for (final key in newMap.keys) {
     if (!oldMap.containsKey(key)) {
       added.add(newMap[key]!);
@@ -251,14 +262,14 @@ ClassDiff diffByClass(
 }
 
 String entryKey(Map<String, dynamic> e) {
-  return [
-    e["day"] ?? "",
-    e["lesson"] ?? "",
-    e["subject"] ?? "",
-    e["teacher"] ?? "",
-    e["room"] ?? "",
-    e["type"] ?? "",
-  ].join("|");
+  return [e["day"] ?? "", e["lesson"] ?? "", e["class"] ?? ""].join("|");
+}
+
+bool isModified(Map<String, dynamic> oldE, Map<String, dynamic> newE) {
+  return oldE["subject"] != newE["subject"] ||
+      oldE["teacher"] != newE["teacher"] ||
+      oldE["room"] != newE["room"] ||
+      oldE["type"] != newE["type"];
 }
 
 class ClassDiff {

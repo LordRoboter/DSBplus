@@ -28,13 +28,11 @@ class _PlanScreenState extends State<PlanScreen> {
       data.setSelectedDay(repo.availableDays.first);
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final repo = context.watch<PlanRepository>();
     final data = context.watch<DataRepository>();
-
-
 
     final sortedEntries = sortEntries(repo.entries, data.clean, data.simplify);
     final visibleGroups = data.selectedDay != null
@@ -144,6 +142,7 @@ class _PlanScreenState extends State<PlanScreen> {
                                 const Spacer(),
                                 const Icon(Icons.update, size: 16),
                                 const SizedBox(width: 6),
+
                                 Text.rich(
                                   TextSpan(
                                     children: [
@@ -153,7 +152,10 @@ class _PlanScreenState extends State<PlanScreen> {
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      TextSpan(text: repo.lastUpdated),
+                                      TextSpan(
+                                        text:
+                                            "${visibleGroups.values.first.first['updated'] ?? ''}",
+                                      ),
                                     ],
                                   ),
                                   style: Theme.of(context).textTheme.bodyMedium,

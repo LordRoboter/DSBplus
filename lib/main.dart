@@ -124,6 +124,7 @@ class _NavigatorScreenState extends State<NavigatorScreen> {
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  print("BACKGROUND HANDLER STARTED");
 
   await initializeDateFormatting('de_DE');
 
@@ -133,47 +134,98 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await data.init();
   final oldData = await data.sync();
 
-  final groupedNew = groupEntriesByAllowedDays(
-    data.cachedEntries,
-    data.availableDays,
-  );
+  /*[
+    {
+      "day": "Freitag",
+      "date": "26.06.2026",
+      "updated": "26.06.2026",
+      "class": "7b",
+      "lesson": "1",
+      "subject": "D",
+      "teacher": "Loh",
+      "room": "102",
+      "type": "Entfall",
+    },
+    {
+      "day": "Donnerstag",
+      "date": "25.06.2026",
+      "updated": "26.06.2026",
+      "class": "7b",
+      "lesson": "3",
+      "subject": "M",
+      "teacher": "Cyb",
+      "room": "102",
+      "type": "Entfall",
+    },
+  ];*/
+
+  final newData = data.cachedEntries;
+
+  /*[
+    {
+      "day": "Freitag",
+      "date": "26.06.2026",
+      "updated": "26.06.2026",
+      "class": "7b",
+      "lesson": "2",
+      "subject": "M",
+      "teacher": "Cyb",
+      "room": "102",
+      "type": "Entfall",
+    },
+  ];*/
+
+  final groupedNew = groupEntriesByAllowedDays(newData, data.availableDays);
   final groupedOld = groupEntriesByAllowedDays(oldData, data.availableDays);
 
   for (final day in data.availableDays) {
     final diff = diffByClass(
-      groupedOld[day]!,
-      groupedNew[day]!,
+      groupedOld[day] ?? [],
+      groupedNew[day] ?? [],
       data.classFilter,
     );
 
+    print((groupedOld[day] ?? []).toString());
+    print((groupedNew[day] ?? []).toString());
     if (diff.added.isNotEmpty || diff.removed.isNotEmpty) {
-      final relativeDay = getRelativeDay(diff.added.first["date"]);
+      final sample = diff.added.isNotEmpty
+          ? diff.added.first
+          : diff.removed.first;
+
+      final relativeDay = getRelativeDay(sample["date"]);
       final dayName =
           relativeDay.toLowerCase() == "heute" ||
               relativeDay.toLowerCase() == "heute"
           ? relativeDay
-          : "$day ($relativeDay)";
+          : "$day $relativeDay";
       final title = diff.added.isNotEmpty && diff.removed.isNotEmpty
-          ? "Veränderter Vertretungsplan für $dayName"
+          ? "$dayName: Vertretungsplanänderung"
           : diff.added.isNotEmpty
-          ? "Neue Einträge für $dayName"
-          : "Gelöschte Einträge für $dayName";
+          ? "$dayName: Neue Einträge"
+          : "$dayName: Gelöschte Einträge";
 
       final addedEntries = diff.added
-          .map((entry) => "${entry["lesson"]}: ${entry["type"]}")
+          .map(
+            (entry) =>
+                "${entry["lesson"]}. Std.: ${entry["type"]} (${entry["subject"]} ${entry["teacher"]})",
+          )
           .join("\n");
 
       final removedEntries = diff.removed
-          .map((entry) => "${entry["lesson"]}: ${entry["type"]}")
+          .map(
+            (entry) =>
+                "${entry["lesson"]}. Std.: ${entry["type"]} (${entry["subject"]} ${entry["teacher"]}) - Entfernt",
+          )
           .join("\n");
 
       final details = [
-        if (diff.added.isNotEmpty) "Neu:\n$addedEntries",
-        if (diff.removed.isNotEmpty) "Entfernt:\n$removedEntries",
-      ].join("\n\n");
+        if (diff.added.isNotEmpty) "$addedEntries",
+        if (diff.removed.isNotEmpty) "$removedEntries",
+      ].join("\n");
 
       await NotificationService.makeUpdateNotification(
-        DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        DateTime.now().millisecondsSinceEpoch ~/ 1000 +
+            data.availableDays.indexOf(day),
         title,
         details,
       );
