@@ -147,7 +147,7 @@ class DSBApi {
                 "class": "Alle",
                 "day": day,
                 "date": date,
-                "updated": "updated",
+                "updated": updated,
                 "type": "Eigenverantwortliches Arbeiten",
 
                 "lesson": infos[i].text.replaceAll("Std.", "").trim(),
