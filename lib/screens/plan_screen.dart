@@ -13,9 +13,12 @@ class PlanScreen extends StatefulWidget {
   State<PlanScreen> createState() => _PlanScreenState();
 }
 
-class _PlanScreenState extends State<PlanScreen> {
+class _PlanScreenState extends State<PlanScreen>
+    with SingleTickerProviderStateMixin {
   var isSearching = false;
   String search = "";
+
+  late final AnimationController _rotationController;
 
   @override
   void didChangeDependencies() {
@@ -30,11 +33,48 @@ class _PlanScreenState extends State<PlanScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    _rotationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+  }
+
+  @override
+  void dispose() {
+    _rotationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final repo = context.watch<PlanRepository>();
     final data = context.watch<DataRepository>();
 
-    final sortedEntries = sortEntries(repo.entries, data.clean, data.simplify);
+    if (repo.loading) {
+      if (!_rotationController.isAnimating) {
+        _rotationController.repeat();
+      }
+    } else {
+      if (_rotationController.isAnimating) {
+        _rotationController.stop();
+        _rotationController.reset();
+      }
+    }
+
+    final sortedEntries = sortEntries(
+      repo.entries,
+      data.clean,
+      data.simplify,
+      disposeTut: data.disposeTut,
+      cleanClassNames: data.cleanClassNames,
+      remapTypes: data.remapTypes,
+      cleanupCourses: data.cleanupCourses,
+      disposeCourseNumbers: data.disposeCourseNumbers,
+      mapCourses: data.mapCourses,
+    );
     final visibleGroups = data.selectedDay != null
         ? sortedEntries[data.selectedDay] ??
               <String, List<Map<String, dynamic>>>{}
@@ -49,10 +89,13 @@ class _PlanScreenState extends State<PlanScreen> {
           )
         : visibleGroups;
 
-    return repo.loading
-        ? const Center(child: CircularProgressIndicator())
-        : repo.error != null
-        ? Center(child: Text(repo.error!))
+    return repo.error != null
+        ? RefreshIndicator(
+            onRefresh: () async {
+              await repo.loadData();
+            },
+            child: Center(child: Text(repo.error!)),
+          )
         : Column(
             children: [
               AnimatedSwitcher(
@@ -140,7 +183,29 @@ class _PlanScreenState extends State<PlanScreen> {
                                   style: Theme.of(context).textTheme.bodyMedium,
                                 ),
                                 const Spacer(),
-                                const Icon(Icons.update, size: 16),
+                                SizedBox(
+                                  height: 18.0,
+                                  width: 18.0,
+                                  child: IconButton(
+                                    iconSize: 18,
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(
+                                      minWidth: 18,
+                                      minHeight: 18,
+                                    ),
+                                    visualDensity: VisualDensity.compact,
+                                    splashRadius: 18,
+                                    onPressed: repo.loading
+                                        ? null
+                                        : () async {
+                                            await repo.loadData();
+                                          },
+                                    icon: RotationTransition(
+                                      turns: _rotationController,
+                                      child: const Icon(Icons.refresh),
+                                    ),
+                                  ),
+                                ),
                                 const SizedBox(width: 6),
 
                                 Text.rich(

@@ -68,19 +68,21 @@ List<Map<String, dynamic>> simplifyEntries(List<Map<String, dynamic>> entries) {
       entry["date"],
     ].join('|');
 
+    final classList = (entry['class'] as String? ?? '')
+        .split(RegExp(r'\s*,\s*'))
+        .map((c) => c.trim())
+        .where((c) => c.isNotEmpty)
+        .toSet();
+
     if (!grouped.containsKey(key)) {
-      grouped[key] = {
-        ...entry,
-        '_classes': <String>{entry['class']},
-      };
+      grouped[key] = {...entry, '_classes': classList};
     } else {
-      (grouped[key]!['_classes'] as Set<String>).add(entry['class']);
+      (grouped[key]!['_classes'] as Set<String>).addAll(classList);
     }
   }
 
   return grouped.values.map((entry) {
     final classes = (entry.remove('_classes') as Set<String>).toList()..sort();
-
     entry['class'] = classes.join(', ');
     return entry;
   }).toList();
@@ -92,47 +94,68 @@ bool isDigit(String c) {
 
 List<Map<String, dynamic>> cleanupEntries(
   List<Map<String, dynamic>> entries, {
+  bool disposeTut = true,
   bool cleanClassNames = true,
   bool remapTypes = true,
+  bool cleanupCourses = true,
   bool disposeCourseNumbers = true,
+  bool mapCourses = true,
 }) {
-  for (final entry in entries) {
-    var classs = entry["class"] as String;
-    classs = classs.split("_")[0].split(" ")[0];
-    classs = classs.replaceFirst(RegExp(r'^0+'), '');
-    entry["class"] = classs;
+  return entries.map((entry) {
+    // Create a copy so the original cache is never modified.
+    final cleaned = Map<String, dynamic>.from(entry);
 
-    entry["type"] =
-        typeMap[entry["type"].toString().toLowerCase()] ?? entry["type"];
+    // ----- Class -----
+    var classs = cleaned["class"] as String;
+    classs = classs.split(" ")[0];
 
-    final String subj = entry["subject"] as String;
-
-    if (subj.length > 2 &&
-        (subj[0] == 'E' || subj[0] == 'Q') &&
-        isDigit(subj[1])) {
-      entry["subject"] = subj.substring(2);
+    if (disposeTut) {
+      classs = classs.split("_")[0];
     }
 
-    var subject = entry["subject"] as String;
+    if (cleanClassNames) {
+      classs = classs.replaceFirst(RegExp(r'^0+'), '');
+    }
 
-    subject = subject
-        .replaceFirst(RegExp(r'^\d+'), '')
-        .replaceFirst(RegExp(r'\d.*$'), '');
+    cleaned["class"] = classs;
+
+    // ----- Type -----
+    if (remapTypes) {
+      cleaned["type"] =
+          typeMap[cleaned["type"].toString().toLowerCase()] ?? cleaned["type"];
+    }
+
+    // ----- Subject -----
+    var subject = cleaned["subject"] as String;
+
+    if (cleanupCourses) {
+      subject = subject
+          .replaceFirst(RegExp(r'[EQ]\d'), '')
+          .replaceFirst(RegExp(r'^\d+'), '')
+          .replaceFirst(RegExp(r'\d+\D$'), '');
+    }
+
+    if (disposeCourseNumbers) {
+      subject = subject.replaceFirst(RegExp(r'\d+$'), '');
+    }
 
     String suffix = "";
 
-    if (subject.contains("_")) {
-      final index = subject.lastIndexOf("_");
-      suffix = subject.substring(index);
-      subject = subject.substring(0, index);
+    if (mapCourses) {
+      final match = RegExp(r'(_.*|\d+)$').firstMatch(subject);
+
+      if (match != null) {
+        suffix = match.group(0)!;
+        subject = subject.substring(0, match.start);
+      }
+
+      subject = subjectMap[subject.toLowerCase()] ?? subject;
     }
 
-    subject = subjectMap[subject.toLowerCase()] ?? subject;
+    cleaned["subject"] = subject + suffix;
 
-    entry["subject"] = subject + suffix;
-  }
-
-  return entries;
+    return cleaned;
+  }).toList();
 }
 
 List<Map<String, dynamic>> filterByClass(
@@ -143,20 +166,25 @@ List<Map<String, dynamic>> filterByClass(
       .toLowerCase()
       .split(RegExp(r'[\s,]+'))
       .where((t) => t.isNotEmpty)
+      .map(classBase)
       .toSet();
 
   if (terms.isEmpty) return entries;
 
   return entries.where((entry) {
-    final entryClasses = (entry["class"] as String? ?? "")
-        .toLowerCase()
-        .split(RegExp(r'\s*,\s*'))
-        .map((c) => c.trim())
-        .where((c) => c.isNotEmpty);
+    final raw = (entry["class"] as String? ?? "").toLowerCase();
+
+    final entryClasses = raw
+        .split(RegExp(r'\s*,\s*|\s+'))
+        .where((c) => c.isNotEmpty)
+        .map(classBase)
+        .toSet();
 
     if (entryClasses.contains("alle")) return true;
 
-    return entryClasses.any(terms.contains);
+    return entryClasses.any(
+      (ec) => terms.any((t) => ec == t || ec.startsWith(t)),
+    );
   }).toList();
 }
 
@@ -180,29 +208,61 @@ bool matches(Map<String, dynamic> entry, String query) {
   return terms.every((term) => searchable.contains(term));
 }
 
+String normalizeClass(String c) {
+  c = c.toLowerCase().trim();
+
+  // remove leading zeros in numbers: 07a -> 7a
+  c = c.replaceFirstMapped(RegExp(r'\b0+(\d)'), (m) => '${m[1]}');
+
+  return c;
+}
+
+String classBase(String c) {
+  c = normalizeClass(c);
+
+  // strip trailing zeros (e.g. "7a0" -> "7a", "70" -> "7")
+  c = c.replaceFirst(RegExp(r'0+$'), '');
+
+  return c;
+}
+
 bool matchesClass(Map<String, dynamic> entry, String query) {
-  if (entry["class"].toString().toLowerCase() == "alle") return true;
+  if ((entry["class"] ?? "").toString().toLowerCase() == "alle") {
+    return true;
+  }
 
   final terms = query
       .toLowerCase()
       .split(RegExp(r'[\s,]+'))
       .where((t) => t.isNotEmpty)
-      .toList();
+      .map(classBase)
+      .toSet();
 
   if (terms.isEmpty) return false;
 
-  final searchable = [
-    entry["class"],
-  ].where((e) => e != null).join(" ").toLowerCase();
+  final entryClasses = (entry["class"] as String? ?? "")
+      .toLowerCase()
+      .split(RegExp(r'\s*,\s*|\s+'))
+      .where((c) => c.isNotEmpty)
+      .map(classBase)
+      .toSet();
 
-  return terms.any((term) => searchable.contains(term));
+  return entryClasses.any(
+    (ec) => terms.any((t) => ec == t || ec.startsWith(t) || t.startsWith(ec)),
+  );
 }
 
 Map<String, Map<String, List<Map<String, dynamic>>>> sortEntries(
   List<Map<String, dynamic>> entries,
   bool clean,
-  bool simplify,
-) {
+  bool simplify, {
+  bool disposeTut = true,
+  bool cleanClassNames = true,
+  bool remapTypes = true,
+  bool cleanupCourses = true,
+  bool disposeCourseNumbers = true,
+  bool mapCourses = true,
+}) {
   final dayResult = groupEntriesByDay(entries);
 
   final groupedByDay = <String, Map<String, List<Map<String, dynamic>>>>{};
@@ -211,7 +271,15 @@ Map<String, Map<String, List<Map<String, dynamic>>>> sortEntries(
     var res = entry.value;
 
     if (clean) {
-      res = cleanupEntries(res);
+      res = cleanupEntries(
+        res,
+        disposeTut: disposeTut,
+        cleanClassNames: cleanClassNames,
+        remapTypes: remapTypes,
+        cleanupCourses: cleanupCourses,
+        disposeCourseNumbers: disposeCourseNumbers,
+        mapCourses: mapCourses,
+      );
     }
 
     if (simplify) {
