@@ -15,71 +15,110 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final GlobalKey<RefreshIndicatorState> _refreshKey =
+      GlobalKey<RefreshIndicatorState>();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final repo = context.read<PlanRepository>();
+      if (repo.loading) {
+        _refreshKey.currentState?.show();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final repo = context.watch<PlanRepository>();
     final data = context.watch<DataRepository>();
 
     final classResults = filterByClass(repo.entries, data.classFilter);
-    final groupedByDay = sortEntries(classResults, data.clean, data.simplify);
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      itemCount: groupedByDay.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 48),
-      itemBuilder: (context, index) {
-        final dayEntry = groupedByDay.entries.elementAt(index);
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        "${dayEntry.key} ${getRelativeDay(dayEntry.value.values.first.first["date"])}",
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onPrimaryContainer,
+    if (repo.loading && _refreshKey.currentState == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _refreshKey.currentState?.show();
+      });
+    }
+
+    final groupedByDay = sortEntries(
+      classResults,
+      data.clean,
+      data.simplify,
+      disposeTut: data.disposeTut,
+      cleanClassNames: data.cleanClassNames,
+      remapTypes: data.remapTypes,
+      cleanupCourses: data.cleanupCourses,
+      disposeCourseNumbers: data.disposeCourseNumbers,
+      mapCourses: data.mapCourses,
+    );
+    return RefreshIndicator(
+      key: _refreshKey,
+      onRefresh: () async {
+        await repo.loadData();
+      },
+
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        itemCount: groupedByDay.length,
+        separatorBuilder: (_, _) => const SizedBox(height: 48),
+        itemBuilder: (context, index) {
+          final dayEntry = groupedByDay.entries.elementAt(index);
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "${dayEntry.key} ${getRelativeDay(dayEntry.value.values.first.first["date"])}",
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onPrimaryContainer,
+                              ),
                         ),
                       ),
-                    ),
-                    if (isOutdated(dayEntry.value.values.first.first["date"]))
-                      Tooltip(
-                        message: "Dieser Eintrag ist wahrscheinlich veraltet",
-                        child: IconButton(
-                          icon: const Icon(Icons.warning_amber_rounded),
-                          color: Theme.of(context).colorScheme.error,
-                          onPressed: () {},
+                      if (isOutdated(dayEntry.value.values.first.first["date"]))
+                        Tooltip(
+                          message: "Dieser Eintrag ist wahrscheinlich veraltet",
+                          child: IconButton(
+                            icon: const Icon(Icons.warning_amber_rounded),
+                            color: Theme.of(context).colorScheme.error,
+                            onPressed: () {},
+                          ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
 
-            const SizedBox(height: 4),
+              const SizedBox(height: 4),
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: EntryListNoScroll(groups: dayEntry.value),
-            ),
-          ],
-        );
-      },
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: EntryListNoScroll(groups: dayEntry.value),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }

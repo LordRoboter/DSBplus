@@ -10,9 +10,16 @@ class DataRepository extends ChangeNotifier {
   bool simplify = true;
   bool clean = true;
 
-  String lastUpdated = "";
+  bool disposeTut = true;
+  bool cleanClassNames = true;
+  bool remapTypes = true;
+  bool cleanupCourses = true;
+  bool disposeCourseNumbers = true;
+  bool mapCourses = true;
+
   String classFilter = "";
 
+  String lastUpdated = "";
   String? selectedDay;
 
   List<Map<String, dynamic>> cachedEntries = [];
@@ -33,6 +40,14 @@ class DataRepository extends ChangeNotifier {
   Future<void> loadSettings() async {
     clean = prefs.getBool("clean") ?? true;
     simplify = prefs.getBool("simplify") ?? true;
+
+    disposeTut = prefs.getBool("disposeTut") ?? true;
+    cleanClassNames = prefs.getBool("cleanClassNames") ?? true;
+    remapTypes = prefs.getBool("remapTypes") ?? true;
+    cleanupCourses = prefs.getBool("cleanupCourses") ?? true;
+    disposeCourseNumbers = prefs.getBool("disposeCourseNumbers") ?? true;
+    mapCourses = prefs.getBool("mapCourses") ?? true;
+
     classFilter = prefs.getString("classFilter") ?? "";
     selectedDay = prefs.getString("selectedDay");
 
@@ -130,6 +145,54 @@ class DataRepository extends ChangeNotifier {
     classFilter = value;
 
     await prefs.setString("classFilter", value);
+
+    notifyListeners();
+  }
+
+  Future<void> setDisposeTut(bool value) async {
+    disposeTut = value;
+
+    await prefs.setBool("disposeTut", value);
+
+    notifyListeners();
+  }
+
+  Future<void> setCleanClassNames(bool value) async {
+    cleanClassNames = value;
+
+    await prefs.setBool("cleanClassNames", value);
+
+    notifyListeners();
+  }
+
+  Future<void> setRemapTypes(bool value) async {
+    remapTypes = value;
+
+    await prefs.setBool("remapTypes", value);
+
+    notifyListeners();
+  }
+
+  Future<void> setCleanupCourses(bool value) async {
+    cleanupCourses = value;
+
+    await prefs.setBool("cleanupCourses", value);
+
+    notifyListeners();
+  }
+
+  Future<void> setDisposeCourseNumbers(bool value) async {
+    disposeCourseNumbers = value;
+
+    await prefs.setBool("disposeCourseNumbers", value);
+
+    notifyListeners();
+  }
+
+  Future<void> setMapCourses(bool value) async {
+    mapCourses = value;
+
+    await prefs.setBool("mapCourses", value);
 
     notifyListeners();
   }

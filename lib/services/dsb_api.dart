@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:html/parser.dart';
 import 'package:uuid/uuid.dart';
 
+//TODO: Get additional resources (Aushänge/ Infos/ ...) -> GetData on normal website, .....
 class DSBApi {
   static const String dataUrl =
       "https://app.dsbcontrol.de/JsonHandler.ashx/GetData";
