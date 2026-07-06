@@ -20,12 +20,17 @@ class DataRepository extends ChangeNotifier {
   String classFilter = "";
 
   String lastUpdated = "";
-  String? selectedDay;
+  String? selectedDayDate;
 
   List<Map<String, dynamic>> cachedEntries = [];
 
-  List<String> get availableDays =>
-      cachedEntries.map((e) => e["day"] as String).toSet().toList();
+  List<String> get availableDayDates => cachedEntries
+      .map(
+        (e) =>
+            "${e["day"] as String? ?? "Unknown"} (${e["date"] as String? ?? "Unknown"})",
+      )
+      .toSet()
+      .toList();
 
   Future<void> init() async {
     prefs = await SharedPreferences.getInstance();
@@ -49,7 +54,7 @@ class DataRepository extends ChangeNotifier {
     mapCourses = prefs.getBool("mapCourses") ?? true;
 
     classFilter = prefs.getString("classFilter") ?? "";
-    selectedDay = prefs.getString("selectedDay");
+    selectedDayDate = prefs.getString("selectedDayDate");
 
     notifyListeners();
   }
@@ -64,8 +69,14 @@ class DataRepository extends ChangeNotifier {
     final oldEntries = cachedEntries;
     final entries = await api.fetchEntries();
 
-    await validateSelectedDay(
-      entries.map((e) => e["day"] as String).toSet().toList(),
+    await validateSelectedDayDate(
+      entries
+          .map(
+            (e) =>
+                "${e["day"] as String? ?? "Unknown"} (${e["date"] as String? ?? "Unknown"})",
+          )
+          .toSet()
+          .toList(),
     );
 
     await saveEntries(entries);
@@ -77,22 +88,22 @@ class DataRepository extends ChangeNotifier {
     return oldEntries;
   }
 
-  Future<void> setSelectedDay(String day) async {
-    selectedDay = day;
+  Future<void> setSelectedDayDate(String dayDate) async {
+    selectedDayDate = dayDate;
 
-    await prefs.setString("selectedDay", day);
+    await prefs.setString("selectedDayDate", dayDate);
 
     notifyListeners();
   }
 
-  Future<void> validateSelectedDay(List<String> days) async {
-    if (selectedDay == null || !days.contains(selectedDay)) {
-      selectedDay = days.isNotEmpty ? days.first : null;
+  Future<void> validateSelectedDayDate(List<String> dayDates) async {
+    if (selectedDayDate == null || !dayDates.contains(selectedDayDate)) {
+      selectedDayDate = dayDates.isNotEmpty ? dayDates.first : null;
 
-      if (selectedDay != null) {
-        await prefs.setString("selectedDay", selectedDay!);
+      if (selectedDayDate != null) {
+        await prefs.setString("selectedDayDate", selectedDayDate!);
       } else {
-        await prefs.remove("selectedDay");
+        await prefs.remove("selectedDayDate");
       }
 
       notifyListeners();

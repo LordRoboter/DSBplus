@@ -136,7 +136,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
   /*[
     {
-      "day": "Freitag",
+      "dayDate": "Freitag",
       "date": "26.06.2026",
       "updated": "26.06.2026",
       "class": "7b",
@@ -147,7 +147,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       "type": "Entfall",
     },
     {
-      "day": "Donnerstag",
+      "dayDate": "Donnerstag",
       "date": "25.06.2026",
       "updated": "26.06.2026",
       "class": "7b",
@@ -163,7 +163,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
   /*[
     {
-      "day": "Freitag",
+      "dayDate": "Freitag",
       "date": "26.06.2026",
       "updated": "26.06.2026",
       "class": "7b",
@@ -175,18 +175,24 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     },
   ];*/
 
-  final groupedNew = groupEntriesByAllowedDays(newData, data.availableDays);
-  final groupedOld = groupEntriesByAllowedDays(oldData, data.availableDays);
+  final groupedNew = groupEntriesByAllowedDayDates(
+    newData,
+    data.availableDayDates,
+  );
+  final groupedOld = groupEntriesByAllowedDayDates(
+    oldData,
+    data.availableDayDates,
+  );
 
-  for (final day in data.availableDays) {
+  for (final dayDate in data.availableDayDates) {
     final diff = diffByClass(
-      groupedOld[day] ?? [],
-      groupedNew[day] ?? [],
+      groupedOld[dayDate] ?? [],
+      groupedNew[dayDate] ?? [],
       data.classFilter,
     );
 
-    print((groupedOld[day] ?? []).toString());
-    print((groupedNew[day] ?? []).toString());
+    print((groupedOld[dayDate] ?? []).toString());
+    print((groupedNew[dayDate] ?? []).toString());
     if (diff.added.isNotEmpty || diff.removed.isNotEmpty) {
       final sample = diff.added.isNotEmpty
           ? diff.added.first
@@ -197,7 +203,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
           relativeDay.toLowerCase() == "heute" ||
               relativeDay.toLowerCase() == "heute"
           ? relativeDay
-          : "$day $relativeDay";
+          : "$dayDate $relativeDay";
       final title = diff.added.isNotEmpty && diff.removed.isNotEmpty
           ? "$dayName: Vertretungsplanänderung"
           : diff.added.isNotEmpty
@@ -219,13 +225,13 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
           .join("\n");
 
       final details = [
-        if (diff.added.isNotEmpty) "$addedEntries",
-        if (diff.removed.isNotEmpty) "$removedEntries",
+        if (diff.added.isNotEmpty) addedEntries,
+        if (diff.removed.isNotEmpty) removedEntries,
       ].join("\n");
 
       await NotificationService.makeUpdateNotification(
         DateTime.now().millisecondsSinceEpoch ~/ 1000 +
-            data.availableDays.indexOf(day),
+            data.availableDayDates.indexOf(dayDate),
         title,
         details,
       );

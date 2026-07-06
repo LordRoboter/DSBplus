@@ -16,36 +16,41 @@ Map<String, List<Map<String, dynamic>>> groupEntries(
   return grouped;
 }
 
-Map<String, List<Map<String, dynamic>>> groupEntriesByDay(
+Map<String, List<Map<String, dynamic>>> groupEntriesByDayDate(
   List<Map<String, dynamic>> entries,
 ) {
   final grouped = <String, List<Map<String, dynamic>>>{};
 
   for (final entry in entries) {
     final day = entry["day"] as String? ?? "Unknown";
+    final date = entry["date"] as String? ?? "Unknown";
 
-    grouped.putIfAbsent(day, () => []);
-    grouped[day]!.add(entry);
+    final dayDate = "$day ($date)";
+
+    grouped.putIfAbsent(dayDate, () => []);
+    grouped[dayDate]!.add(entry);
   }
 
   return grouped;
 }
 
-Map<String, List<Map<String, dynamic>>> groupEntriesByAllowedDays(
+Map<String, List<Map<String, dynamic>>> groupEntriesByAllowedDayDates(
   List<Map<String, dynamic>> entries,
-  List<String> allowedDays,
+  List<String> allowedDayDates,
 ) {
   // Start with all allowed days as empty lists
   final grouped = <String, List<Map<String, dynamic>>>{
-    for (final day in allowedDays) day: [],
+    for (final dayDate in allowedDayDates) dayDate: [],
   };
 
   for (final entry in entries) {
-    final day = entry["day"] as String?;
+    final day = entry["day"] as String? ?? "Unknown";
+    final date = entry["date"] as String? ?? "Unknown";
+    final dayDate = "$day ($date)";
 
     // Only accept entries whose day is in the allowed list
-    if (day != null && grouped.containsKey(day)) {
-      grouped[day]!.add(entry);
+    if (grouped.containsKey(dayDate)) {
+      grouped[dayDate]!.add(entry);
     }
   }
 
@@ -263,7 +268,7 @@ Map<String, Map<String, List<Map<String, dynamic>>>> sortEntries(
   bool disposeCourseNumbers = true,
   bool mapCourses = true,
 }) {
-  final dayResult = groupEntriesByDay(entries);
+  final dayResult = groupEntriesByDayDate(entries);
 
   final groupedByDay = <String, Map<String, List<Map<String, dynamic>>>>{};
 
