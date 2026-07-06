@@ -15,7 +15,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final GlobalKey<RefreshIndicatorState> _refreshKey =
+  /*final GlobalKey<RefreshIndicatorState> _refreshKey =
       GlobalKey<RefreshIndicatorState>();
 
   @override
@@ -27,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _refreshKey.currentState?.show();
       }
     });
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -36,11 +36,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final classResults = filterByClass(repo.entries, data.classFilter);
 
-    if (repo.loading && _refreshKey.currentState == null) {
+    /*if (repo.loading && _refreshKey.currentState == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _refreshKey.currentState?.show();
       });
-    }
+    }*/
 
     final groupedByDay = sortEntries(
       classResults,
@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
       mapCourses: data.mapCourses,
     );
     return RefreshIndicator(
-      key: _refreshKey,
+      //key: _refreshKey,
       onRefresh: () async {
         await repo.loadData();
       },

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:planner/services/dsb_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:async';
+import 'package:collection/collection.dart';
 
 class DataRepository extends ChangeNotifier {
   late final SharedPreferences prefs;
@@ -23,6 +25,10 @@ class DataRepository extends ChangeNotifier {
   String? selectedDayDate;
 
   List<Map<String, dynamic>> cachedEntries = [];
+
+  final _updates = StreamController<void>.broadcast();
+
+  Stream<void> get updates => _updates.stream;
 
   List<String> get availableDayDates => cachedEntries
       .map(
@@ -69,6 +75,8 @@ class DataRepository extends ChangeNotifier {
     final oldEntries = cachedEntries;
     final entries = await api.fetchEntries();
 
+    final changed = !const DeepCollectionEquality().equals(oldEntries, entries);
+
     await validateSelectedDayDate(
       entries
           .map(
@@ -80,6 +88,10 @@ class DataRepository extends ChangeNotifier {
     );
 
     await saveEntries(entries);
+
+    if (changed) {
+      _updates.add(null);
+    }
 
     await saveUpdated(
       DateFormat('dd.MM. HH:mm', 'de_DE').format(DateTime.now()),
