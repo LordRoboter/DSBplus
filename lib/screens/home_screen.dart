@@ -59,66 +59,85 @@ class _HomeScreenState extends State<HomeScreen> {
         await repo.loadData();
       },
 
-      child: ListView.separated(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        itemCount: groupedByDay.length,
-        separatorBuilder: (_, _) => const SizedBox(height: 48),
-        itemBuilder: (context, index) {
-          final dayEntry = groupedByDay.entries.elementAt(index);
+      child: groupedByDay.isEmpty && repo.loading
+          ? const Center(child: CircularProgressIndicator())
+          : groupedByDay.isEmpty
+          ? LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: SizedBox(
+                    height: constraints.maxHeight,
+                    child: const Center(
+                      child: Text("Keine relevanten Einträge •︵•"),
+                    ),
+                  ),
+                );
+              },
+            )
+          : ListView.separated(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              itemCount: groupedByDay.length,
+              separatorBuilder: (_, _) => const SizedBox(height: 48),
+              itemBuilder: (context, index) {
+                final dayEntry = groupedByDay.entries.elementAt(index);
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          "${dayEntry.key} ${getRelativeDay(dayEntry.value.values.first.first["date"])}",
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onPrimaryContainer,
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                "${dayEntry.value.values.first.first["day"]} ${getRelativeDay(dayEntry.value.values.first.first["date"])}",
+                                style: Theme.of(context).textTheme.titleLarge
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onPrimaryContainer,
+                                    ),
                               ),
+                            ),
+                            if (isOutdated(
+                              dayEntry.value.values.first.first["date"],
+                            ))
+                              Tooltip(
+                                message:
+                                    "Dieser Eintrag ist wahrscheinlich veraltet",
+                                child: IconButton(
+                                  icon: const Icon(Icons.warning_amber_rounded),
+                                  color: Theme.of(context).colorScheme.error,
+                                  onPressed: () {},
+                                ),
+                              ),
+                          ],
                         ),
                       ),
-                      if (isOutdated(dayEntry.value.values.first.first["date"]))
-                        Tooltip(
-                          message: "Dieser Eintrag ist wahrscheinlich veraltet",
-                          child: IconButton(
-                            icon: const Icon(Icons.warning_amber_rounded),
-                            color: Theme.of(context).colorScheme.error,
-                            onPressed: () {},
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
+                    ),
 
-              const SizedBox(height: 4),
+                    const SizedBox(height: 4),
 
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: EntryListNoScroll(groups: dayEntry.value),
-              ),
-            ],
-          );
-        },
-      ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: EntryListNoScroll(groups: dayEntry.value),
+                    ),
+                  ],
+                );
+              },
+            ),
     );
   }
 }

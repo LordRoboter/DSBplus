@@ -27,8 +27,8 @@ class _PlanScreenState extends State<PlanScreen>
     final repo = context.read<PlanRepository>();
     final data = context.read<DataRepository>();
 
-    if (data.selectedDay == null && repo.availableDays.isNotEmpty) {
-      data.setSelectedDay(repo.availableDays.first);
+    if (data.selectedDayDate == null && repo.availableDayDates.isNotEmpty) {
+      data.setSelectedDayDate(repo.availableDayDates.first);
     }
   }
 
@@ -75,8 +75,8 @@ class _PlanScreenState extends State<PlanScreen>
       disposeCourseNumbers: data.disposeCourseNumbers,
       mapCourses: data.mapCourses,
     );
-    final visibleGroups = data.selectedDay != null
-        ? sortedEntries[data.selectedDay] ??
+    final visibleGroups = data.selectedDayDate != null
+        ? sortedEntries[data.selectedDayDate] ??
               <String, List<Map<String, dynamic>>>{}
         : <String, List<Map<String, dynamic>>>{};
 
@@ -95,6 +95,20 @@ class _PlanScreenState extends State<PlanScreen>
               await repo.loadData();
             },
             child: Center(child: Text(repo.error!)),
+          )
+        : filteredGroups.isEmpty && repo.loading
+        ? const Center(child: CircularProgressIndicator())
+        : filteredGroups.isEmpty
+        ? LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: constraints.maxHeight,
+                  child: const Center(child: Text('Keine Einträge ( – ⤙ – )')),
+                ),
+              );
+            },
           )
         : Column(
             children: [
@@ -131,17 +145,20 @@ class _PlanScreenState extends State<PlanScreen>
                                   child: ListView.separated(
                                     scrollDirection: Axis.horizontal,
                                     padding: const EdgeInsets.all(8),
-                                    itemCount: repo.availableDays.length,
+                                    itemCount: repo.availableDayDates.length,
                                     separatorBuilder: (_, _) =>
                                         const SizedBox(width: 8),
                                     itemBuilder: (context, index) {
-                                      final day = repo.availableDays[index];
+                                      final dayDate =
+                                          repo.availableDayDates[index];
+                                      final day = dayDate.split(" ")[0];
 
                                       return ChoiceChip(
                                         label: Text(day),
-                                        selected: data.selectedDay == day,
+                                        selected:
+                                            data.selectedDayDate == dayDate,
                                         onSelected: (_) {
-                                          data.setSelectedDay(day);
+                                          data.setSelectedDayDate(dayDate);
                                         },
                                       );
                                     },

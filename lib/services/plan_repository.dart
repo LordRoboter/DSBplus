@@ -14,8 +14,13 @@ class PlanRepository extends ChangeNotifier {
 
   String get lastUpdated => data.lastUpdated;
 
-  List<String> get availableDays =>
-      entries.map((e) => e["day"] as String).toSet().toList();
+  List<String> get availableDayDates => entries
+      .map(
+        (e) =>
+            "${e["day"] as String? ?? "Unknown"} (${e["date"] as String? ?? "Unknown"})",
+      )
+      .toSet()
+      .toList();
 
   Future<void> init() async {
     entries = data.cachedEntries;
