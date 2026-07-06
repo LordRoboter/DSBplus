@@ -17,6 +17,8 @@ import 'services/plan_repository.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
+import 'dart:async';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -72,6 +74,8 @@ class _NavigatorScreenState extends State<NavigatorScreen> {
 
   final pages = const [HomeScreen(), PlanScreen()];
 
+  late final StreamSubscription _sub;
+
   Future<void> openSettings() async {
     await Navigator.push(
       context,
@@ -84,6 +88,7 @@ class _NavigatorScreenState extends State<NavigatorScreen> {
     super.initState();
 
     final plan = context.read<PlanRepository>();
+    final data = context.read<DataRepository>();
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       print(message.data["type"]);
@@ -92,6 +97,23 @@ class _NavigatorScreenState extends State<NavigatorScreen> {
       await NotificationService.showUpdateNotification();
       await plan.loadData();
     });
+
+    _sub = data.updates.listen((_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Timetable updated"),
+          duration: Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+          
+        ),
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _sub.cancel();
+    super.dispose();
   }
 
   @override
