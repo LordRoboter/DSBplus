@@ -21,9 +21,15 @@ class EntryListNoScroll extends StatelessWidget {
 
 class EntryList extends StatelessWidget {
   final Map<String, List<Map<String, dynamic>>> groups;
+  final List<Map<String, String>> filters;
   final String classFilter;
 
-  const EntryList({super.key, required this.groups, required this.classFilter});
+  const EntryList({
+    super.key,
+    required this.groups,
+    required this.filters,
+    required this.classFilter,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +39,19 @@ class EntryList extends StatelessWidget {
       ) {
         return EntryCard(
           group: group,
-          marked: matchesClass(group.value.first, classFilter),
+          marked: filters.any((filter) {
+            final f = Map<String, String>.from(filter);
+
+            final classMatches =
+                classFilter.isEmpty ||
+                matchesClass(group.value.first, classFilter);
+
+            if (classFilter.isNotEmpty) {
+              f.remove("class");
+            }
+
+            return classMatches && matchesFilter(group.value.first, f);
+          }),
         );
       }).toList(),
     );

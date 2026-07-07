@@ -19,7 +19,10 @@ class DataRepository extends ChangeNotifier {
   bool disposeCourseNumbers = true;
   bool mapCourses = true;
 
+  bool notifications = true;
+
   String classFilter = "";
+  List<Map<String, String>> filters = [];
 
   String lastUpdated = "";
   String? selectedDayDate;
@@ -59,7 +62,20 @@ class DataRepository extends ChangeNotifier {
     disposeCourseNumbers = prefs.getBool("disposeCourseNumbers") ?? true;
     mapCourses = prefs.getBool("mapCourses") ?? true;
 
+    notifications = prefs.getBool("notifications") ?? true;
+
     classFilter = prefs.getString("classFilter") ?? "";
+
+    final filtersJson = prefs.getString("filters");
+
+    if (filtersJson != null) {
+      final decoded = jsonDecode(filtersJson) as List;
+
+      filters = decoded.map((e) => Map<String, String>.from(e)).toList();
+    } else {
+      filters = [];
+    }
+
     selectedDayDate = prefs.getString("selectedDayDate");
 
     notifyListeners();
@@ -216,6 +232,49 @@ class DataRepository extends ChangeNotifier {
     mapCourses = value;
 
     await prefs.setBool("mapCourses", value);
+
+    notifyListeners();
+  }
+
+  Future<void> saveFilters() async {
+    await prefs.setString("filters", jsonEncode(filters));
+    notifyListeners();
+  }
+
+  Future<void> addFilter(Map<String, String> filter) async {
+    filters.add(filter);
+
+    await saveFilters();
+  }
+
+  Future<void> clearFilters() async {
+    filters.clear();
+
+    await prefs.remove("filters");
+    notifyListeners();
+  }
+
+  Future<void> removeFilter(Map<String, String> filter) async {
+    filters.remove(filter);
+    await saveFilters();
+  }
+
+  void updateFilter(
+    Map<String, String> oldFilter,
+    Map<String, String> newFilter,
+  ) {
+    final index = filters.indexOf(oldFilter);
+
+    if (index != -1) {
+      filters[index] = newFilter;
+      notifyListeners();
+    }
+  }
+
+  Future<void> setNotifications(bool value) async {
+    notifications = value;
+
+    await prefs.setBool("notifications", value);
 
     notifyListeners();
   }

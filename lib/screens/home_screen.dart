@@ -36,6 +36,31 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final classResults = filterByClass(repo.entries, data.classFilter);
 
+    final uniqueResults = <String, Map<String, dynamic>>{};
+
+    final newFilters = data.filters
+        .map((f) => Map<String, String>.from(f)..remove("class"))
+        .toList();
+    for (final filter in newFilters) {
+      if (data.classFilter.trim() != "") {
+        filter.remove("class");
+      }
+      final results = filterByInfo(classResults, filter);
+      for (final item in results) {
+        final key =
+            "${item["class"]}_${item["lesson"]}_${item["subject"]}_${item["teacher"]}_${item["day"]}_${item["date"]}}";
+
+        uniqueResults[key] = item;
+      }
+    }
+
+    List<Map<String, dynamic>> finalResults;
+    if (data.filters.isNotEmpty) {
+      finalResults = uniqueResults.values.toList();
+    } else {
+      finalResults = classResults;
+    }
+
     /*if (repo.loading && _refreshKey.currentState == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _refreshKey.currentState?.show();
@@ -43,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }*/
 
     final groupedByDay = sortEntries(
-      classResults,
+      finalResults,
       data.clean,
       data.simplify,
       disposeTut: data.disposeTut,
