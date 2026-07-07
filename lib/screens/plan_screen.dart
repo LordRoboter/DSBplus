@@ -256,6 +256,7 @@ class _PlanScreenState extends State<PlanScreen>
                   },
                   child: EntryList(
                     groups: filteredGroups,
+                    filters: data.filters,
                     classFilter: data.classFilter,
                   ),
                 ),

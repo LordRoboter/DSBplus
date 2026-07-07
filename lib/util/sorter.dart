@@ -193,6 +193,139 @@ List<Map<String, dynamic>> filterByClass(
   }).toList();
 }
 
+List<Map<String, dynamic>> filterByInfo(
+  List<Map<String, dynamic>> entries,
+  Map<String, String> filters,
+) {
+  if (filters.isEmpty) return entries;
+
+  bool matchRange(String value, String filter) {
+    if (!filter.contains('-')) return value == filter;
+
+    final parts = filter.split('-');
+    if (parts.length != 2) return false;
+
+    final start = int.tryParse(parts[0]);
+    final end = int.tryParse(parts[1]);
+    final v = int.tryParse(value);
+
+    if (start == null || end == null || v == null) return false;
+
+    return v >= start && v <= end;
+  }
+
+  return entries.where((entry) {
+    final entryClass = (entry["class"] as String? ?? "").toLowerCase();
+    if (entryClass == "alle") {
+      return true;
+    }
+    final entryLesson = (entry["lesson"] as String? ?? "").toLowerCase();
+    final entrySubject = (entry["subject"] as String? ?? "").toLowerCase();
+    final entryTeacher = (entry["teacher"] as String? ?? "").toLowerCase();
+    final entryDay = (entry["day"] as String? ?? "").toLowerCase();
+
+    for (final filter in filters.entries) {
+      final key = filter.key.toLowerCase();
+      final value = filter.value.toLowerCase().trim();
+
+      if (value.isEmpty) continue;
+
+      switch (key) {
+        case "class":
+          if (!entryClass.contains(value.toLowerCase())) return false;
+          break;
+
+        case "lesson":
+          if (!matchRange(entryLesson.replaceFirst(r'\D+$', ''), value)) {
+            return false;
+          }
+          break;
+
+        case "subject":
+          if (!entrySubject.contains(value.toLowerCase())) return false;
+          break;
+
+        case "teacher":
+          if (!entryTeacher.contains(value.toLowerCase())) return false;
+          break;
+
+        case "day":
+          if (!entryDay.contains(value.toLowerCase())) return false;
+          break;
+
+        default:
+          // unknown field → ignore or treat as failure (your choice)
+          return false;
+      }
+    }
+
+    return true;
+  }).toList();
+}
+
+bool matchesFilter(Map<String, dynamic> entry, Map<String, String> filters) {
+  if (filters.isEmpty) return true;
+
+  bool matchRange(String value, String filter) {
+    if (!filter.contains('-')) return value == filter;
+
+    final parts = filter.split('-');
+    if (parts.length != 2) return false;
+
+    final start = int.tryParse(parts[0]);
+    final end = int.tryParse(parts[1]);
+    final v = int.tryParse(value);
+
+    if (start == null || end == null || v == null) return false;
+
+    return v >= start && v <= end;
+  }
+
+  final lesson = (entry["lesson"] ?? "").toString().toLowerCase();
+  final subject = (entry["subject"] ?? "").toString().toLowerCase();
+  final teacher = (entry["teacher"] ?? "").toString().toLowerCase();
+  final day = (entry["day"] ?? "").toString().toLowerCase();
+
+  for (final filter in filters.entries) {
+    final key = filter.key.toLowerCase();
+    final value = filter.value.trim();
+
+    if (value.isEmpty) continue;
+
+    switch (key) {
+      case "class":
+        if (!matchesClass(entry, value)) return false;
+        break;
+
+      case "lesson":
+        if (!matchRange(
+          lesson.replaceAll(RegExp(r'\D+$'), ''),
+          value.toLowerCase(),
+        )) {
+          return false;
+        }
+        break;
+
+      case "subject":
+        if (!subject.contains(value.toLowerCase())) return false;
+        break;
+
+      case "teacher":
+        if (!teacher.contains(value.toLowerCase())) return false;
+        break;
+
+      case "day":
+        if (!day.contains(value.toLowerCase())) return false;
+        break;
+
+      default:
+        return false;
+    }
+  }
+
+  return true;
+}
+
 bool matches(Map<String, dynamic> entry, String query) {
   final terms = query
       .toLowerCase()

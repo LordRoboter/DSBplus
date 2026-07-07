@@ -10,6 +10,7 @@ import 'package:planner/util/sorter.dart';
 
 import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'screens/settings_screen.dart';
 import 'services/plan_repository.dart';
@@ -101,10 +102,9 @@ class _NavigatorScreenState extends State<NavigatorScreen> {
     _sub = data.updates.listen((_) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Timetable updated"),
+          content: Text("Neue Einträge!"),
           duration: Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
-          
         ),
       );
     });
@@ -151,6 +151,14 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await initializeDateFormatting('de_DE');
 
   if (message.data["type"] != "timetable_updated") return;
+
+  final settings = await SharedPreferences.getInstance();
+
+  final backgroundNotifications = settings.getBool("notifications") ?? true;
+
+  if (!backgroundNotifications) {
+    return; // don't show notification, but still allow Firebase processing
+  }
 
   final data = DataRepository();
   await data.init();
