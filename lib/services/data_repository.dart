@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:planner/services/dsb_api.dart';
+import 'package:planner/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'package:collection/collection.dart';
@@ -30,6 +31,8 @@ class DataRepository extends ChangeNotifier {
   List<Map<String, dynamic>> cachedEntries = [];
 
   final _updates = StreamController<void>.broadcast();
+
+  AppThemes theme = AppThemes.system;
 
   Stream<void> get updates => _updates.stream;
 
@@ -61,6 +64,8 @@ class DataRepository extends ChangeNotifier {
     cleanupCourses = prefs.getBool("cleanupCourses") ?? true;
     disposeCourseNumbers = prefs.getBool("disposeCourseNumbers") ?? true;
     mapCourses = prefs.getBool("mapCourses") ?? true;
+
+    loadTheme();
 
     notifications = prefs.getBool("notifications") ?? true;
 
@@ -277,5 +282,21 @@ class DataRepository extends ChangeNotifier {
     await prefs.setBool("notifications", value);
 
     notifyListeners();
+  }
+
+  Future<void> setTheme(AppThemes value) async {
+    theme = value;
+
+    await prefs.setInt("theme", value.index);
+
+    notifyListeners();
+  }
+
+  void loadTheme() {
+    final themeIndex = prefs.getInt("theme");
+
+    if (themeIndex != null) {
+      theme = AppThemes.values[themeIndex];
+    }
   }
 }
