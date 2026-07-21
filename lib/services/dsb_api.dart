@@ -101,7 +101,13 @@ class DSBApi {
   }
 
   Future<List<Map<String, dynamic>>> fetchTimetable(String url) async {
-    final response = await http.get(Uri.parse(url));
+    http.Response response;
+    try {
+      response = await http.get(Uri.parse(url));
+    } catch (e) {
+      print("GET failed: $url");
+      print(e);
+    }
 
     final document = parse(response.body);
 
@@ -167,7 +173,7 @@ class DSBApi {
           }
         }
       } catch (e) {
-        print(e);
+        //This is what you call amazing error handling
       }
 
       for (int r = 1; r < rows.length; r++) {
