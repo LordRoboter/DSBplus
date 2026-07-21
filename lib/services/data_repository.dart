@@ -33,6 +33,7 @@ class DataRepository extends ChangeNotifier {
   final _updates = StreamController<void>.broadcast();
 
   AppThemes theme = AppThemes.system;
+  DarkTheme darkTheme = DarkTheme.dark;
 
   Stream<void> get updates => _updates.stream;
 
@@ -66,6 +67,7 @@ class DataRepository extends ChangeNotifier {
     mapCourses = prefs.getBool("mapCourses") ?? true;
 
     loadTheme();
+    loadDarkTheme();
 
     notifications = prefs.getBool("notifications") ?? true;
 
@@ -297,6 +299,22 @@ class DataRepository extends ChangeNotifier {
 
     if (themeIndex != null) {
       theme = AppThemes.values[themeIndex];
+    }
+  }
+
+  Future<void> setDarkTheme(DarkTheme value) async {
+    darkTheme = value;
+
+    await prefs.setInt("darkTheme", value.index);
+
+    notifyListeners();
+  }
+
+  void loadDarkTheme() {
+    final themeIndex = prefs.getInt("darkTheme");
+
+    if (themeIndex != null) {
+      darkTheme = DarkTheme.values[themeIndex];
     }
   }
 }

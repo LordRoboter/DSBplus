@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 enum AppThemes { system, light, dark }
 
+enum DarkTheme { dark, amoled }
+
 ThemeData lightTheme = ThemeData(
   useMaterial3: true,
   brightness: Brightness.light,

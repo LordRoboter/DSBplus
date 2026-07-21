@@ -66,7 +66,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
 
       theme: lightTheme,
-      darkTheme: amoledTheme,
+      darkTheme: switch (data.darkTheme) {
+        DarkTheme.dark => darkTheme,
+        DarkTheme.amoled => amoledTheme,
+      },
 
       themeMode: switch (data.theme) {
         AppThemes.system => ThemeMode.system,
