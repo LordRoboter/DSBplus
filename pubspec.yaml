@@ -46,6 +46,7 @@ dependencies:
   smooth_page_indicator: ^2.0.1
   collection: ^1.19.1
   crypto: ^3.0.7
+  marquee: ^2.3.0
 
 dev_dependencies:
   flutter_test:

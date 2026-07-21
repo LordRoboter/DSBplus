@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:marquee/marquee.dart';
 import 'package:planner/components/lists.dart';
 import 'package:planner/services/data_repository.dart';
 import 'package:planner/util/sorter.dart';
@@ -182,36 +183,47 @@ class _PlanScreenState extends State<PlanScreen>
                               children: [
                                 const Icon(Icons.calendar_today, size: 16),
                                 const SizedBox(width: 6),
-                                Text.rich(
-                                  TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: "Datum: ",
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text:
-                                            "${visibleGroups.values.first.first['date'] ?? ''}",
-                                      ),
-                                    ],
-                                  ),
-                                  style: Theme.of(context).textTheme.bodyMedium,
+
+                                // Datum label
+                                Text(
+                                  "Datum: ",
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                      ?.copyWith(fontWeight: FontWeight.bold),
                                 ),
-                                const Spacer(),
+
+                                // Date text
+                                Expanded(
+                                  child: SizedBox(
+                                    height: 20,
+                                    child: Marquee(
+                                      text:
+                                          "${visibleGroups.values.first.first['date'] ?? ''}",
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodyMedium,
+                                      velocity: 30,
+                                      blankSpace: 30,
+                                      pauseAfterRound: const Duration(
+                                        seconds: 1,
+                                      ),
+                                      showFadingOnlyWhenScrolling: true,
+                                    ),
+                                  ),
+                                ),
+
+                                const SizedBox(width: 8),
+
+                                // Refresh button
                                 SizedBox(
-                                  height: 18.0,
-                                  width: 18.0,
+                                  width: 18,
+                                  height: 18,
                                   child: IconButton(
-                                    iconSize: 18,
                                     padding: EdgeInsets.zero,
+                                    iconSize: 18,
                                     constraints: const BoxConstraints(
                                       minWidth: 18,
                                       minHeight: 18,
                                     ),
-                                    visualDensity: VisualDensity.compact,
-                                    splashRadius: 18,
                                     onPressed: repo.loading
                                         ? null
                                         : () async {
@@ -223,24 +235,34 @@ class _PlanScreenState extends State<PlanScreen>
                                     ),
                                   ),
                                 ),
-                                const SizedBox(width: 6),
 
-                                Text.rich(
-                                  TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: "Updated: ",
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                const SizedBox(width: 8),
+
+                                // Updated label
+                                Text(
+                                  "Updated: ",
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                      ?.copyWith(fontWeight: FontWeight.bold),
+                                ),
+
+                                // Updated text
+                                Expanded(
+                                  child: SizedBox(
+                                    height: 20,
+                                    child: Marquee(
+                                      text:
+                                          "${visibleGroups.values.first.first['updated'] ?? ''}",
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodyMedium,
+                                      velocity: 30,
+                                      blankSpace: 30,
+                                      pauseAfterRound: const Duration(
+                                        seconds: 1,
                                       ),
-                                      TextSpan(
-                                        text:
-                                            "${visibleGroups.values.first.first['updated'] ?? ''}",
-                                      ),
-                                    ],
+                                      showFadingOnlyWhenScrolling: true,
+                                    ),
                                   ),
-                                  style: Theme.of(context).textTheme.bodyMedium,
                                 ),
                               ],
                             ),
