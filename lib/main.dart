@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:crypto/crypto.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:planner/screens/home_screen.dart';
@@ -22,6 +25,7 @@ import 'dart:async';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  HttpOverrides.global = MyHttpOverrides();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
@@ -92,7 +96,6 @@ class _NavigatorScreenState extends State<NavigatorScreen> {
     final data = context.read<DataRepository>();
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      print(message.data["type"]);
       if (message.data["type"] != "timetable_updated") return;
 
       await NotificationService.showUpdateNotification();
@@ -100,6 +103,7 @@ class _NavigatorScreenState extends State<NavigatorScreen> {
     });
 
     _sub = data.updates.listen((_) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Neue Einträge!"),
@@ -146,7 +150,6 @@ class _NavigatorScreenState extends State<NavigatorScreen> {
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  print("BACKGROUND HANDLER STARTED");
 
   await initializeDateFormatting('de_DE');
 
@@ -221,8 +224,6 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       data.classFilter,
     );
 
-    print((groupedOld[dayDate] ?? []).toString());
-    print((groupedNew[dayDate] ?? []).toString());
     if (diff.added.isNotEmpty || diff.removed.isNotEmpty) {
       final sample = diff.added.isNotEmpty
           ? diff.added.first
@@ -267,4 +268,30 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       );
     }
   }
+}
+
+//TODO: Fix this, find the issue with the certificate on some devices...
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    final client = super.createHttpClient(context);
+
+    client
+        .badCertificateCallback = (X509Certificate cert, String host, int port) {
+      if (host == "dsbmobile.de") {
+        final fingerprint = certificateSha256(cert);
+
+        return fingerprint ==
+            "8C54C334B66BA4E426772AF4A3F9136C19A1AEC729FDB28C535C07A5A4EF22E0";
+      }
+
+      return false;
+    };
+
+    return client;
+  }
+}
+
+String certificateSha256(X509Certificate cert) {
+  return sha256.convert(cert.der).toString().toUpperCase();
 }
