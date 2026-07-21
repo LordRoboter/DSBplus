@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Widget roomText(String room) {
+Widget roomText(BuildContext context, String room) {
   if (!room.contains("?")) {
     return Text(room);
   }
@@ -12,9 +12,9 @@ Widget roomText(String room) {
       children: [
         TextSpan(
           text: parts[0],
-          style: const TextStyle(
+          style: TextStyle(
             decoration: TextDecoration.lineThrough,
-            color: Colors.grey,
+            color: Theme.of(context).colorScheme.onSecondary,
             fontStyle: FontStyle.italic,
           ),
         ),
