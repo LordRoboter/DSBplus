@@ -137,11 +137,22 @@ class EntryCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Chip(
-                            label: Text(entry["type"] ?? ""),
+                            label: Text(
+                              entry["type"] ?? "",
+                              style: TextStyle(
+                                color:
+                                    ThemeData.estimateBrightnessForColor(
+                                          typeColor(entry["type"]),
+                                        ) ==
+                                        Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
+                            ),
                             visualDensity: VisualDensity.compact,
                             backgroundColor: typeColor(entry["type"]),
                           ),
-                          roomText(entry["room"].toString()),
+                          roomText(context, entry["room"].toString()),
                         ],
                       ),
                     ],
