@@ -93,20 +93,24 @@ class DSBApi {
       if (url.endsWith(".htm") &&
           !url.endsWith(".html") &&
           !url.endsWith("news.htm")) {
-        output.addAll(await fetchTimetable(url));
+        final put = await fetchTimetable(url);
+        if (put != null) {
+          output.addAll(put);
+        }
       }
     }
 
     return output;
   }
 
-  Future<List<Map<String, dynamic>>> fetchTimetable(String url) async {
+  Future<List<Map<String, dynamic>>?> fetchTimetable(String url) async {
     http.Response response;
     try {
       response = await http.get(Uri.parse(url));
     } catch (e) {
       print("GET failed: $url");
       print(e);
+      return null;
     }
 
     final document = parse(response.body);

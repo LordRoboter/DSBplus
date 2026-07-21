@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:planner/components/dialogues.dart';
+import 'package:planner/res/maps.dart';
 import 'package:planner/services/data_repository.dart';
+import 'package:planner/theme.dart';
 
 import 'package:provider/provider.dart';
 
@@ -309,6 +311,86 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           },
                           icon: const Icon(Icons.add),
                           label: const Text("Filter hinzufügen"),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              "App Thema",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            DropdownMenu<AppThemes>(
+                              initialSelection: data.theme,
+                              dropdownMenuEntries: const [
+                                DropdownMenuEntry(
+                                  value: AppThemes.system,
+                                  label: "System",
+                                ),
+                                DropdownMenuEntry(
+                                  value: AppThemes.light,
+                                  label: "Light",
+                                ),
+                                DropdownMenuEntry(
+                                  value: AppThemes.dark,
+                                  label: "Dark",
+                                ),
+                              ],
+                              onSelected: (value) {
+                                if (value != null) {
+                                  data.setTheme(value);
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              "Dunkles Thema",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            DropdownMenu<DarkTheme>(
+                              initialSelection: data.darkTheme,
+                              dropdownMenuEntries: const [
+                                DropdownMenuEntry(
+                                  value: DarkTheme.dark,
+                                  label: "Standard",
+                                ),
+                                DropdownMenuEntry(
+                                  value: DarkTheme.amoled,
+                                  label: "Amoled",
+                                ),
+                              ],
+                              onSelected: (value) {
+                                if (value != null) {
+                                  data.setDarkTheme(value);
+                                }
+                              },
+                            ),
+                          ],
                         ),
                       ],
                     ),
