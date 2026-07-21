@@ -61,7 +61,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Vertretungsplan',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(useMaterial3: true),
+      theme: ThemeData(useMaterial3: true, brightness: Brightness.light),
+
+      darkTheme: ThemeData(useMaterial3: true, brightness: Brightness.dark),
+
+      themeMode: ThemeMode.system,
       home: const NavigatorScreen(),
     );
   }
