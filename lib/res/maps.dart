@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:planner/theme.dart';
 
 const typeMap = {
   "eigenverantwortliches arbeiten": "Entfall",
@@ -30,6 +31,12 @@ const subjectMap = {
   "chin": "Chinesisch",
   "info": "Informatik",
   "geo": "Erdkunde",
+};
+
+const themeMap = {
+  AppThemes.system: "System",
+  AppThemes.light: "Hell",
+  AppThemes.dark: "Dunkel",
 };
 
 Color typeColor(String type) {

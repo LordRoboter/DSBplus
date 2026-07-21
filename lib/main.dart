@@ -8,6 +8,7 @@ import 'package:planner/screens/plan_screen.dart';
 import 'package:planner/services/data_repository.dart';
 import 'package:planner/services/notification_service.dart'
     show NotificationService;
+import 'package:planner/theme.dart';
 import 'package:planner/util/date.dart';
 import 'package:planner/util/sorter.dart';
 
@@ -58,14 +59,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final data = context.watch<DataRepository>();
+
     return MaterialApp(
       title: 'Vertretungsplan',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(useMaterial3: true, brightness: Brightness.light),
 
-      darkTheme: ThemeData(useMaterial3: true, brightness: Brightness.dark),
+      theme: lightTheme,
+      darkTheme: amoledTheme,
 
-      themeMode: ThemeMode.system,
+      themeMode: switch (data.theme) {
+        AppThemes.system => ThemeMode.system,
+        AppThemes.light => ThemeMode.light,
+        AppThemes.dark => ThemeMode.dark,
+      },
+
       home: const NavigatorScreen(),
     );
   }
