@@ -264,6 +264,7 @@ List<Map<String, dynamic>> filterByInfo(
 }
 
 bool matchesFilter(Map<String, dynamic> entry, Map<String, String> filters) {
+  print(filters);
   if (filters.isEmpty) return true;
 
   bool matchRange(String value, String filter) {
