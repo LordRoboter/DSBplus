@@ -147,51 +147,77 @@ class CleanupSettingsPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SettingsSwitchCard(
-                title: 'Einträge bereinigen',
-                subtitle: 'Einträge besser lesbar machen',
-                value: data.clean,
-                onChanged: data.setClean,
+                title: 'Einträge vereinfachen',
+                subtitle: 'Gedoppelte Einträge zusammenfassen',
+                value: data.simplify,
+                onChanged: data.setSimplify,
               ),
               const SizedBox(height: 16),
               Card(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.fromLTRB(16, 12, 16, 4),
-                      child: Text('Bereinigungsoptionen'),
-                    ),
                     SwitchListTile(
-                      title: const Text('Klassennamen vereinfachen'),
-                      value: data.cleanClassNames,
-                      onChanged: data.clean ? data.setCleanClassNames : null,
+                      title: const Text("Einträge bereinigen"),
+                      subtitle: const Text("Einträge besser lesbar machen"),
+                      value: data.clean,
+                      onChanged: data.setClean,
                     ),
-                    SwitchListTile(
-                      title: const Text('Unterrichtsstatus vereinfachen'),
-                      value: data.remapTypes,
-                      onChanged: data.clean ? data.setRemapTypes : null,
-                    ),
-                    SwitchListTile(
-                      title: const Text('Kurse vereinfachen'),
-                      value: data.cleanupCourses,
-                      onChanged: data.clean ? data.setCleanupCourses : null,
-                    ),
-                    SwitchListTile(
-                      title: const Text('Tutorenkurse zusammenfassen'),
-                      value: data.disposeTut,
-                      onChanged: data.clean ? data.setDisposeTut : null,
-                    ),
-                    SwitchListTile(
-                      title: const Text('Fächer umbenennen'),
-                      value: data.mapCourses,
-                      onChanged: data.clean ? data.setMapCourses : null,
-                    ),
-                    SwitchListTile(
-                      title: const Text('Kursnummern entfernen'),
-                      value: data.disposeCourseNumbers,
-                      onChanged: data.clean
-                          ? data.setDisposeCourseNumbers
-                          : null,
+                    const Divider(height: 1),
+
+                    AnimatedOpacity(
+                      duration: const Duration(milliseconds: 150),
+                      opacity: data.clean ? 1 : 0.5,
+                      child: IgnorePointer(
+                        ignoring: !data.clean,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.fromLTRB(16, 12, 16, 4),
+                              child: Text('Bereinigungsoptionen'),
+                            ),
+                            SwitchListTile(
+                              title: const Text('Klassennamen vereinfachen'),
+                              value: data.cleanClassNames,
+                              onChanged: data.clean
+                                  ? data.setCleanClassNames
+                                  : null,
+                            ),
+                            SwitchListTile(
+                              title: const Text(
+                                'Unterrichtsstatus vereinfachen',
+                              ),
+                              value: data.remapTypes,
+                              onChanged: data.clean ? data.setRemapTypes : null,
+                            ),
+                            SwitchListTile(
+                              title: const Text('Kurse vereinfachen'),
+                              value: data.cleanupCourses,
+                              onChanged: data.clean
+                                  ? data.setCleanupCourses
+                                  : null,
+                            ),
+                            SwitchListTile(
+                              title: const Text('Tutorenkurse zusammenfassen'),
+                              value: data.disposeTut,
+                              onChanged: data.clean ? data.setDisposeTut : null,
+                            ),
+                            SwitchListTile(
+                              title: const Text('Fächer umbenennen'),
+                              value: data.mapCourses,
+                              onChanged: data.clean ? data.setMapCourses : null,
+                            ),
+                            SwitchListTile(
+                              title: const Text('Kursnummern entfernen'),
+                              value: data.disposeCourseNumbers,
+                              onChanged: data.clean
+                                  ? data.setDisposeCourseNumbers
+                                  : null,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),
