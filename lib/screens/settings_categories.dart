@@ -359,14 +359,14 @@ class SettingsCategoriesPage extends StatelessWidget {
           _stackedCategories([
             SettingsCategoryTile(
               title: 'Aussehen',
-              subtitle: 'Theme und dunkles Thema',
+              subtitle: 'Dunkles Thema',
               icon: Icons.palette_outlined,
               position: SettingsCategoryTilePosition.top,
               onTap: () => _open(context, const AppearanceSettingsPage()),
             ),
             SettingsCategoryTile(
               title: 'Benachrichtigungen',
-              subtitle: 'Push-Benachrichtigungen für Planänderungen',
+              subtitle: 'Benachrichtigungen bei neuen Einträgen',
               icon: Icons.notifications_outlined,
               position: SettingsCategoryTilePosition.bottom,
               onTap: () => _open(context, const NotificationsSettingsPage()),
@@ -375,15 +375,15 @@ class SettingsCategoriesPage extends StatelessWidget {
           const SizedBox(height: 16),
           _stackedCategories([
             SettingsCategoryTile(
-              title: 'Cleanup',
-              subtitle: 'Bereinigung und Normalisierung',
+              title: 'Bereinigung',
+              subtitle: 'Einträge verbessern',
               icon: Icons.cleaning_services_outlined,
               position: SettingsCategoryTilePosition.top,
               onTap: () => _open(context, const CleanupSettingsPage()),
             ),
             SettingsCategoryTile(
               title: 'Filter',
-              subtitle: 'Klassenfilter und erweiterte Filter',
+              subtitle: 'Filter nach Klasse und Stunden',
               icon: Icons.filter_alt_outlined,
               position: SettingsCategoryTilePosition.bottom,
               onTap: () => _open(context, const FiltersSettingsPage()),
