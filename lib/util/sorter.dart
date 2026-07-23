@@ -97,6 +97,31 @@ bool isDigit(String c) {
   return c.length == 1 && c.codeUnitAt(0) >= 48 && c.codeUnitAt(0) <= 57;
 }
 
+({int start, int end})? parseLessonRange(String value) {
+  final matches = RegExp(r'\d+').allMatches(value).toList();
+
+  if (matches.isEmpty) return null;
+
+  final start = int.tryParse(matches.first.group(0)!);
+  final end = int.tryParse(
+    matches.length > 1 ? matches.last.group(0)! : matches.first.group(0)!,
+  );
+
+  if (start == null || end == null) return null;
+
+  return (start: start, end: end);
+}
+
+bool lessonRangesOverlap(String entryValue, String filterValue) {
+  final entryRange = parseLessonRange(entryValue);
+  final filterRange = parseLessonRange(filterValue);
+
+  if (entryRange == null || filterRange == null) return false;
+
+  return entryRange.start <= filterRange.end &&
+      filterRange.start <= entryRange.end;
+}
+
 List<Map<String, dynamic>> cleanupEntries(
   List<Map<String, dynamic>> entries, {
   bool disposeTut = true,
@@ -199,21 +224,6 @@ List<Map<String, dynamic>> filterByInfo(
 ) {
   if (filters.isEmpty) return entries;
 
-  bool matchRange(String value, String filter) {
-    if (!filter.contains('-')) return value == filter;
-
-    final parts = filter.split('-');
-    if (parts.length != 2) return false;
-
-    final start = int.tryParse(parts[0]);
-    final end = int.tryParse(parts[1]);
-    final v = int.tryParse(value);
-
-    if (start == null || end == null || v == null) return false;
-
-    return v >= start && v <= end;
-  }
-
   return entries.where((entry) {
     final entryClass = (entry["class"] as String? ?? "").toLowerCase();
     if (entryClass == "alle") {
@@ -236,7 +246,7 @@ List<Map<String, dynamic>> filterByInfo(
           break;
 
         case "lesson":
-          if (!matchRange(entryLesson.replaceFirst(r'\D+$', ''), value)) {
+          if (!lessonRangesOverlap(entryLesson, value)) {
             return false;
           }
           break;
@@ -264,23 +274,7 @@ List<Map<String, dynamic>> filterByInfo(
 }
 
 bool matchesFilter(Map<String, dynamic> entry, Map<String, String> filters) {
-  print(filters);
   if (filters.isEmpty) return true;
-
-  bool matchRange(String value, String filter) {
-    if (!filter.contains('-')) return value == filter;
-
-    final parts = filter.split('-');
-    if (parts.length != 2) return false;
-
-    final start = int.tryParse(parts[0]);
-    final end = int.tryParse(parts[1]);
-    final v = int.tryParse(value);
-
-    if (start == null || end == null || v == null) return false;
-
-    return v >= start && v <= end;
-  }
 
   final lesson = (entry["lesson"] ?? "").toString().toLowerCase();
   final subject = (entry["subject"] ?? "").toString().toLowerCase();
@@ -299,10 +293,7 @@ bool matchesFilter(Map<String, dynamic> entry, Map<String, String> filters) {
         break;
 
       case "lesson":
-        if (!matchRange(
-          lesson.replaceAll(RegExp(r'\D+$'), ''),
-          value.toLowerCase(),
-        )) {
+        if (!lessonRangesOverlap(lesson, value.toLowerCase())) {
           return false;
         }
         break;
