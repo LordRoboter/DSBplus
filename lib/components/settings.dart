@@ -140,7 +140,7 @@ class SettingsSectionHeader extends StatelessWidget {
             ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
         ),
-        if (action != null) action!,
+        ?action,
       ],
     );
   }

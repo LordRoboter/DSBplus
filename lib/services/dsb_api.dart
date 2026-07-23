@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart';
 import 'package:uuid/uuid.dart';
@@ -108,8 +109,8 @@ class DSBApi {
     try {
       response = await http.get(Uri.parse(url));
     } catch (e) {
-      print("GET failed: $url");
-      print(e);
+      debugPrint("GET failed: $url");
+      debugPrint(e as String);
       return null;
     }
 
