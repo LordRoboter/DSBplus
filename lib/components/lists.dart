@@ -33,37 +33,24 @@ class EntryList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool matchesAnyFilter(Map<String, dynamic> entry) {
+      return filters.any((filter) => matchesFilter(entry, filter));
+    }
+
     return ListView(
       children: groups.entries.where((group) => group.value.isNotEmpty).map((
         group,
       ) {
-        final groupMarked = filters.any((filter) {
-          final f = Map<String, String>.from(filter);
-
-          final classMatches =
-              classFilter.isEmpty ||
-              matchesClass(group.value.first, classFilter);
-
-          if (classFilter.isNotEmpty) {
-            f.remove("class");
-          }
-
-          return classMatches && matchesFilter(group.value.first, f);
-        });
+        final groupMarked =
+            classFilter.isNotEmpty &&
+            group.value.any((entry) => matchesClass(entry, classFilter));
 
         final entries = group.value.map((entry) {
-          final entryMarked = filters.any((filter) {
-            final f = Map<String, String>.from(filter);
-
-            final classMatches =
-                classFilter.isEmpty || matchesClass(entry, classFilter);
-
-            if (classFilter.isNotEmpty) {
-              f.remove("class");
-            }
-
-            return classMatches && matchesFilter(entry, f);
-          });
+          final entryMarked =
+              (classFilter.isNotEmpty &&
+                  matchesClass(entry, classFilter) &&
+                  matchesAnyFilter(entry)) ||
+              (classFilter.isEmpty && matchesAnyFilter(entry));
 
           return {...entry, 'marked': entryMarked};
         }).toList();
