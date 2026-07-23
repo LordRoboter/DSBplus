@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+enum SettingsCategoryTilePosition { single, top, middle, bottom }
+
 class SettingsSectionCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
@@ -23,6 +25,7 @@ class SettingsCategoryTile extends StatelessWidget {
   final String subtitle;
   final IconData icon;
   final VoidCallback onTap;
+  final SettingsCategoryTilePosition position;
 
   const SettingsCategoryTile({
     super.key,
@@ -30,11 +33,30 @@ class SettingsCategoryTile extends StatelessWidget {
     required this.subtitle,
     required this.icon,
     required this.onTap,
+    this.position = SettingsCategoryTilePosition.single,
   });
 
   @override
   Widget build(BuildContext context) {
+    final shape = switch (position) {
+      SettingsCategoryTilePosition.single => const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+      ),
+      SettingsCategoryTilePosition.top => const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+      ),
+      SettingsCategoryTilePosition.middle => const RoundedRectangleBorder(
+        borderRadius: BorderRadius.zero,
+      ),
+      SettingsCategoryTilePosition.bottom => const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(12)),
+      ),
+    };
+
     return Card(
+      margin: EdgeInsets.zero,
+      shape: shape,
+      clipBehavior: Clip.antiAlias,
       child: ListTile(
         leading: Icon(icon),
         title: Text(title),
