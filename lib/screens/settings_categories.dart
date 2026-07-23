@@ -331,6 +331,20 @@ class AppearanceSettingsPage extends StatelessWidget {
 class SettingsCategoriesPage extends StatelessWidget {
   const SettingsCategoriesPage({super.key});
 
+  Widget _stackedCategories(List<SettingsCategoryTile> tiles) {
+    final children = <Widget>[];
+
+    for (var index = 0; index < tiles.length; index++) {
+      children.add(tiles[index]);
+
+      if (index != tiles.length - 1) {
+        children.add(const SizedBox(height: 1));
+      }
+    }
+
+    return Column(mainAxisSize: MainAxisSize.min, children: children);
+  }
+
   void _open(BuildContext context, Widget page) {
     Navigator.push(context, MaterialPageRoute(builder: (_) => page));
   }
@@ -342,33 +356,39 @@ class SettingsCategoriesPage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          SettingsCategoryTile(
-            title: 'Aussehen',
-            subtitle: 'Theme und dunkles Theme',
-            icon: Icons.palette_outlined,
-            onTap: () => _open(context, const AppearanceSettingsPage()),
-          ),
-          const SizedBox(height: 12),
-          SettingsCategoryTile(
-            title: 'Filter',
-            subtitle: 'Klassenfilter und erweiterte Filter',
-            icon: Icons.filter_alt_outlined,
-            onTap: () => _open(context, const FiltersSettingsPage()),
-          ),
-          const SizedBox(height: 12),
-          SettingsCategoryTile(
-            title: 'Cleanup',
-            subtitle: 'Bereinigung und Normalisierung',
-            icon: Icons.cleaning_services_outlined,
-            onTap: () => _open(context, const CleanupSettingsPage()),
-          ),
-          const SizedBox(height: 12),
-          SettingsCategoryTile(
-            title: 'Benachrichtigungen',
-            subtitle: 'Push-Benachrichtigungen für Planänderungen',
-            icon: Icons.notifications_outlined,
-            onTap: () => _open(context, const NotificationsSettingsPage()),
-          ),
+          _stackedCategories([
+            SettingsCategoryTile(
+              title: 'Aussehen',
+              subtitle: 'Theme und dunkles Thema',
+              icon: Icons.palette_outlined,
+              position: SettingsCategoryTilePosition.top,
+              onTap: () => _open(context, const AppearanceSettingsPage()),
+            ),
+            SettingsCategoryTile(
+              title: 'Benachrichtigungen',
+              subtitle: 'Push-Benachrichtigungen für Planänderungen',
+              icon: Icons.notifications_outlined,
+              position: SettingsCategoryTilePosition.bottom,
+              onTap: () => _open(context, const NotificationsSettingsPage()),
+            ),
+          ]),
+          const SizedBox(height: 16),
+          _stackedCategories([
+            SettingsCategoryTile(
+              title: 'Cleanup',
+              subtitle: 'Bereinigung und Normalisierung',
+              icon: Icons.cleaning_services_outlined,
+              position: SettingsCategoryTilePosition.top,
+              onTap: () => _open(context, const CleanupSettingsPage()),
+            ),
+            SettingsCategoryTile(
+              title: 'Filter',
+              subtitle: 'Klassenfilter und erweiterte Filter',
+              icon: Icons.filter_alt_outlined,
+              position: SettingsCategoryTilePosition.bottom,
+              onTap: () => _open(context, const FiltersSettingsPage()),
+            ),
+          ]),
         ],
       ),
     );
