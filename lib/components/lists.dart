@@ -33,25 +33,31 @@ class EntryList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool matchesAnyFilter(Map<String, dynamic> entry) {
+      return filters.any((filter) => matchesFilter(entry, filter));
+    }
+
     return ListView(
       children: groups.entries.where((group) => group.value.isNotEmpty).map((
         group,
       ) {
+        final groupMarked =
+            classFilter.isNotEmpty &&
+            group.value.any((entry) => matchesClass(entry, classFilter));
+
+        final entries = group.value.map((entry) {
+          final entryMarked =
+              (classFilter.isNotEmpty &&
+                  matchesClass(entry, classFilter) &&
+                  matchesAnyFilter(entry)) ||
+              (classFilter.isEmpty && matchesAnyFilter(entry));
+
+          return {...entry, 'marked': entryMarked};
+        }).toList();
+
         return EntryCard(
-          group: group,
-          marked: filters.any((filter) {
-            final f = Map<String, String>.from(filter);
-
-            final classMatches =
-                classFilter.isEmpty ||
-                matchesClass(group.value.first, classFilter);
-
-            if (classFilter.isNotEmpty) {
-              f.remove("class");
-            }
-
-            return classMatches && matchesFilter(group.value.first, f);
-          }),
+          group: MapEntry(group.key, entries),
+          marked: groupMarked,
         );
       }).toList(),
     );
@@ -81,83 +87,101 @@ class EntryCard extends StatelessWidget {
 
             ...group.value.asMap().entries.map((item) {
               final entry = item.value;
+              final entryMarked = entry['marked'] == true;
 
-              return Column(
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "${entry['lesson']}. Std${entry["subject"] != "---" ? " • ${entry["subject"]}" : ""}",
-                              style: TextStyle(
-                                fontWeight:
-                                    ((entry["type"] == "Entfall") ||
-                                        (entry["type"] ==
-                                            "Eigenverantwortliches Arbeiten"))
-                                    ? FontWeight.bold
-                                    : FontWeight.bold,
-                                decoration:
-                                    ((entry["type"] == "Entfall") ||
-                                        (entry["type"] ==
-                                            "Eigenverantwortliches Arbeiten"))
-                                    ? TextDecoration.lineThrough
-                                    : TextDecoration.none,
-                                fontStyle:
-                                    ((entry["type"] == "Entfall") ||
-                                        (entry["type"] ==
-                                            "Eigenverantwortliches Arbeiten"))
-                                    ? FontStyle.italic
-                                    : FontStyle.normal,
-                              ),
-                            ),
-                            teacherText(entry["teacher"] ?? ""),
+              final isSpecial =
+                  entry["type"] == "Entfall" ||
+                  entry["type"] == "Eigenverantwortliches Arbeiten";
 
-                            if ((entry["text"] ?? "").toString().isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 4),
-                                child: Text(
-                                  entry["text"],
-                                  style: TextStyle(
-                                    color: Colors.grey[700],
-                                    fontStyle: FontStyle.italic,
-                                  ),
+              return Container(
+                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+                decoration: entryMarked
+                    ? BoxDecoration(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.secondary.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(8),
+                      )
+                    : null,
+                child: Column(
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "${entry['lesson']}. Std"
+                                "${entry["subject"] != "---" ? " • ${entry["subject"]}" : ""}",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  decoration: isSpecial
+                                      ? TextDecoration.lineThrough
+                                      : TextDecoration.none,
+                                  fontStyle: isSpecial
+                                      ? FontStyle.italic
+                                      : FontStyle.normal,
                                 ),
                               ),
+
+                              teacherText(entry["teacher"] ?? ""),
+
+                              if ((entry["text"] ?? "").toString().isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 1),
+                                  child: Text(
+                                    entry["text"],
+                                    style: TextStyle(
+                                      color: entryMarked
+                                          ? Theme.of(
+                                              context,
+                                            ).colorScheme.onSecondaryContainer
+                                          : Colors.grey[700],
+                                      fontStyle: FontStyle.italic,
+                                      fontWeight: entryMarked
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Chip(
+                              label: Text(
+                                entry["type"] ?? "",
+                                style: TextStyle(
+                                  color:
+                                      ThemeData.estimateBrightnessForColor(
+                                            typeColor(entry["type"]),
+                                          ) ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black,
+                                  fontWeight: entryMarked
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                              ),
+                              visualDensity: VisualDensity.compact,
+                              backgroundColor: typeColor(entry["type"]),
+                            ),
+
+                            roomText(context, entry["room"].toString()),
                           ],
                         ),
-                      ),
-
-                      const SizedBox(width: 12),
-
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Chip(
-                            label: Text(
-                              entry["type"] ?? "",
-                              style: TextStyle(
-                                color:
-                                    ThemeData.estimateBrightnessForColor(
-                                          typeColor(entry["type"]),
-                                        ) ==
-                                        Brightness.dark
-                                    ? Colors.white
-                                    : Colors.black,
-                              ),
-                            ),
-                            visualDensity: VisualDensity.compact,
-                            backgroundColor: typeColor(entry["type"]),
-                          ),
-                          roomText(context, entry["room"].toString()),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               );
             }),
           ],

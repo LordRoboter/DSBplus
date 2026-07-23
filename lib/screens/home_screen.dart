@@ -38,13 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final uniqueResults = <String, Map<String, dynamic>>{};
 
-    final newFilters = data.filters
-        .map((f) => Map<String, String>.from(f)..remove("class"))
-        .toList();
-    for (final filter in newFilters) {
-      if (data.classFilter.trim() != "") {
-        filter.remove("class");
-      }
+    for (final filter in data.filters) {
       final results = filterByInfo(classResults, filter);
       for (final item in results) {
         final key =
