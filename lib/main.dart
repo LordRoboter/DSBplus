@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:planner/l10n/l10extension.dart';
@@ -38,7 +39,8 @@ Future<void> main() async {
 
   await FirebaseMessaging.instance.subscribeToTopic("vertretungsplan");
 
-  await initializeDateFormatting('de_DE');
+  final locale = PlatformDispatcher.instance.locale.toString();
+  await initializeDateFormatting(locale);
 
   final dataRepository = DataRepository();
   await dataRepository.init();

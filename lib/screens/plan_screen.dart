@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:planner/components/lists.dart';
 import 'package:planner/services/data_repository.dart';
 import 'package:planner/util/sorter.dart';
@@ -193,7 +194,7 @@ class _PlanScreenState extends State<PlanScreen>
                                       ),
                                       TextSpan(
                                         text:
-                                            "${visibleGroups.values.first.first['date'] ?? ''}",
+                                            "${visibleGroups.values.first.isNotEmpty && visibleGroups.values.first.first['date'] != null ? DateFormat.yMd().format(visibleGroups.values.first.first['date'] as DateTime) : ''}",
                                       ),
                                     ],
                                   ),
@@ -236,7 +237,7 @@ class _PlanScreenState extends State<PlanScreen>
                                       ),
                                       TextSpan(
                                         text:
-                                            "${visibleGroups.values.first.first['updated'] ?? ''}",
+                                            "${visibleGroups.values.first.isNotEmpty && visibleGroups.values.first.first['updated'] != null ? DateFormat.yMd().add_Hm().format(visibleGroups.values.first.first['updated'] as DateTime) : ''}",
                                       ),
                                     ],
                                   ),

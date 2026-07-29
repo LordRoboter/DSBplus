@@ -1,3 +1,6 @@
+import 'package:intl/intl.dart';
+import 'package:planner/util/date.dart';
+
 import '../res/maps.dart';
 
 Map<String, List<Map<String, dynamic>>> groupEntries(
@@ -22,10 +25,7 @@ Map<String, List<Map<String, dynamic>>> groupEntriesByDayDate(
   final grouped = <String, List<Map<String, dynamic>>>{};
 
   for (final entry in entries) {
-    final day = entry["day"] as String? ?? "Unknown";
-    final date = entry["date"] as String? ?? "Unknown";
-
-    final dayDate = "$day ($date)";
+    final dayDate = formatDayDate(entry);
 
     grouped.putIfAbsent(dayDate, () => []);
     grouped[dayDate]!.add(entry);
@@ -44,9 +44,7 @@ Map<String, List<Map<String, dynamic>>> groupEntriesByAllowedDayDates(
   };
 
   for (final entry in entries) {
-    final day = entry["day"] as String? ?? "Unknown";
-    final date = entry["date"] as String? ?? "Unknown";
-    final dayDate = "$day ($date)";
+    final dayDate = formatDayDate(entry);
 
     // Only accept entries whose day is in the allowed list
     if (grouped.containsKey(dayDate)) {

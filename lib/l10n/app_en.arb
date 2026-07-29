@@ -1,11 +1,15 @@
 {
   "@@locale": "en",
-  "@helloWorld": {
-    "description": "The conventional newborn programmer greeting"
-  },
-  "helloWorld": "Hello World!",
+
   "home": "Home",
-  "newEntries": "New Entries!",
   "plan": "Plan",
-  "substPlan": "Substitution Plan"
+
+  "substPlan": "Substitution Plan",
+
+
+  "newEntries": "New Entries!",
+
+  "entryInfo": "{lessonOrdinal} lesson: {type} {subject} {teacher}",
+  "entryInfoDeleted": "{lessonOrdinal} lesson: {type} {subject} {teacher} - Deleted"
+  
 }

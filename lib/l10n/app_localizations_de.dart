@@ -9,17 +9,34 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
-  String get helloWorld => 'Hallo Welt!';
-
-  @override
   String get home => 'Home';
-
-  @override
-  String get newEntries => 'Neue Einträge!';
 
   @override
   String get plan => 'Plan';
 
   @override
   String get substPlan => 'Vertretungsplan';
+
+  @override
+  String get newEntries => 'Neue Einträge!';
+
+  @override
+  String entryInfo(
+    Object lessonOrdinal,
+    Object subject,
+    Object teacher,
+    Object type,
+  ) {
+    return '$lessonOrdinal lesson: $type $subject $teacher';
+  }
+
+  @override
+  String entryInfoDeleted(
+    Object lessonOrdinal,
+    Object subject,
+    Object teacher,
+    Object type,
+  ) {
+    return '$lessonOrdinal lesson: $type $subject $teacher - Deleted';
+  }
 }

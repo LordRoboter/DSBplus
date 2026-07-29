@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:planner/services/dsb_api.dart';
 import 'package:planner/theme.dart';
+import 'package:planner/util/date.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'package:collection/collection.dart';
@@ -38,10 +39,9 @@ class DataRepository extends ChangeNotifier {
   Stream<void> get updates => _updates.stream;
 
   List<String> get availableDayDates => cachedEntries
-      .map(
-        (e) =>
-            "${e["day"] as String? ?? "Unknown"} (${e["date"] as String? ?? "Unknown"})",
-      )
+      .map((e) {
+        return formatDayDate(e);
+      })
       .toSet()
       .toList();
 
@@ -51,8 +51,8 @@ class DataRepository extends ChangeNotifier {
   }
 
   Future<void> load() async {
-    loadSettings();
-    loadCache();
+    await loadSettings();
+    await loadCache();
   }
 
   Future<void> loadSettings() async {
@@ -102,10 +102,9 @@ class DataRepository extends ChangeNotifier {
 
     await validateSelectedDayDate(
       entries
-          .map(
-            (e) =>
-                "${e["day"] as String? ?? "Unknown"} (${e["date"] as String? ?? "Unknown"})",
-          )
+          .map((e) {
+            return formatDayDate(e);
+          })
           .toSet()
           .toList(),
     );
@@ -151,14 +150,41 @@ class DataRepository extends ChangeNotifier {
     final entriesJson = prefs.getString("entries");
     if (entriesJson != null) {
       final decoded = jsonDecode(entriesJson) as List;
-      cachedEntries = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
+
+      cachedEntries = decoded.map((e) {
+        final entry = Map<String, dynamic>.from(e);
+
+        if (entry["date"] != null) {
+          entry["date"] = DateTime.parse(entry["date"]);
+        }
+
+        if (entry["updated"] != null) {
+          entry["updated"] = DateTime.parse(entry["updated"]);
+        }
+
+        return entry;
+      }).toList();
     }
   }
 
   Future<void> saveEntries(List<Map<String, dynamic>> entries) async {
     cachedEntries = entries;
 
-    await prefs.setString("entries", jsonEncode(entries));
+    final jsonEntries = entries.map((entry) {
+      final copy = Map<String, dynamic>.from(entry);
+
+      if (copy["date"] is DateTime) {
+        copy["date"] = (copy["date"] as DateTime).toIso8601String();
+      }
+
+      if (copy["updated"] is DateTime) {
+        copy["updated"] = (copy["updated"] as DateTime).toIso8601String();
+      }
+
+      return copy;
+    }).toList();
+
+    await prefs.setString("entries", jsonEncode(jsonEntries));
 
     notifyListeners();
   }
