@@ -144,6 +144,8 @@ class DSBApi {
       ).firstMatch(headers[t].text);
 
       final updated = match?.group(1) ?? '';
+      final updatedFormat = DateFormat("dd.MM.yyyy hh:mm", 'de_DE');
+      final updatedDateTime = updatedFormat.parse(updated);
 
       final rows = tables[t].querySelectorAll("tr");
 
@@ -163,7 +165,7 @@ class DSBApi {
                 "class": "Alle",
                 "day": day,
                 "date": dateTime,
-                "updated": updated,
+                "updated": updatedDateTime,
                 "type": "Eigenverantwortliches Arbeiten",
 
                 "lesson": infos[i].text.replaceAll("Std.", "").trim(),
@@ -206,7 +208,7 @@ class DSBApi {
             "date": dateTime,
             "day": day,
             "class": classs,
-            "updated": updated,
+            "updated": updatedDateTime,
           };
 
           for (int i = 0; i < cells.length; i++) {

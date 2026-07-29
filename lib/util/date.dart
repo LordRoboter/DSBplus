@@ -1,11 +1,7 @@
 import 'package:intl/intl.dart';
 
-String getRelativeDay(String dateString) {
-  final formatter = DateFormat('dd.MM.yyyy');
-
+String getRelativeDay(DateTime date) {
   try {
-    final date = formatter.parseStrict(dateString);
-
     final today = DateTime.now();
     final todayDate = DateTime(today.year, today.month, today.day);
 
@@ -21,7 +17,7 @@ String getRelativeDay(String dateString) {
       case 1:
         return "(Morgen)";
       default:
-        return "($dateString)";
+        return "(${DateFormat.yMd().format(date)})";
     }
   } catch (_) {
     // Invalid date format
@@ -29,12 +25,8 @@ String getRelativeDay(String dateString) {
   }
 }
 
-bool isOutdated(String dateString) {
-  final formatter = DateFormat('dd.MM.yyyy');
-
+bool isOutdated(DateTime date) {
   try {
-    final date = formatter.parseStrict(dateString);
-
     final today = DateTime.now();
     final todayDate = DateTime(today.year, today.month, today.day);
 
@@ -50,4 +42,15 @@ bool isOutdated(String dateString) {
   } catch (e) {
     return false;
   }
+}
+
+String formatDayDate(Map<String, dynamic> entry) {
+  final day = entry["day"] as String? ?? "Unknown";
+  final date = entry["date"];
+
+  final formattedDate = date is DateTime
+      ? DateFormat.yMd().format(date)
+      : "Unknown";
+
+  return "$day ($formattedDate)";
 }

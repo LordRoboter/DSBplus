@@ -98,23 +98,11 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
-  /// The conventional newborn programmer greeting
-  ///
-  /// In en, this message translates to:
-  /// **'Hello World!'**
-  String get helloWorld;
-
   /// No description provided for @home.
   ///
   /// In en, this message translates to:
   /// **'Home'**
   String get home;
-
-  /// No description provided for @newEntries.
-  ///
-  /// In en, this message translates to:
-  /// **'New Entries!'**
-  String get newEntries;
 
   /// No description provided for @plan.
   ///
@@ -127,6 +115,34 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Substitution Plan'**
   String get substPlan;
+
+  /// No description provided for @newEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'New Entries!'**
+  String get newEntries;
+
+  /// No description provided for @entryInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'{lessonOrdinal} lesson: {type} {subject} {teacher}'**
+  String entryInfo(
+    Object lessonOrdinal,
+    Object subject,
+    Object teacher,
+    Object type,
+  );
+
+  /// No description provided for @entryInfoDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'{lessonOrdinal} lesson: {type} {subject} {teacher} - Deleted'**
+  String entryInfoDeleted(
+    Object lessonOrdinal,
+    Object subject,
+    Object teacher,
+    Object type,
+  );
 }
 
 class _AppLocalizationsDelegate

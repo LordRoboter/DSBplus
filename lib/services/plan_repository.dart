@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:planner/util/date.dart';
 
 import 'data_repository.dart';
 
@@ -14,13 +15,8 @@ class PlanRepository extends ChangeNotifier {
 
   String get lastUpdated => data.lastUpdated;
 
-  List<String> get availableDayDates => entries
-      .map(
-        (e) =>
-            "${e["day"] as String? ?? "Unknown"} (${e["date"] as String? ?? "Unknown"})",
-      )
-      .toSet()
-      .toList();
+  List<String> get availableDayDates =>
+      entries.map((e) => formatDayDate(e)).toSet().toList();
 
   Future<void> init() async {
     entries = data.cachedEntries;
