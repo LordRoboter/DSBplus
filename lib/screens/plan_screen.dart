@@ -99,18 +99,6 @@ class _PlanScreenState extends State<PlanScreen>
           )
         : filteredGroups.isEmpty && repo.loading
         ? const Center(child: CircularProgressIndicator())
-        : filteredGroups.isEmpty
-        ? LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: SizedBox(
-                  height: constraints.maxHeight,
-                  child: const Center(child: Text('Keine Einträge ( – ⤙ – )')),
-                ),
-              );
-            },
-          )
         : Column(
             children: [
               AnimatedSwitcher(
@@ -255,11 +243,25 @@ class _PlanScreenState extends State<PlanScreen>
                   onRefresh: () async {
                     await repo.loadData();
                   },
-                  child: EntryList(
-                    groups: filteredGroups,
-                    filters: data.filters,
-                    classFilter: data.classFilter,
-                  ),
+                  child: filteredGroups.isEmpty
+                      ? LayoutBuilder(
+                          builder: (context, constraints) {
+                            return SingleChildScrollView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              child: SizedBox(
+                                height: constraints.maxHeight,
+                                child: const Center(
+                                  child: Text('Keine Einträge ( – ⤙ – )'),
+                                ),
+                              ),
+                            );
+                          },
+                        )
+                      : EntryList(
+                          groups: filteredGroups,
+                          filters: data.filters,
+                          classFilter: data.classFilter,
+                        ),
                 ),
               ),
             ],
