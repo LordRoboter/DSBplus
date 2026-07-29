@@ -1,5 +1,9 @@
 import 'dart:io';
 
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:planner/l10n/l10extension.dart';
+import 'l10n/app_localizations.dart';
+
 import 'package:crypto/crypto.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -77,6 +81,14 @@ class MyApp extends StatelessWidget {
         AppThemes.dark => ThemeMode.dark,
       },
 
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [Locale('en'), Locale('de')],
+
       home: const NavigatorScreen(),
     );
   }
@@ -120,8 +132,8 @@ class _NavigatorScreenState extends State<NavigatorScreen> {
     _sub = data.updates.listen((_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Neue Einträge!"),
+        SnackBar(
+          content: Text(context.l10n.newEntries),
           duration: Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
         ),
@@ -139,7 +151,7 @@ class _NavigatorScreenState extends State<NavigatorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Vertretungsplan"),
+        title: Text(context.l10n.substPlan),
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
         actions: [
@@ -150,11 +162,14 @@ class _NavigatorScreenState extends State<NavigatorScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: index,
         onTap: (i) => setState(() => index = i),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: context.l10n.home,
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_view_month),
-            label: "Plan",
+            label: context.l10n.plan,
           ),
         ],
       ),
