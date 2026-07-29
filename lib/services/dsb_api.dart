@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:html/parser.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:intl/intl.dart';
+
 //TODO: Get additional resources (Aushänge/ Infos/ ...) -> GetData on normal website, .....
 class DSBApi {
   static const String dataUrl =
@@ -132,6 +134,8 @@ class DSBApi {
       final split = title.split(" ");
 
       final date = split.first;
+      final inputFormat = DateFormat("dd.mm.yyyy", 'de_DE');
+      final dateTime = inputFormat.parse(date);
 
       final day = split.length > 1 ? split[1].replaceAll(",", "") : "";
 
@@ -158,7 +162,7 @@ class DSBApi {
               final entry = {
                 "class": "Alle",
                 "day": day,
-                "date": date,
+                "date": dateTime,
                 "updated": updated,
                 "type": "Eigenverantwortliches Arbeiten",
 
@@ -199,7 +203,7 @@ class DSBApi {
 
         for (final cls in classes) {
           Map<String, dynamic> entry = {
-            "date": date,
+            "date": dateTime,
             "day": day,
             "class": classs,
             "updated": updated,
