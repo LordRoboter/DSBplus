@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:planner/components/lists.dart';
+import 'package:planner/widgets/lists.dart';
 import 'package:planner/services/data_repository.dart';
-import 'package:planner/util/date.dart';
+import 'package:planner/core/util/date.dart';
 import 'package:provider/provider.dart';
 
 import '../services/plan_repository.dart';
-import '../util/sorter.dart';
+import '../core/util/sorter.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

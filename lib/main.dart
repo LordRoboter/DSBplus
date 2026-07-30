@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:planner/l10n/l10extension.dart';
-import 'package:planner/util/translations.dart';
+import 'package:planner/core/util/translations.dart';
 import 'l10n/app_localizations.dart';
 
 import 'package:crypto/crypto.dart';
@@ -16,8 +16,8 @@ import 'package:planner/services/data_repository.dart';
 import 'package:planner/services/notification_service.dart'
     show NotificationService;
 import 'package:planner/theme.dart';
-import 'package:planner/util/date.dart';
-import 'package:planner/util/sorter.dart';
+import 'package:planner/core/util/date.dart';
+import 'package:planner/core/util/sorter.dart';
 
 import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
