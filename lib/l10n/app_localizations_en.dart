@@ -39,4 +39,22 @@ class AppLocalizationsEn extends AppLocalizations {
   ) {
     return '$lessonOrdinal lesson: $type $subject $teacher - Deleted';
   }
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get tomorrow => 'Tomorrow';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String get newEntriess => 'New Entries';
+
+  @override
+  String get timetableChanged => 'Timetable changed';
+
+  @override
+  String get deletedEntries => 'Deleted Entries';
 }

@@ -2,7 +2,9 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart';
 import 'package:planner/l10n/l10extension.dart';
+import 'package:planner/util/translations.dart';
 import 'l10n/app_localizations.dart';
 
 import 'package:crypto/crypto.dart';
@@ -183,8 +185,6 @@ class _NavigatorScreenState extends State<NavigatorScreen> {
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  await initializeDateFormatting('de_DE');
-
   if (message.data["type"] != "timetable_updated") return;
 
   final settings = await SharedPreferences.getInstance();
@@ -249,6 +249,10 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     data.availableDayDates,
   );
 
+  final localeCode = PlatformDispatcher.instance.locale.languageCode;
+  final l10n = await AppLocalizations.delegate.load(Locale(localeCode));
+  await initializeDateFormatting(localeCode);
+
   for (final dayDate in data.availableDayDates) {
     final diff = diffByClass(
       groupedOld[dayDate] ?? [],
@@ -261,29 +265,42 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
           ? diff.added.first
           : diff.removed.first;
 
-      final relativeDay = getRelativeDay(sample["date"]);
-      final dayName =
-          relativeDay.toLowerCase() == "heute" ||
-              relativeDay.toLowerCase() == "heute"
-          ? relativeDay
-          : "$dayDate $relativeDay";
+      final date = sample["date"];
+      final formattedDate = DateFormat.yMd(Locale(localeCode)).format(date);
+      final relativeDay = getRelativeDay(date);
+      final day = sample["day"];
+      final dayName = switch (relativeDay) {
+        0 => l10n.today,
+        1 => l10n.tomorrow,
+        -1 => l10n.yesterday,
+        _ => "$day ($formattedDate)",
+      };
+
       final title = diff.added.isNotEmpty && diff.removed.isNotEmpty
-          ? "$dayName: Vertretungsplanänderung"
+          ? "$dayName: ${l10n.timetableChanged}"
           : diff.added.isNotEmpty
-          ? "$dayName: Neue Einträge"
-          : "$dayName: Gelöschte Einträge";
+          ? "$dayName: ${l10n.newEntries}"
+          : "$dayName: ${l10n.deletedEntries}";
 
       final addedEntries = diff.added
           .map(
-            (entry) =>
-                "${entry["lesson"]}. Std.: ${entry["type"]} (${entry["subject"]} ${entry["teacher"]})",
+            (entry) => l10n.entryInfo(
+              ordinal(entry["lesson"], Locale(localeCode)),
+              entry["type"],
+              entry["subject"],
+              entry["teacher"],
+            ),
           )
           .join("\n");
 
       final removedEntries = diff.removed
           .map(
-            (entry) =>
-                "${entry["lesson"]}. Std.: ${entry["type"]} (${entry["subject"]} ${entry["teacher"]}) - Entfernt",
+            (entry) => l10n.entryInfoDeleted(
+              ordinal(entry["lesson"], Locale(localeCode)),
+              entry["type"],
+              entry["subject"],
+              entry["teacher"],
+            ),
           )
           .join("\n");
 
