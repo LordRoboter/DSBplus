@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'texts.dart';
 import '../res/maps.dart';
-import '../util/sorter.dart';
+import '../core/util/sorter.dart';
 
 class EntryListNoScroll extends StatelessWidget {
   final Map<String, List<Map<String, dynamic>>> groups;

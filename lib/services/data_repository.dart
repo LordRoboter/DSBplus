@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:planner/services/dsb_api.dart';
 import 'package:planner/theme.dart';
-import 'package:planner/util/date.dart';
+import 'package:planner/core/util/date.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'package:collection/collection.dart';
@@ -144,6 +144,12 @@ class DataRepository extends ChangeNotifier {
     }
   }
 
+  int encodeDate(DateTime date) =>
+      date.difference(DateTime.utc(1970, 1, 1)).inDays;
+
+  DateTime decodeDate(int days) =>
+      DateTime.utc(1970, 1, 1).add(Duration(days: days));
+
   Future<void> loadCache() async {
     lastUpdated = prefs.getString("updated") ?? "";
 
@@ -155,11 +161,13 @@ class DataRepository extends ChangeNotifier {
         final entry = Map<String, dynamic>.from(e);
 
         if (entry["date"] != null) {
-          entry["date"] = DateTime.parse(entry["date"]);
+          entry["date"] = decodeDate(entry["date"]);
         }
 
         if (entry["updated"] != null) {
-          entry["updated"] = DateTime.parse(entry["updated"]);
+          entry["updated"] = DateTime.fromMillisecondsSinceEpoch(
+            entry["updated"],
+          );
         }
 
         return entry;
@@ -174,11 +182,11 @@ class DataRepository extends ChangeNotifier {
       final copy = Map<String, dynamic>.from(entry);
 
       if (copy["date"] is DateTime) {
-        copy["date"] = (copy["date"] as DateTime).toIso8601String();
+        copy["date"] = encodeDate(copy["date"]);
       }
 
       if (copy["updated"] is DateTime) {
-        copy["updated"] = (copy["updated"] as DateTime).toIso8601String();
+        copy["updated"] = (copy["updated"] as DateTime).millisecondsSinceEpoch;
       }
 
       return copy;
