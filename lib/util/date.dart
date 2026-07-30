@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 
-String getRelativeDay(DateTime date) {
+int getRelativeDay(DateTime date) {
   try {
     final today = DateTime.now();
     final todayDate = DateTime(today.year, today.month, today.day);
@@ -9,19 +9,10 @@ String getRelativeDay(DateTime date) {
 
     final difference = targetDate.difference(todayDate).inDays;
 
-    switch (difference) {
-      case -1:
-        return "(Gestern)";
-      case 0:
-        return "(Heute)";
-      case 1:
-        return "(Morgen)";
-      default:
-        return "(${DateFormat.yMd().format(date)})";
-    }
+    return difference;
   } catch (_) {
-    // Invalid date format
-    return "";
+    //TODO: Make this return more informative
+    return 2;
   }
 }
 

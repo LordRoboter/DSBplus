@@ -27,7 +27,7 @@ class AppLocalizationsDe extends AppLocalizations {
     Object teacher,
     Object type,
   ) {
-    return '$lessonOrdinal lesson: $type $subject $teacher';
+    return '$lessonOrdinal Stunde: $type $subject $teacher';
   }
 
   @override
@@ -37,6 +37,24 @@ class AppLocalizationsDe extends AppLocalizations {
     Object teacher,
     Object type,
   ) {
-    return '$lessonOrdinal lesson: $type $subject $teacher - Deleted';
+    return '$lessonOrdinal Stunde: $type $subject $teacher - Entfernt';
   }
+
+  @override
+  String get today => 'Heute';
+
+  @override
+  String get tomorrow => 'Morgen';
+
+  @override
+  String get yesterday => 'Gestern';
+
+  @override
+  String get newEntriess => 'Neue Einträge';
+
+  @override
+  String get timetableChanged => 'Vertretungsplanänderung';
+
+  @override
+  String get deletedEntries => 'Gelöschte Einträge';
 }

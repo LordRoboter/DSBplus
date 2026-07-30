@@ -143,6 +143,42 @@ abstract class AppLocalizations {
     Object teacher,
     Object type,
   );
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @tomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get tomorrow;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
+
+  /// No description provided for @newEntriess.
+  ///
+  /// In en, this message translates to:
+  /// **'New Entries'**
+  String get newEntriess;
+
+  /// No description provided for @timetableChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Timetable changed'**
+  String get timetableChanged;
+
+  /// No description provided for @deletedEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted Entries'**
+  String get deletedEntries;
 }
 
 class _AppLocalizationsDelegate
