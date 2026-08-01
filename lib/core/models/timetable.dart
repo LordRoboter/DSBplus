@@ -38,6 +38,22 @@ class Timetable {
           .toList(),
     );
   }
+
+  Timetable copyWith({
+    DateTime? date,
+    String? day,
+    DateTime? updated,
+    Map<String, String>? extraInfos,
+    List<ClassEntry>? entries,
+  }) {
+    return Timetable(
+      date: date ?? this.date,
+      day: day ?? this.day,
+      updated: updated ?? this.updated,
+      extraInfos: extraInfos ?? this.extraInfos,
+      entries: entries ?? this.entries,
+    );
+  }
 }
 
 class ClassEntry {
@@ -59,6 +75,13 @@ class ClassEntry {
       entries: (json["entries"] as List)
           .map((e) => TimetableEntry.fromJson(e))
           .toList(),
+    );
+  }
+
+  ClassEntry copyWith({String? className, List<TimetableEntry>? entries}) {
+    return ClassEntry(
+      className: className ?? this.className,
+      entries: entries ?? this.entries,
     );
   }
 }

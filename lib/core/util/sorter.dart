@@ -218,59 +218,76 @@ List<Timetable> filterByClass(List<Timetable> timetables, String classes) {
   }).toList();
 }
 
-List<Map<String, dynamic>> filterByInfo(
-  List<Map<String, dynamic>> entries,
+List<Timetable> filterByInfo(
+  List<Timetable> timetables,
   Map<String, String> filters,
 ) {
-  if (filters.isEmpty) return entries;
+  if (filters.isEmpty) return timetables;
 
-  return entries.where((entry) {
-    final entryClass = (entry["class"] as String? ?? "").toLowerCase();
-    if (entryClass == "alle") {
-      return true;
-    }
-    final entryLesson = (entry["lesson"] as String? ?? "").toLowerCase();
-    final entrySubject = (entry["subject"] as String? ?? "").toLowerCase();
-    final entryTeacher = (entry["teacher"] as String? ?? "").toLowerCase();
-    final entryDay = (entry["day"] as String? ?? "").toLowerCase();
+  final result = <Timetable>[];
 
-    for (final filter in filters.entries) {
-      final key = filter.key.toLowerCase();
-      final value = filter.value.toLowerCase().trim();
+  for (final timetable in timetables) {
+    final filteredClasses = <ClassEntry>[];
 
-      if (value.isEmpty) continue;
+    for (final classEntry in timetable.entries) {
+      if ((classEntry.className ?? "").toLowerCase() == "alle") {
+        filteredClasses.add(classEntry);
+        continue;
+      }
 
-      switch (key) {
-        case "class":
-          if (!entryClass.contains(value.toLowerCase())) return false;
-          break;
+      final matchingEntries = classEntry.entries.where((entry) {
+        final entryClass = (classEntry.className ?? "").toLowerCase();
+        final entryLesson = (entry.lesson ?? "").toLowerCase();
+        final entrySubject = (entry.subject ?? "").toLowerCase();
+        final entryTeacher = (entry.teacher ?? "").toLowerCase();
+        final entryDay = (timetable.day ?? "").toLowerCase();
 
-        case "lesson":
-          if (!lessonRangesOverlap(entryLesson, value)) {
-            return false;
+        for (final filter in filters.entries) {
+          final value = filter.value.toLowerCase().trim();
+
+          if (value.isEmpty) continue;
+
+          switch (filter.key.toLowerCase()) {
+            case "class":
+              if (!entryClass.contains(value)) return false;
+              break;
+
+            case "lesson":
+              if (!lessonRangesOverlap(entryLesson, value)) return false;
+              break;
+
+            case "subject":
+              if (!entrySubject.contains(value)) return false;
+              break;
+
+            case "teacher":
+              if (!entryTeacher.contains(value)) return false;
+              break;
+
+            case "day":
+              if (!entryDay.contains(value)) return false;
+              break;
           }
-          break;
+        }
 
-        case "subject":
-          if (!entrySubject.contains(value.toLowerCase())) return false;
-          break;
+        return true;
+      }).toList();
 
-        case "teacher":
-          if (!entryTeacher.contains(value.toLowerCase())) return false;
-          break;
-
-        case "day":
-          if (!entryDay.contains(value.toLowerCase())) return false;
-          break;
-
-        default:
-          // unknown field → ignore or treat as failure (your choice)
-          return false;
+      if (matchingEntries.isNotEmpty) {
+        filteredClasses.add(classEntry.copyWith(entries: matchingEntries));
       }
     }
 
-    return true;
-  }).toList();
+    final hasRealMatch = filteredClasses.any(
+      (c) => (c.className ?? "").toLowerCase() != "alle",
+    );
+
+    if (hasRealMatch) {
+      result.add(timetable.copyWith(entries: filteredClasses));
+    }
+  }
+
+  return result;
 }
 
 bool matchesFilter(Map<String, dynamic> entry, Map<String, String> filters) {
