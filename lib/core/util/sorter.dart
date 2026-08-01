@@ -1,4 +1,4 @@
-import 'package:intl/intl.dart';
+import 'package:planner/core/models/timetable.dart';
 import 'package:planner/core/util/date.dart';
 
 import '../../res/maps.dart';
@@ -186,10 +186,7 @@ List<Map<String, dynamic>> cleanupEntries(
   }).toList();
 }
 
-List<Map<String, dynamic>> filterByClass(
-  List<Map<String, dynamic>> entries,
-  String classes,
-) {
+List<Timetable> filterByClass(List<Timetable> timetables, String classes) {
   final terms = classes
       .toLowerCase()
       .split(RegExp(r'[\s,]+'))
@@ -197,13 +194,18 @@ List<Map<String, dynamic>> filterByClass(
       .map(classBase)
       .toSet();
 
-  if (terms.isEmpty) return entries;
+  if (terms.isEmpty) return timetables;
 
-  return entries.where((entry) {
-    final raw = (entry["class"] as String? ?? "").toLowerCase();
+  return timetables.where((timetable) {
+    final hasUnknownClass = timetable.entries.any(
+      (e) => e.className == null || e.className!.isEmpty,
+    );
 
-    final entryClasses = raw
-        .split(RegExp(r'\s*,\s*|\s+'))
+    if (hasUnknownClass) return true;
+
+    final entryClasses = timetable.entries
+        .map((e) => e.className!)
+        .expand((c) => c.split(RegExp(r'\s*,\s*|\s+')))
         .where((c) => c.isNotEmpty)
         .map(classBase)
         .toSet();
