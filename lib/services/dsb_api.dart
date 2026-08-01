@@ -228,13 +228,15 @@ class DSBApi {
           );
 
           final existing = timetable.entries
-              .where((e) => e.className == cls)
+              .where((e) => e.className == classs)
               .firstOrNull;
 
           if (existing != null) {
             existing.entries.add(entry);
           } else {
-            timetable.entries.add(ClassEntry(className: cls, entries: [entry]));
+            timetable.entries.add(
+              ClassEntry(className: classs, entries: [entry]),
+            );
           }
         }
       }
