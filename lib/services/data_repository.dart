@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:planner/core/models/timetable.dart';
 import 'package:planner/services/dsb_api.dart';
 import 'package:planner/theme.dart';
 import 'package:planner/core/util/date.dart';
@@ -29,7 +30,7 @@ class DataRepository extends ChangeNotifier {
   String lastUpdated = "";
   String? selectedDayDate;
 
-  List<Map<String, dynamic>> cachedEntries = [];
+  List<Timetable> cachedEntries = [];
 
   final _updates = StreamController<void>.broadcast();
 
@@ -88,7 +89,7 @@ class DataRepository extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<Map<String, dynamic>>> sync() async {
+  Future<List<Timetable>> sync() async {
     final api = DSBApi(
       "REMOVED",
       "REMOVED",
@@ -103,7 +104,7 @@ class DataRepository extends ChangeNotifier {
     await validateSelectedDayDate(
       entries
           .map((e) {
-            return formatDayDate(e);
+            return formatDayDate(e.date!);
           })
           .toSet()
           .toList(),
@@ -157,40 +158,14 @@ class DataRepository extends ChangeNotifier {
     if (entriesJson != null) {
       final decoded = jsonDecode(entriesJson) as List;
 
-      cachedEntries = decoded.map((e) {
-        final entry = Map<String, dynamic>.from(e);
-
-        if (entry["date"] != null) {
-          entry["date"] = decodeDate(entry["date"]);
-        }
-
-        if (entry["updated"] != null) {
-          entry["updated"] = DateTime.fromMillisecondsSinceEpoch(
-            entry["updated"],
-          );
-        }
-
-        return entry;
-      }).toList();
+      cachedEntries = decoded.map((e) => Timetable.fromJson(e)).toList();
     }
   }
 
-  Future<void> saveEntries(List<Map<String, dynamic>> entries) async {
+  Future<void> saveEntries(List<Timetable> entries) async {
     cachedEntries = entries;
 
-    final jsonEntries = entries.map((entry) {
-      final copy = Map<String, dynamic>.from(entry);
-
-      if (copy["date"] is DateTime) {
-        copy["date"] = encodeDate(copy["date"]);
-      }
-
-      if (copy["updated"] is DateTime) {
-        copy["updated"] = (copy["updated"] as DateTime).millisecondsSinceEpoch;
-      }
-
-      return copy;
-    }).toList();
+    final jsonEntries = entries.map((e) => e.toJson()).toList();
 
     await prefs.setString("entries", jsonEncode(jsonEntries));
 
