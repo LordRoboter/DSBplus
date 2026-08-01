@@ -106,7 +106,7 @@ class DSBApi {
       }
     }
 
-    return output;
+    return mergeTimetables(output);
   }
 
   String valueFor(String key, List<Element> cells) {
@@ -180,15 +180,7 @@ class DSBApi {
               final entry = TimetableEntry(
                 lesson: infos[i].text.replaceAll("Std.", "").trim(),
                 type: "Eigenverantwortliches Arbeiten",
-              ); /*{
-                "class": "Alle",
-                "day": day,
-                "date": dateTime,
-                "updated": updatedDateTime,
-                "type": "Eigenverantwortliches Arbeiten",
-
-                "lesson": infos[i].text.replaceAll("Std.", "").trim(),
-              };*/
+              );
 
               timetable.entries.add(
                 ClassEntry(className: "Alle", entries: [entry]),
@@ -250,5 +242,46 @@ class DSBApi {
     }
 
     return results;
+  }
+
+  List<Timetable> mergeTimetables(List<Timetable> timetables) {
+    final Map<String, Timetable> merged = {};
+
+    for (final timetable in timetables) {
+      final key =
+          "${timetable.date?.year}-${timetable.date?.month}-${timetable.date?.day}-${timetable.day}";
+
+      if (!merged.containsKey(key)) {
+        merged[key] = timetable;
+        continue;
+      }
+
+      final existing = merged[key]!;
+
+      for (final classEntry in timetable.entries) {
+        final existingClass = existing.entries
+            .where((e) => e.className == classEntry.className)
+            .firstOrNull;
+
+        if (existingClass != null) {
+          existingClass.entries.addAll(classEntry.entries);
+        } else {
+          existing.entries.add(classEntry);
+        }
+      }
+
+      if (timetable.extraInfos != null) {
+        existing.extraInfos ??= {};
+        existing.extraInfos!.addAll(timetable.extraInfos!);
+      }
+
+      if (timetable.updated != null &&
+          (existing.updated == null ||
+              timetable.updated!.isAfter(existing.updated!))) {
+        existing.updated = timetable.updated;
+      }
+    }
+
+    return merged.values.toList();
   }
 }

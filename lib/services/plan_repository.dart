@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:planner/core/models/timetable.dart';
 import 'package:planner/core/util/date.dart';
 
 import 'data_repository.dart';
@@ -8,7 +9,7 @@ class PlanRepository extends ChangeNotifier {
 
   PlanRepository(this.data);
 
-  List<Map<String, dynamic>> entries = [];
+  List<Timetable> entries = [];
 
   bool loading = true;
   String? error;
