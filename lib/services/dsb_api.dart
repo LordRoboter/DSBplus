@@ -246,6 +246,7 @@ class DSBApi {
           }
         }
       }
+      results.add(timetable);
     }
 
     return results;
