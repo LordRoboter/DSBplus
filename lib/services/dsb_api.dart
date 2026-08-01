@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/rendering.dart';
+import 'package:html/dom.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart';
+import 'package:planner/core/models/timetable.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:intl/intl.dart';
@@ -36,7 +38,7 @@ class DSBApi {
     classIndex = tableMapper.indexOf("class");
   }
 
-  Future<List<Map<String, dynamic>>> fetchEntries() async {
+  Future<List<Timetable>> fetchEntries() async {
     final now = DateTime.now().toUtc().toIso8601String();
 
     final params = {
@@ -90,15 +92,16 @@ class DSBApi {
       }
     }
 
-    List<Map<String, dynamic>> output = [];
+    final List<Timetable> output = [];
 
     for (final url in urls) {
       if (url.endsWith(".htm") &&
           !url.endsWith(".html") &&
           !url.endsWith("news.htm")) {
-        final put = await fetchTimetable(url);
-        if (put != null) {
-          output.addAll(put);
+        final timetables = await fetchTimetable(url);
+
+        if (timetables != null) {
+          output.addAll(timetables);
         }
       }
     }
@@ -106,7 +109,18 @@ class DSBApi {
     return output;
   }
 
-  Future<List<Map<String, dynamic>>?> fetchTimetable(String url) async {
+  String valueFor(String key, List<Element> cells) {
+    final index = tableMapper.indexOf(key);
+
+    if (index == -1 || index >= cells.length) {
+      return "---";
+    }
+
+    final text = cells[index].text.trim();
+    return text.isEmpty ? "---" : text;
+  }
+
+  Future<List<Timetable>?> fetchTimetable(String url) async {
     http.Response response;
     try {
       response = await http.get(Uri.parse(url));
@@ -118,7 +132,7 @@ class DSBApi {
 
     final document = parse(response.body);
 
-    final results = <Map<String, dynamic>>[];
+    final List<Timetable> results = [];
 
     final tables = document.querySelectorAll(".mon_list");
 
@@ -129,22 +143,24 @@ class DSBApi {
     final infos = document.querySelectorAll("td.info");
 
     for (int t = 0; t < tables.length; t++) {
+      final timetable = Timetable(entries: []);
+
       final title = titles[t].text.trim();
 
       final split = title.split(" ");
 
       final date = split.first;
-      final inputFormat = DateFormat("dd.mm.yyyy", 'de_DE');
+      final inputFormat = DateFormat("dd.MM.yyyy", 'de_DE');
       final dateTime = inputFormat.parse(date);
 
-      final day = split.length > 1 ? split[1].replaceAll(",", "") : "";
+      final day = split.length > 1 ? split[1].replaceAll(",", "") : null;
 
       final match = RegExp(
         r'Stand:\s*([\d.]+\s+\d{2}:\d{2})',
       ).firstMatch(headers[t].text);
 
       final updated = match?.group(1) ?? '';
-      final updatedFormat = DateFormat("dd.MM.yyyy hh:mm", 'de_DE');
+      final updatedFormat = DateFormat("dd.MM.yyyy HH:mm", 'de_DE');
       final updatedDateTime = updatedFormat.parse(updated);
 
       final rows = tables[t].querySelectorAll("tr");
@@ -152,7 +168,7 @@ class DSBApi {
       var classs = "Unknown";
 
       //TODO: Display infos
-      final Map<String, dynamic> theInfos = {};
+      final Map<String, String> theInfos = {};
 
       var field = "";
 
@@ -161,7 +177,10 @@ class DSBApi {
           if (i % 2 == 1) {
             if (field.replaceFirst(RegExp(r'&.*'), '').toLowerCase().trim() ==
                 "unterrichtsfrei") {
-              final entry = {
+              final entry = TimetableEntry(
+                lesson: infos[i].text.replaceAll("Std.", "").trim(),
+                type: "Eigenverantwortliches Arbeiten",
+              ); /*{
                 "class": "Alle",
                 "day": day,
                 "date": dateTime,
@@ -169,13 +188,11 @@ class DSBApi {
                 "type": "Eigenverantwortliches Arbeiten",
 
                 "lesson": infos[i].text.replaceAll("Std.", "").trim(),
-              };
-              for (final item in tableMapper) {
-                if (!entry.containsKey(item)) {
-                  entry[item] = "---";
-                }
-              }
-              results.add(entry);
+              };*/
+
+              timetable.entries.add(
+                ClassEntry(className: "Alle", entries: [entry]),
+              );
             } else {
               theInfos[field] = infos[i].text;
             }
@@ -186,6 +203,11 @@ class DSBApi {
       } catch (e) {
         //This is what you call amazing error handling
       }
+
+      timetable.date = dateTime;
+      timetable.updated = updatedDateTime;
+      timetable.day = day;
+      timetable.extraInfos = theInfos;
 
       for (int r = 1; r < rows.length; r++) {
         final cells = rows[r].querySelectorAll("td");
@@ -204,24 +226,24 @@ class DSBApi {
         }
 
         for (final cls in classes) {
-          Map<String, dynamic> entry = {
-            "date": dateTime,
-            "day": day,
-            "class": classs,
-            "updated": updatedDateTime,
-          };
+          final entry = TimetableEntry(
+            lesson: valueFor("lesson", cells),
+            teacher: valueFor("teacher", cells),
+            subject: valueFor("subject", cells),
+            room: valueFor("room", cells),
+            type: valueFor("type", cells),
+            text: valueFor("text", cells),
+          );
 
-          for (int i = 0; i < cells.length; i++) {
-            final key = i < tableMapper.length ? tableMapper[i] : "col$i";
+          final existing = timetable.entries
+              .where((e) => e.className == cls)
+              .firstOrNull;
 
-            final value = cells[i].text.trim().isEmpty
-                ? "---"
-                : cells[i].text.trim();
-
-            entry[key] = key == "class" ? cls : value;
+          if (existing != null) {
+            existing.entries.add(entry);
+          } else {
+            timetable.entries.add(ClassEntry(className: cls, entries: [entry]));
           }
-
-          results.add(entry);
         }
       }
     }
