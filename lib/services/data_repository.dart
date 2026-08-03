@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:planner/core/models/daydate.dart';
 import 'package:planner/core/models/timetable.dart';
 import 'package:planner/services/dsb_api.dart';
 import 'package:planner/theme.dart';
@@ -28,7 +29,7 @@ class DataRepository extends ChangeNotifier {
   List<Map<String, String>> filters = [];
 
   String lastUpdated = "";
-  String? selectedDayDate;
+  DayDate? selectedDayDate;
 
   List<Timetable> cachedEntries = [];
 
@@ -39,7 +40,7 @@ class DataRepository extends ChangeNotifier {
 
   Stream<void> get updates => _updates.stream;
 
-  List<String> get availableDayDates => cachedEntries
+  List<DayDate> get availableDayDates => cachedEntries
       .map((e) {
         return formatDayDate(e);
       })
@@ -84,7 +85,11 @@ class DataRepository extends ChangeNotifier {
       filters = [];
     }
 
-    selectedDayDate = prefs.getString("selectedDayDate");
+    final selected = prefs.getString("selectedDayDate");
+
+    if (selected != null) {
+      selectedDayDate = DayDate.fromJson(jsonDecode(selected));
+    }
 
     notifyListeners();
   }
@@ -104,7 +109,7 @@ class DataRepository extends ChangeNotifier {
     await validateSelectedDayDate(
       entries
           .map((e) {
-            return formatDayDate(e.date!);
+            return formatDayDate(e);
           })
           .toSet()
           .toList(),
@@ -123,20 +128,23 @@ class DataRepository extends ChangeNotifier {
     return oldEntries;
   }
 
-  Future<void> setSelectedDayDate(String dayDate) async {
+  Future<void> setSelectedDayDate(DayDate dayDate) async {
     selectedDayDate = dayDate;
 
-    await prefs.setString("selectedDayDate", dayDate);
+    await prefs.setString("selectedDayDate", jsonEncode(dayDate.toJson()));
 
     notifyListeners();
   }
 
-  Future<void> validateSelectedDayDate(List<String> dayDates) async {
+  Future<void> validateSelectedDayDate(List<DayDate> dayDates) async {
     if (selectedDayDate == null || !dayDates.contains(selectedDayDate)) {
       selectedDayDate = dayDates.isNotEmpty ? dayDates.first : null;
 
       if (selectedDayDate != null) {
-        await prefs.setString("selectedDayDate", selectedDayDate!);
+        await prefs.setString(
+          "selectedDayDate",
+          jsonEncode(selectedDayDate!.toJson()),
+        );
       } else {
         await prefs.remove("selectedDayDate");
       }

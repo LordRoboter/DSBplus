@@ -1,55 +1,16 @@
+import 'package:planner/core/models/daydate.dart';
 import 'package:planner/core/models/timetable.dart';
 import 'package:planner/core/util/date.dart';
 
 import '../../res/maps.dart';
 
-Map<String, List<Map<String, dynamic>>> groupEntries(
-  List<Map<String, dynamic>> entries,
-) {
-  final grouped = <String, List<Map<String, dynamic>>>{};
+Map<DayDate, Timetable> groupEntriesByDayDate(List<Timetable> timetables) {
+  final grouped = <DayDate, Timetable>{};
 
-  for (final entry in entries) {
-    final className = entry["class"] as String? ?? "Unknown";
+  for (final timetable in timetables) {
+    final dayDate = DayDate(timetable.day, timetable.date);
 
-    grouped.putIfAbsent(className, () => []);
-
-    grouped[className]!.add(entry);
-  }
-
-  return grouped;
-}
-
-Map<String, List<Map<String, dynamic>>> groupEntriesByDayDate(
-  List<Map<String, dynamic>> entries,
-) {
-  final grouped = <String, List<Map<String, dynamic>>>{};
-
-  for (final entry in entries) {
-    final dayDate = formatDayDate(entry);
-
-    grouped.putIfAbsent(dayDate, () => []);
-    grouped[dayDate]!.add(entry);
-  }
-
-  return grouped;
-}
-
-Map<String, List<Map<String, dynamic>>> groupEntriesByAllowedDayDates(
-  List<Map<String, dynamic>> entries,
-  List<String> allowedDayDates,
-) {
-  // Start with all allowed days as empty lists
-  final grouped = <String, List<Map<String, dynamic>>>{
-    for (final dayDate in allowedDayDates) dayDate: [],
-  };
-
-  for (final entry in entries) {
-    final dayDate = formatDayDate(entry);
-
-    // Only accept entries whose day is in the allowed list
-    if (grouped.containsKey(dayDate)) {
-      grouped[dayDate]!.add(entry);
-    }
+    grouped[dayDate] = timetable;
   }
 
   return grouped;
@@ -120,8 +81,8 @@ bool lessonRangesOverlap(String entryValue, String filterValue) {
       filterRange.start <= entryRange.end;
 }
 
-List<Map<String, dynamic>> cleanupEntries(
-  List<Map<String, dynamic>> entries, {
+Timetable cleanupTimetable(
+  Timetable timetable, {
   bool disposeTut = true,
   bool cleanClassNames = true,
   bool remapTypes = true,
@@ -129,61 +90,75 @@ List<Map<String, dynamic>> cleanupEntries(
   bool disposeCourseNumbers = true,
   bool mapCourses = true,
 }) {
-  return entries.map((entry) {
-    // Create a copy so the original cache is never modified.
-    final cleaned = Map<String, dynamic>.from(entry);
+  final cleanedClasses = timetable.entries.map((classEntry) {
+    final cleanedClassNames = classEntry.classNames.map((className) {
+      var cleaned = className;
 
-    // ----- Class -----
-    var classs = cleaned["class"] as String;
-    classs = classs.split(" ")[0];
-
-    if (disposeTut) {
-      classs = classs.split("_")[0];
-    }
-
-    if (cleanClassNames) {
-      classs = classs.replaceFirst(RegExp(r'^0+'), '');
-    }
-
-    cleaned["class"] = classs;
-
-    // ----- Type -----
-    if (remapTypes) {
-      cleaned["type"] =
-          typeMap[cleaned["type"].toString().toLowerCase()] ?? cleaned["type"];
-    }
-
-    // ----- Subject -----
-    var subject = cleaned["subject"] as String;
-
-    if (cleanupCourses) {
-      subject = subject
-          .replaceFirst(RegExp(r'[EQ]\d'), '')
-          .replaceFirst(RegExp(r'^\d+'), '')
-          .replaceFirst(RegExp(r'\d+\D$'), '');
-    }
-
-    if (disposeCourseNumbers) {
-      subject = subject.replaceFirst(RegExp(r'\d+$'), '');
-    }
-
-    String suffix = "";
-
-    if (mapCourses) {
-      final match = RegExp(r'(_.*|\d+)$').firstMatch(subject);
-
-      if (match != null) {
-        suffix = match.group(0)!;
-        subject = subject.substring(0, match.start);
+      if (disposeTut) {
+        cleaned = cleaned.split("_")[0];
       }
 
-      subject = subjectMap[subject.toLowerCase()] ?? subject;
-    }
+      if (cleanClassNames) {
+        cleaned = cleaned.replaceFirst(RegExp(r'^0+'), '');
+      }
 
-    cleaned["subject"] = subject + suffix;
+      return cleaned;
+    }).toList();
 
-    return cleaned;
+    final cleanedEntries = classEntry.entries.map((entry) {
+      var subject = entry.subject ?? "";
+      var type = entry.type ?? "";
+
+      // ----- Type -----
+      if (remapTypes) {
+        type = typeMap[type.toLowerCase()] ?? type;
+      }
+
+      // ----- Subject -----
+      if (cleanupCourses) {
+        subject = subject
+            .replaceFirst(RegExp(r'[EQ]\d'), '')
+            .replaceFirst(RegExp(r'^\d+'), '')
+            .replaceFirst(RegExp(r'\d+\D$'), '');
+      }
+
+      if (disposeCourseNumbers) {
+        subject = subject.replaceFirst(RegExp(r'\d+$'), '');
+      }
+
+      String suffix = "";
+
+      if (mapCourses) {
+        final match = RegExp(r'(_.*|\d+)$').firstMatch(subject);
+
+        if (match != null) {
+          suffix = match.group(0)!;
+          subject = subject.substring(0, match.start);
+        }
+
+        subject = subjectMap[subject.toLowerCase()] ?? subject;
+      }
+
+      return TimetableEntry(
+        lesson: entry.lesson,
+        teacher: entry.teacher,
+        room: entry.room,
+        text: entry.text,
+        subject: subject + suffix,
+        type: type,
+      );
+    }).toList();
+
+    return ClassEntry(classNames: cleanedClassNames, entries: cleanedEntries);
   }).toList();
+
+  return Timetable(
+    date: timetable.date,
+    day: timetable.day,
+    updated: timetable.updated,
+    extraInfos: timetable.extraInfos,
+    entries: cleanedClasses,
+  );
 }
 
 List<Timetable> filterByClass(List<Timetable> timetables, String classes) {
@@ -290,41 +265,56 @@ List<Timetable> filterByInfo(
   return result;
 }
 
-bool matchesFilter(Map<String, dynamic> entry, Map<String, String> filters) {
+bool matchesFilter(
+  TimetableEntry entry,
+  ClassEntry classEntry,
+  Timetable timetable,
+  Map<String, String> filters,
+) {
   if (filters.isEmpty) return true;
 
-  final lesson = (entry["lesson"] ?? "").toString().toLowerCase();
-  final subject = (entry["subject"] ?? "").toString().toLowerCase();
-  final teacher = (entry["teacher"] ?? "").toString().toLowerCase();
-  final day = (entry["day"] ?? "").toString().toLowerCase();
+  final lesson = (entry.lesson ?? "").toLowerCase();
+  final subject = (entry.subject ?? "").toLowerCase();
+  final teacher = (entry.teacher ?? "").toLowerCase();
+  final day = (timetable.day ?? "").toLowerCase();
 
   for (final filter in filters.entries) {
     final key = filter.key.toLowerCase();
-    final value = filter.value.trim();
+    final value = filter.value.trim().toLowerCase();
 
     if (value.isEmpty) continue;
 
     switch (key) {
       case "class":
-        if (!matchesClass(entry, value)) return false;
+        if (!classEntry.classNames.any(
+          (c) => c.toLowerCase().contains(value),
+        )) {
+          return false;
+        }
         break;
 
       case "lesson":
-        if (!lessonRangesOverlap(lesson, value.toLowerCase())) {
+        if (!lessonRangesOverlap(lesson, value)) {
           return false;
         }
         break;
 
       case "subject":
-        if (!subject.contains(value.toLowerCase())) return false;
+        if (!subject.contains(value)) {
+          return false;
+        }
         break;
 
       case "teacher":
-        if (!teacher.contains(value.toLowerCase())) return false;
+        if (!teacher.contains(value)) {
+          return false;
+        }
         break;
 
       case "day":
-        if (!day.contains(value.toLowerCase())) return false;
+        if (!day.contains(value)) {
+          return false;
+        }
         break;
 
       default:
@@ -335,7 +325,7 @@ bool matchesFilter(Map<String, dynamic> entry, Map<String, String> filters) {
   return true;
 }
 
-bool matches(Map<String, dynamic> entry, String query) {
+bool matches(ClassEntry classEntry, TimetableEntry entry, String query) {
   final terms = query
       .toLowerCase()
       .split(RegExp(r'[\s,]+'))
@@ -345,12 +335,14 @@ bool matches(Map<String, dynamic> entry, String query) {
   if (terms.isEmpty) return true;
 
   final searchable = [
-    entry["subject"],
-    entry["teacher"],
-    entry["type"],
-    entry["text"],
-    entry["class"],
-  ].where((e) => e != null).join(" ").toLowerCase();
+    classEntry.className,
+    entry.subject,
+    entry.teacher,
+    entry.type,
+    entry.text,
+    entry.room,
+    entry.lesson,
+  ].whereType<String>().join(' ').toLowerCase();
 
   return terms.every((term) => searchable.contains(term));
 }
@@ -358,7 +350,6 @@ bool matches(Map<String, dynamic> entry, String query) {
 String normalizeClass(String c) {
   c = c.toLowerCase().trim();
 
-  // remove leading zeros in numbers: 07a -> 7a
   c = c.replaceFirstMapped(RegExp(r'\b0+(\d)'), (m) => '${m[1]}');
 
   return c;
@@ -367,7 +358,6 @@ String normalizeClass(String c) {
 String classBase(String c) {
   c = normalizeClass(c);
 
-  // strip trailing zeros (e.g. "7a0" -> "7a", "70" -> "7")
   c = c.replaceFirst(RegExp(r'0+$'), '');
 
   return c;
@@ -399,8 +389,8 @@ bool matchesClass(Map<String, dynamic> entry, String query) {
   );
 }
 
-Map<String, Map<String, List<Map<String, dynamic>>>> sortEntries(
-  List<Map<String, dynamic>> entries,
+Timetable enhanceTimetable(
+  Timetable timetable,
   bool clean,
   bool simplify, {
   bool disposeTut = true,
@@ -410,49 +400,42 @@ Map<String, Map<String, List<Map<String, dynamic>>>> sortEntries(
   bool disposeCourseNumbers = true,
   bool mapCourses = true,
 }) {
-  final dayResult = groupEntriesByDayDate(entries);
+  var res = timetable;
 
-  final groupedByDay = <String, Map<String, List<Map<String, dynamic>>>>{};
-
-  for (final entry in dayResult.entries) {
-    var res = entry.value;
-
-    if (clean) {
-      res = cleanupEntries(
-        res,
-        disposeTut: disposeTut,
-        cleanClassNames: cleanClassNames,
-        remapTypes: remapTypes,
-        cleanupCourses: cleanupCourses,
-        disposeCourseNumbers: disposeCourseNumbers,
-        mapCourses: mapCourses,
-      );
-    }
-
-    if (simplify) {
-      res = simplifyEntries(res);
-    }
-
-    groupedByDay[entry.key] = groupEntries(res);
+  if (clean) {
+    res = cleanupTimetable(
+      res,
+      disposeTut: disposeTut,
+      cleanClassNames: cleanClassNames,
+      remapTypes: remapTypes,
+      cleanupCourses: cleanupCourses,
+      disposeCourseNumbers: disposeCourseNumbers,
+      mapCourses: mapCourses,
+    );
   }
 
-  return groupedByDay;
+  //if (!simplify) {
+  //  res = deSimplifyEntries(res);
+  //}
+
+  //groupedByDay[entry.key] = groupEntries(res);
+
+  return res;
 }
 
 ClassDiff diffByClass(
-  List<Map<String, dynamic>> oldEntries,
-  List<Map<String, dynamic>> newEntries,
+  Timetable? oldTimetable,
+  Timetable? newTimetable,
   String classes,
 ) {
-  final oldFiltered = filterByClass(oldEntries, classes);
-  final newFiltered = filterByClass(newEntries, classes);
+  final oldEntries = _flattenEntries(oldTimetable, classes);
+  final newEntries = _flattenEntries(newTimetable, classes);
 
-  final oldMap = {for (var e in oldFiltered) entryKey(e): e};
-  final newMap = {for (var e in newFiltered) entryKey(e): e};
+  final oldMap = {for (final e in oldEntries) entryKey(e): e};
+  final newMap = {for (final e in newEntries) entryKey(e): e};
 
-  final added = <Map<String, dynamic>>[];
-  final removed = <Map<String, dynamic>>[];
-  final modified = <Map<String, dynamic>>[];
+  final added = <_ClassedEntry>[];
+  final removed = <_ClassedEntry>[];
 
   for (final key in oldMap.keys) {
     if (!newMap.containsKey(key)) {
@@ -462,7 +445,7 @@ ClassDiff diffByClass(
       final newE = newMap[key]!;
 
       if (isModified(oldE, newE)) {
-        modified.add(newE);
+        // optional: handle modified entries here
       }
     }
   }
@@ -476,20 +459,52 @@ ClassDiff diffByClass(
   return ClassDiff(added: added, removed: removed);
 }
 
-String entryKey(Map<String, dynamic> e) {
-  return [e["day"] ?? "", e["lesson"] ?? "", e["class"] ?? ""].join("|");
+String entryKey(_ClassedEntry e) {
+  return [e.day ?? "", e.entry.lesson ?? "", e.className].join("|");
 }
 
-bool isModified(Map<String, dynamic> oldE, Map<String, dynamic> newE) {
-  return oldE["subject"] != newE["subject"] ||
-      oldE["teacher"] != newE["teacher"] ||
-      oldE["room"] != newE["room"] ||
-      oldE["type"] != newE["type"];
+bool isModified(_ClassedEntry oldE, _ClassedEntry newE) {
+  return oldE.entry.subject != newE.entry.subject ||
+      oldE.entry.teacher != newE.entry.teacher ||
+      oldE.entry.room != newE.entry.room ||
+      oldE.entry.type != newE.entry.type;
+}
+
+List<_ClassedEntry> _flattenEntries(Timetable? timetable, String classes) {
+  if (timetable == null) return [];
+
+  return timetable.entries
+      .where(
+        (classEntry) =>
+            classes.isEmpty || classEntry.classNames.contains(classes),
+      )
+      .expand(
+        (classEntry) => classEntry.entries.map(
+          (entry) => _ClassedEntry(
+            className: classEntry.className,
+            entry: entry,
+            day: timetable.day,
+          ),
+        ),
+      )
+      .toList();
+}
+
+class _ClassedEntry {
+  final String className;
+  final String? day;
+  final TimetableEntry entry;
+
+  _ClassedEntry({
+    required this.className,
+    required this.entry,
+    required this.day,
+  });
 }
 
 class ClassDiff {
-  final List<Map<String, dynamic>> added;
-  final List<Map<String, dynamic>> removed;
+  final List<_ClassedEntry> added;
+  final List<_ClassedEntry> removed;
 
   bool get hasChanges => added.isNotEmpty || removed.isNotEmpty;
 

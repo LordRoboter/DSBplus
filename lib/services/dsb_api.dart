@@ -109,15 +109,15 @@ class DSBApi {
     return mergeTimetables(output);
   }
 
-  String valueFor(String key, List<Element> cells) {
+  String? valueFor(String key, List<Element> cells) {
     final index = tableMapper.indexOf(key);
 
     if (index == -1 || index >= cells.length) {
-      return "---";
+      return null;
     }
 
     final text = cells[index].text.trim();
-    return text.isEmpty ? "---" : text;
+    return text.isEmpty || text == "---" ? null : text;
   }
 
   Future<List<Timetable>?> fetchTimetable(String url) async {
@@ -183,7 +183,7 @@ class DSBApi {
               );
 
               timetable.entries.add(
-                ClassEntry(className: "Alle", entries: [entry]),
+                ClassEntry(classNames: ["Alle"], entries: [entry]),
               );
             } else {
               theInfos[field] = infos[i].text;
@@ -205,7 +205,7 @@ class DSBApi {
         final cells = rows[r].querySelectorAll("td");
 
         if (cells.length == 1) {
-          classs = cells[0].text.trim();
+          classs = cells[0].text.trim().split(" ")[0];
           continue;
         } else if (cells.length < 2) {
           continue;
@@ -235,7 +235,7 @@ class DSBApi {
             existing.entries.add(entry);
           } else {
             timetable.entries.add(
-              ClassEntry(className: classs, entries: [entry]),
+              ClassEntry(classNames: [classs], entries: [entry]),
             );
           }
         }
@@ -249,6 +249,19 @@ class DSBApi {
   List<Timetable> mergeTimetables(List<Timetable> timetables) {
     final Map<String, Timetable> merged = {};
 
+    String lessonKey(ClassEntry entry) {
+      final lesson = entry.entries.first;
+
+      return [
+        lesson.type,
+        lesson.lesson,
+        lesson.subject,
+        lesson.room,
+        lesson.teacher,
+        lesson.text,
+      ].join("|");
+    }
+
     for (final timetable in timetables) {
       final key =
           "${timetable.date?.year}-${timetable.date?.month}-${timetable.date?.day}-${timetable.day}";
@@ -261,12 +274,15 @@ class DSBApi {
       final existing = merged[key]!;
 
       for (final classEntry in timetable.entries) {
-        final existingClass = existing.entries
-            .where((e) => e.className == classEntry.className)
+        final key = lessonKey(classEntry);
+
+        final existingEntry = existing.entries
+            .where((e) => lessonKey(e) == key)
             .firstOrNull;
 
-        if (existingClass != null) {
-          existingClass.entries.addAll(classEntry.entries);
+        if (existingEntry != null) {
+          existingEntry.classNames.addAll(classEntry.classNames);
+          existingEntry.classNames.sort();
         } else {
           existing.entries.add(classEntry);
         }
