@@ -57,33 +57,39 @@ class Timetable {
 }
 
 class ClassEntry {
-  final String? className;
+  final List<String> classNames;
   final List<TimetableEntry> entries;
 
-  const ClassEntry({this.className, required this.entries});
+  const ClassEntry({required this.classNames, required this.entries});
 
   Map<String, dynamic> toJson() {
     return {
-      "className": className,
+      "classNames": classNames,
       "entries": entries.map((e) => e.toJson()).toList(),
     };
   }
 
   factory ClassEntry.fromJson(Map<String, dynamic> json) {
     return ClassEntry(
-      className: json["className"],
+      classNames: (json["classNames"] as List).cast<String>(),
       entries: (json["entries"] as List)
           .map((e) => TimetableEntry.fromJson(e))
           .toList(),
     );
   }
 
-  ClassEntry copyWith({String? className, List<TimetableEntry>? entries}) {
+  ClassEntry copyWith({
+    List<String>? classNames,
+    List<TimetableEntry>? entries,
+  }) {
     return ClassEntry(
-      className: className ?? this.className,
+      classNames: classNames ?? this.classNames,
       entries: entries ?? this.entries,
     );
   }
+
+  /// Convenience getter for displaying classes.
+  String get className => classNames.join(", ");
 }
 
 class TimetableEntry {
@@ -122,6 +128,24 @@ class TimetableEntry {
       room: json["room"],
       type: json["type"],
       text: json["text"],
+    );
+  }
+
+  TimetableEntry copyWith({
+    String? lesson,
+    String? teacher,
+    String? subject,
+    String? room,
+    String? type,
+    String? text,
+  }) {
+    return TimetableEntry(
+      lesson: lesson ?? this.lesson,
+      teacher: teacher ?? this.teacher,
+      subject: subject ?? this.subject,
+      room: room ?? this.room,
+      type: type ?? this.type,
+      text: text ?? this.text,
     );
   }
 }

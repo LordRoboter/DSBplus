@@ -1,74 +1,69 @@
 import 'package:flutter/material.dart';
+import 'package:planner/core/models/timetable.dart';
 import 'texts.dart';
 import '../res/maps.dart';
 import '../core/util/sorter.dart';
 
 class EntryListNoScroll extends StatelessWidget {
-  final Map<String, List<Map<String, dynamic>>> groups;
+  final Timetable timetable;
 
-  const EntryListNoScroll({super.key, required this.groups});
+  const EntryListNoScroll({super.key, required this.timetable});
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: groups.entries
-          .where((group) => group.value.isNotEmpty)
-          .map((group) => EntryCard(group: group, marked: false))
+      children: timetable.entries
+          .map((entry) => EntryCard(entry: entry, marked: false))
           .toList(),
     );
   }
 }
 
 class EntryList extends StatelessWidget {
-  final Map<String, List<Map<String, dynamic>>> groups;
+  final Timetable timetable;
   final List<Map<String, String>> filters;
   final String classFilter;
 
   const EntryList({
     super.key,
-    required this.groups,
+    required this.timetable,
     required this.filters,
     required this.classFilter,
   });
 
   @override
   Widget build(BuildContext context) {
-    bool matchesAnyFilter(Map<String, dynamic> entry) {
-      return filters.any((filter) => matchesFilter(entry, filter));
+    bool matchesAnyFilter(
+      TimetableEntry entry,
+      ClassEntry classEntry,
+      Timetable timetable,
+      List<Map<String, String>> filters,
+    ) {
+      if (filters.isEmpty) return true;
+
+      return filters.any(
+        (filter) => matchesFilter(entry, classEntry, timetable, filter),
+      );
     }
 
     return ListView(
-      children: groups.entries.where((group) => group.value.isNotEmpty).map((
-        group,
-      ) {
+      children: timetable.entries.map((classEntry) {
         final groupMarked =
             classFilter.isNotEmpty &&
-            group.value.any((entry) => matchesClass(entry, classFilter));
+            classEntry.classNames.contains(classFilter);
 
-        final entries = group.value.map((entry) {
-          final entryMarked =
-              (classFilter.isNotEmpty &&
-                  matchesClass(entry, classFilter) &&
-                  matchesAnyFilter(entry)) ||
-              (classFilter.isEmpty && matchesAnyFilter(entry));
-
-          return {...entry, 'marked': entryMarked};
-        }).toList();
-
-        return EntryCard(
-          group: MapEntry(group.key, entries),
-          marked: groupMarked,
-        );
+        return EntryCard(entry: classEntry, marked: groupMarked);
       }).toList(),
     );
   }
 }
 
+//TODO: Bring back singular marked entries
 class EntryCard extends StatelessWidget {
-  final MapEntry<String, List<Map<String, dynamic>>> group;
+  final ClassEntry entry;
   final bool marked;
 
-  const EntryCard({super.key, required this.group, required this.marked});
+  const EntryCard({super.key, required this.entry, required this.marked});
 
   @override
   Widget build(BuildContext context) {
@@ -82,106 +77,60 @@ class EntryCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(group.key, style: Theme.of(context).textTheme.titleLarge),
+            Text(
+              entry.classNames.join(", "),
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+
             const Divider(),
 
-            ...group.value.asMap().entries.map((item) {
-              final entry = item.value;
-              final entryMarked = entry['marked'] == true;
-
+            ...entry.entries.map((lesson) {
               final isSpecial =
-                  entry["type"] == "Entfall" ||
-                  entry["type"] == "Eigenverantwortliches Arbeiten";
+                  lesson.type == "Entfall" ||
+                  lesson.type == "Eigenverantwortliches Arbeiten";
 
-              return Container(
-                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
-                decoration: entryMarked
-                    ? BoxDecoration(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.secondary.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(8),
-                      )
-                    : null,
-                child: Column(
-                  children: [
-                    Row(
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "${entry['lesson']}. Std"
-                                "${entry["subject"] != "---" ? " • ${entry["subject"]}" : ""}",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  decoration: isSpecial
-                                      ? TextDecoration.lineThrough
-                                      : TextDecoration.none,
-                                  fontStyle: isSpecial
-                                      ? FontStyle.italic
-                                      : FontStyle.normal,
-                                ),
-                              ),
-
-                              teacherText(entry["teacher"] ?? ""),
-
-                              if ((entry["text"] ?? "").toString().isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 1),
-                                  child: Text(
-                                    entry["text"],
-                                    style: TextStyle(
-                                      color: entryMarked
-                                          ? Theme.of(
-                                              context,
-                                            ).colorScheme.onSecondaryContainer
-                                          : Colors.grey[700],
-                                      fontStyle: FontStyle.italic,
-                                      fontWeight: entryMarked
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
-                                    ),
-                                  ),
-                                ),
-                            ],
+                        Text(
+                          "${lesson.lesson}. Std"
+                          "${lesson.subject != "---" ? " • ${lesson.subject}" : ""}",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            decoration: isSpecial
+                                ? TextDecoration.lineThrough
+                                : null,
+                            fontStyle: isSpecial ? FontStyle.italic : null,
                           ),
                         ),
 
-                        const SizedBox(width: 12),
+                        teacherText(lesson.teacher ?? ""),
 
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Chip(
-                              label: Text(
-                                entry["type"] ?? "",
-                                style: TextStyle(
-                                  color:
-                                      ThemeData.estimateBrightnessForColor(
-                                            typeColor(entry["type"]),
-                                          ) ==
-                                          Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black,
-                                  fontWeight: entryMarked
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
-                                ),
-                              ),
-                              visualDensity: VisualDensity.compact,
-                              backgroundColor: typeColor(entry["type"]),
-                            ),
-
-                            roomText(context, entry["room"].toString()),
-                          ],
-                        ),
+                        if ((lesson.text ?? "").isNotEmpty)
+                          Text(
+                            lesson.text!,
+                            style: const TextStyle(fontStyle: FontStyle.italic),
+                          ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Chip(
+                        label: Text(lesson.type ?? ""),
+                        backgroundColor: typeColor(lesson.type ?? ""),
+                      ),
+
+                      roomText(context, lesson.room ?? ""),
+                    ],
+                  ),
+                ],
               );
             }),
           ],

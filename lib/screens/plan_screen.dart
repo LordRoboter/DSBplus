@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:planner/core/models/daydate.dart';
+import 'package:planner/core/models/timetable.dart';
 import 'package:planner/widgets/lists.dart';
 import 'package:planner/services/data_repository.dart';
 import 'package:planner/core/util/sorter.dart';
@@ -65,30 +67,41 @@ class _PlanScreenState extends State<PlanScreen>
       }
     }
 
-    final sortedEntries = sortEntries(
-      repo.entries,
-      data.clean,
-      data.simplify,
-      disposeTut: data.disposeTut,
-      cleanClassNames: data.cleanClassNames,
-      remapTypes: data.remapTypes,
-      cleanupCourses: data.cleanupCourses,
-      disposeCourseNumbers: data.disposeCourseNumbers,
-      mapCourses: data.mapCourses,
-    );
-    final visibleGroups = data.selectedDayDate != null
-        ? sortedEntries[data.selectedDayDate] ??
-              <String, List<Map<String, dynamic>>>{}
-        : <String, List<Map<String, dynamic>>>{};
+    final enhancedTimetables = repo.entries
+        .map(
+          (timetable) => enhanceTimetable(
+            timetable,
+            data.clean,
+            data.simplify,
+            disposeTut: data.disposeTut,
+            cleanClassNames: data.cleanClassNames,
+            remapTypes: data.remapTypes,
+            cleanupCourses: data.cleanupCourses,
+            disposeCourseNumbers: data.disposeCourseNumbers,
+            mapCourses: data.mapCourses,
+          ),
+        )
+        .toList();
+    final sortedEntries = groupEntriesByDayDate(enhancedTimetables);
 
-    final filteredGroups = isSearching
-        ? visibleGroups.map(
-            (group, entries) => MapEntry(
-              group,
-              entries.where((e) => matches(e, search)).toList(),
-            ),
+    final visibleTimetable = data.selectedDayDate != null
+        ? sortedEntries[data.selectedDayDate!]
+        : null;
+
+    final filteredTimetable = isSearching && visibleTimetable != null
+        ? visibleTimetable.copyWith(
+            entries: visibleTimetable.entries
+                .map(
+                  (classEntry) => classEntry.copyWith(
+                    entries: classEntry.entries
+                        .where((e) => matches(classEntry, e, search))
+                        .toList(),
+                  ),
+                )
+                .where((classEntry) => classEntry.entries.isNotEmpty)
+                .toList(),
           )
-        : visibleGroups;
+        : visibleTimetable;
 
     return repo.error != null
         ? RefreshIndicator(
@@ -97,7 +110,8 @@ class _PlanScreenState extends State<PlanScreen>
             },
             child: Center(child: Text(repo.error!)),
           )
-        : filteredGroups.isEmpty && repo.loading
+        : (filteredTimetable == null || filteredTimetable.entries.isEmpty) &&
+              repo.loading
         ? const Center(child: CircularProgressIndicator())
         : Column(
             children: [
@@ -140,7 +154,13 @@ class _PlanScreenState extends State<PlanScreen>
                                     itemBuilder: (context, index) {
                                       final dayDate =
                                           repo.availableDayDates[index];
-                                      final day = dayDate.split(" ")[0];
+                                      final day =
+                                          dayDate.day ??
+                                          (dayDate.date == null
+                                              ? "Unbekannt"
+                                              : DateFormat.yMd().format(
+                                                  dayDate.date!,
+                                                ));
 
                                       return ChoiceChip(
                                         label: Text(day),
@@ -181,8 +201,11 @@ class _PlanScreenState extends State<PlanScreen>
                                         ),
                                       ),
                                       TextSpan(
-                                        text:
-                                            "${visibleGroups.values.first.isNotEmpty && visibleGroups.values.first.first['date'] != null ? DateFormat.yMd().format(visibleGroups.values.first.first['date'] as DateTime) : ''}",
+                                        text: visibleTimetable?.date != null
+                                            ? DateFormat.yMd().format(
+                                                visibleTimetable!.date!,
+                                              )
+                                            : '',
                                       ),
                                     ],
                                   ),
@@ -224,8 +247,11 @@ class _PlanScreenState extends State<PlanScreen>
                                         ),
                                       ),
                                       TextSpan(
-                                        text:
-                                            "${visibleGroups.values.first.isNotEmpty && visibleGroups.values.first.first['updated'] != null ? DateFormat.yMd().add_Hm().format(visibleGroups.values.first.first['updated'] as DateTime) : ''}",
+                                        text: visibleTimetable?.updated != null
+                                            ? DateFormat.yMd().format(
+                                                visibleTimetable!.updated!,
+                                              )
+                                            : '',
                                       ),
                                     ],
                                   ),
@@ -243,7 +269,9 @@ class _PlanScreenState extends State<PlanScreen>
                   onRefresh: () async {
                     await repo.loadData();
                   },
-                  child: filteredGroups.isEmpty
+                  child:
+                      filteredTimetable == null ||
+                          filteredTimetable.entries.isEmpty
                       ? LayoutBuilder(
                           builder: (context, constraints) {
                             return SingleChildScrollView(
@@ -258,7 +286,7 @@ class _PlanScreenState extends State<PlanScreen>
                           },
                         )
                       : EntryList(
-                          groups: filteredGroups,
+                          timetable: filteredTimetable,
                           filters: data.filters,
                           classFilter: data.classFilter,
                         ),

@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
+import 'package:planner/core/models/daydate.dart';
 import 'package:planner/l10n/l10extension.dart';
 import 'package:planner/core/util/translations.dart';
 import 'l10n/app_localizations.dart';
@@ -192,62 +193,24 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   final backgroundNotifications = settings.getBool("notifications") ?? true;
 
   if (!backgroundNotifications) {
-    return; // don't show notification, but still allow Firebase processing
+    return;
   }
 
   final data = DataRepository();
   await data.init();
+
   final oldData = await data.sync();
-
-  /*[
-    {
-      "dayDate": "Freitag",
-      "date": "26.06.2026",
-      "updated": "26.06.2026",
-      "class": "7b",
-      "lesson": "1",
-      "subject": "D",
-      "teacher": "Loh",
-      "room": "102",
-      "type": "Entfall",
-    },
-    {
-      "dayDate": "Donnerstag",
-      "date": "25.06.2026",
-      "updated": "26.06.2026",
-      "class": "7b",
-      "lesson": "3",
-      "subject": "M",
-      "teacher": "Cyb",
-      "room": "102",
-      "type": "Entfall",
-    },
-  ];*/
-
   final newData = data.cachedEntries;
 
-  /*[
-    {
-      "dayDate": "Freitag",
-      "date": "26.06.2026",
-      "updated": "26.06.2026",
-      "class": "7b",
-      "lesson": "2",
-      "subject": "M",
-      "teacher": "Cyb",
-      "room": "102",
-      "type": "Entfall",
-    },
-  ];*/
+  final groupedOld = {
+    for (final timetable in oldData)
+      DayDate(timetable.day, timetable.date): timetable,
+  };
 
-  final groupedNew = groupEntriesByAllowedDayDates(
-    newData,
-    data.availableDayDates,
-  );
-  final groupedOld = groupEntriesByAllowedDayDates(
-    oldData,
-    data.availableDayDates,
-  );
+  final groupedNew = {
+    for (final timetable in newData)
+      DayDate(timetable.day, timetable.date): timetable,
+  };
 
   final localeCode = PlatformDispatcher.instance.locale.languageCode;
   final l10n = await AppLocalizations.delegate.load(Locale(localeCode));
@@ -255,67 +218,68 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
   for (final dayDate in data.availableDayDates) {
     final diff = diffByClass(
-      groupedOld[dayDate] ?? [],
-      groupedNew[dayDate] ?? [],
+      groupedOld[dayDate],
+      groupedNew[dayDate],
       data.classFilter,
     );
 
-    if (diff.added.isNotEmpty || diff.removed.isNotEmpty) {
-      final sample = diff.added.isNotEmpty
-          ? diff.added.first
-          : diff.removed.first;
+    if (!diff.hasChanges) continue;
 
-      final date = sample["date"];
-      final formattedDate = DateFormat.yMd(Locale(localeCode)).format(date);
-      final relativeDay = getRelativeDay(date);
-      final day = sample["day"];
-      final dayName = switch (relativeDay) {
-        0 => l10n.today,
-        1 => l10n.tomorrow,
-        -1 => l10n.yesterday,
-        _ => "$day ($formattedDate)",
-      };
+    final sample = diff.added.isNotEmpty
+        ? diff.added.first
+        : diff.removed.first;
 
-      final title = diff.added.isNotEmpty && diff.removed.isNotEmpty
-          ? "$dayName: ${l10n.timetableChanged}"
-          : diff.added.isNotEmpty
-          ? "$dayName: ${l10n.newEntries}"
-          : "$dayName: ${l10n.deletedEntries}";
+    final date = dayDate.date!;
+    final formattedDate = DateFormat.yMd(Locale(localeCode)).format(date);
 
-      final addedEntries = diff.added
-          .map(
-            (entry) => l10n.entryInfo(
-              ordinal(entry["lesson"], Locale(localeCode)),
-              entry["type"],
-              entry["subject"],
-              entry["teacher"],
-            ),
-          )
-          .join("\n");
+    final relativeDay = getRelativeDay(date);
 
-      final removedEntries = diff.removed
-          .map(
-            (entry) => l10n.entryInfoDeleted(
-              ordinal(entry["lesson"], Locale(localeCode)),
-              entry["type"],
-              entry["subject"],
-              entry["teacher"],
-            ),
-          )
-          .join("\n");
+    final dayName = switch (relativeDay) {
+      0 => l10n.today,
+      1 => l10n.tomorrow,
+      -1 => l10n.yesterday,
+      _ => "${dayDate.day} ($formattedDate)",
+    };
 
-      final details = [
-        if (diff.added.isNotEmpty) addedEntries,
-        if (diff.removed.isNotEmpty) removedEntries,
-      ].join("\n");
+    final title = diff.added.isNotEmpty && diff.removed.isNotEmpty
+        ? "$dayName: ${l10n.timetableChanged}"
+        : diff.added.isNotEmpty
+        ? "$dayName: ${l10n.newEntries}"
+        : "$dayName: ${l10n.deletedEntries}";
 
-      await NotificationService.makeUpdateNotification(
-        DateTime.now().millisecondsSinceEpoch ~/ 1000 +
-            data.availableDayDates.indexOf(dayDate),
-        title,
-        details,
-      );
-    }
+    final addedEntries = diff.added
+        .map(
+          (entry) => l10n.entryInfo(
+            ordinal(entry.entry.lesson, Locale(localeCode)),
+            entry.entry.type ?? "",
+            entry.entry.subject ?? "",
+            entry.entry.teacher ?? "",
+          ),
+        )
+        .join("\n");
+
+    final removedEntries = diff.removed
+        .map(
+          (entry) => l10n.entryInfoDeleted(
+            ordinal(entry.entry.lesson, Locale(localeCode)),
+            entry.entry.type ?? "",
+            entry.entry.subject ?? "",
+            entry.entry.teacher ?? "",
+          ),
+        )
+        .join("\n");
+
+    final details = [
+      if (diff.added.isNotEmpty) addedEntries,
+      if (diff.removed.isNotEmpty) removedEntries,
+    ].join("\n");
+
+    await NotificationService.makeUpdateNotification(
+      DateTime.now().millisecondsSinceEpoch ~/ 1000 +
+          data.availableDayDates.indexOf(dayDate),
+      title,
+      details,
+    );
   }
 }
 

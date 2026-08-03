@@ -1,6 +1,15 @@
 import 'dart:ui';
 
-String ordinal(int number, Locale locale) {
+String ordinal(String? value, Locale locale) {
+  if (value == null || value.isEmpty) return "";
+
+  if (value.contains("-")) {
+    return value.split("-").map((part) => ordinal(part, locale)).join("-");
+  }
+
+  final number = int.tryParse(value);
+  if (number == null) return value;
+
   switch (locale.languageCode) {
     case 'de':
       return '$number.';

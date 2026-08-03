@@ -1,4 +1,6 @@
 import 'package:intl/intl.dart';
+import 'package:planner/core/models/daydate.dart';
+import 'package:planner/core/models/timetable.dart';
 
 int getRelativeDay(DateTime date) {
   try {
@@ -35,13 +37,9 @@ bool isOutdated(DateTime date) {
   }
 }
 
-String formatDayDate(Map<String, dynamic> entry) {
-  final day = entry["day"] as String? ?? "Unknown";
-  final date = entry["date"];
+DayDate formatDayDate(Timetable timetable) {
+  final day = timetable.day;
+  final date = timetable.date;
 
-  final formattedDate = date is DateTime
-      ? DateFormat.yMd().format(date)
-      : "Unknown";
-
-  return "$day ($formattedDate)";
+  return DayDate(day, date);
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:planner/core/models/daydate.dart';
 import 'package:planner/core/models/timetable.dart';
 import 'package:planner/core/util/date.dart';
 
@@ -16,7 +17,7 @@ class PlanRepository extends ChangeNotifier {
 
   String get lastUpdated => data.lastUpdated;
 
-  List<String> get availableDayDates =>
+  List<DayDate> get availableDayDates =>
       entries.map((e) => formatDayDate(e)).toSet().toList();
 
   Future<void> init() async {
