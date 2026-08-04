@@ -90,6 +90,13 @@ Timetable cleanupTimetable(
   bool disposeCourseNumbers = true,
   bool mapCourses = true,
 }) {
+  for (final c in timetable.entries) {
+    if (c.className.startsWith("E")) {
+      print(
+        '${c.classNames} -> ${c.entries.map((e) => '${e.subject} ${e.lesson} ${e.teacher}').join(", ")}',
+      );
+    }
+  }
   final cleanedClasses = timetable.entries.map((classEntry) {
     final cleanedClassNames = classEntry.classNames.map((className) {
       var cleaned = className;
@@ -152,13 +159,46 @@ Timetable cleanupTimetable(
     return ClassEntry(classNames: cleanedClassNames, entries: cleanedEntries);
   }).toList();
 
+  final merged = <String, ClassEntry>{};
+
+  for (final classEntry in cleanedClasses) {
+    final key = classNamesKey(classEntry.classNames);
+
+    if (merged.containsKey(key)) {
+      merged[key] = ClassEntry(
+        classNames: merged[key]!.classNames,
+        entries: [...merged[key]!.entries, ...classEntry.entries],
+      );
+    } else {
+      merged[key] = ClassEntry(
+        classNames: classEntry.classNames.toSet().toList(),
+        entries: classEntry.entries,
+      );
+    }
+  }
+
+  final resultEntries = merged.values.map((entry) {
+    return ClassEntry(
+      classNames: entry.classNames,
+      entries: entry.entries.toSet().toList(),
+    );
+  }).toList();
+
   return Timetable(
     date: timetable.date,
     day: timetable.day,
     updated: timetable.updated,
     extraInfos: timetable.extraInfos,
-    entries: cleanedClasses,
+    entries: resultEntries,
   );
+}
+
+String classNamesKey(List<String> classNames) {
+  final normalized = classNames.map((c) => c.toLowerCase()).toSet().toList();
+
+  normalized.sort();
+
+  return normalized.join(",");
 }
 
 List<Timetable> filterByClass(List<Timetable> timetables, String classes) {

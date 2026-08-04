@@ -228,14 +228,19 @@ class DSBApi {
           );
 
           final existing = timetable.entries
-              .where((e) => e.className == classs)
+              .where(
+                (e) => e.classNames.contains(classIndex != -1 ? cls : classs),
+              )
               .firstOrNull;
 
           if (existing != null) {
             existing.entries.add(entry);
           } else {
             timetable.entries.add(
-              ClassEntry(classNames: [classs], entries: [entry]),
+              ClassEntry(
+                classNames: classIndex != -1 ? [cls] : [classs],
+                entries: [entry],
+              ),
             );
           }
         }
@@ -247,59 +252,119 @@ class DSBApi {
   }
 
   List<Timetable> mergeTimetables(List<Timetable> timetables) {
-    final Map<String, Timetable> merged = {};
+    String entryGroupKey(ClassEntry entry) {
+      final lessons = entry.entries.map((lesson) {
+        return [
+          lesson.type,
+          lesson.lesson,
+          lesson.subject,
+          lesson.room,
+          lesson.teacher,
+          lesson.text,
+        ].join("|");
+      }).toList();
 
-    String lessonKey(ClassEntry entry) {
-      final lesson = entry.entries.first;
+      lessons.sort();
 
-      return [
-        lesson.type,
-        lesson.lesson,
-        lesson.subject,
-        lesson.room,
-        lesson.teacher,
-        lesson.text,
-      ].join("|");
+      return lessons.join(";");
     }
 
-    for (final timetable in timetables) {
-      final key =
-          "${timetable.date?.year}-${timetable.date?.month}-${timetable.date?.day}-${timetable.day}";
+    List<Timetable> mergeByDate(List<Timetable> timetables) {
+      final Map<String, Timetable> result = {};
 
-      if (!merged.containsKey(key)) {
-        merged[key] = timetable;
-        continue;
-      }
+      for (final timetable in timetables) {
+        final key =
+            "${timetable.date?.year}-${timetable.date?.month}-${timetable.date?.day}-${timetable.day}";
 
-      final existing = merged[key]!;
-
-      for (final classEntry in timetable.entries) {
-        final key = lessonKey(classEntry);
-
-        final existingEntry = existing.entries
-            .where((e) => lessonKey(e) == key)
-            .firstOrNull;
-
-        if (existingEntry != null) {
-          existingEntry.classNames.addAll(classEntry.classNames);
-          existingEntry.classNames.sort();
+        if (!result.containsKey(key)) {
+          result[key] = timetable;
         } else {
-          existing.entries.add(classEntry);
+          result[key]!.entries.addAll(timetable.entries);
         }
       }
 
-      if (timetable.extraInfos != null) {
-        existing.extraInfos ??= {};
-        existing.extraInfos!.addAll(timetable.extraInfos!);
-      }
-
-      if (timetable.updated != null &&
-          (existing.updated == null ||
-              timetable.updated!.isAfter(existing.updated!))) {
-        existing.updated = timetable.updated;
-      }
+      return result.values.toList();
     }
 
-    return merged.values.toList();
+    List<ClassEntry> mergeClasses(List<ClassEntry> entries) {
+      final Map<String, ClassEntry> result = {};
+
+      for (final entry in entries) {
+        final classes = [...entry.classNames]..sort();
+        final key = classes.join(",");
+
+        if (result.containsKey(key)) {
+          result[key]!.entries.addAll(entry.entries);
+        } else {
+          result[key] = ClassEntry(
+            classNames: classes,
+            entries: [...entry.entries],
+          );
+        }
+      }
+
+      return result.values.toList();
+    }
+
+    List<ClassEntry> combineCommonLessons(List<ClassEntry> classEntries) {
+      // First: invert class -> lessons into lesson -> classes
+      final Map<String, _LessonGroup> lessons = {};
+
+      for (final classEntry in classEntries) {
+        for (final lesson in classEntry.entries) {
+          final lessonKey = [
+            lesson.lesson,
+            lesson.subject,
+            lesson.teacher,
+            lesson.room,
+            lesson.type,
+            lesson.text,
+          ].join("|");
+
+          final group = lessons.putIfAbsent(
+            lessonKey,
+            () => _LessonGroup(lesson),
+          );
+
+          group.classes.addAll(classEntry.classNames);
+        }
+      }
+
+      // Second: group identical class sets back together
+      final Map<String, ClassEntry> result = {};
+
+      for (final group in lessons.values) {
+        final classes = group.classes.toSet().toList()..sort();
+
+        final classKey = classes.join(",");
+
+        final existing = result[classKey];
+
+        if (existing != null) {
+          existing.entries.add(group.lesson);
+        } else {
+          result[classKey] = ClassEntry(
+            classNames: classes,
+            entries: [group.lesson],
+          );
+        }
+      }
+
+      return result.values.toList();
+    }
+
+    return mergeByDate(timetables).map((timetable) {
+      final mergedClasses = mergeClasses(timetable.entries);
+      final simplified = combineCommonLessons(mergedClasses);
+
+      return timetable.copyWith(entries: simplified);
+    }).toList();
   }
+}
+
+class _LessonGroup {
+  final TimetableEntry lesson;
+  final List<String> classes = [];
+
+  _LessonGroup(this.lesson);
 }
