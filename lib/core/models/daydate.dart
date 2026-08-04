@@ -12,4 +12,12 @@ class DayDate {
     'day': day,
     'date': date?.toIso8601String(),
   };
+
+  @override
+  bool operator ==(Object other) {
+    return other is DayDate && other.day == day && other.date == date;
+  }
+
+  @override
+  int get hashCode => Object.hash(day, date);
 }
