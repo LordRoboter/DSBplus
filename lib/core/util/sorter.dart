@@ -171,26 +171,22 @@ List<Timetable> filterByClass(List<Timetable> timetables, String classes) {
 
   if (terms.isEmpty) return timetables;
 
-  return timetables.where((timetable) {
-    final hasUnknownClass = timetable.entries.any(
-      (e) => e.className == null || e.className!.isEmpty,
-    );
+  return timetables
+      .map((timetable) {
+        final matchingEntries = timetable.entries.where((entry) {
+          final entryClasses = entry.classNames.map(classBase).toSet();
 
-    if (hasUnknownClass) return true;
+          if (entryClasses.contains("alle")) return true;
 
-    final entryClasses = timetable.entries
-        .map((e) => e.className!)
-        .expand((c) => c.split(RegExp(r'\s*,\s*|\s+')))
-        .where((c) => c.isNotEmpty)
-        .map(classBase)
-        .toSet();
+          return entryClasses.any(
+            (ec) => terms.any((t) => ec == t || ec.startsWith(t)),
+          );
+        }).toList();
 
-    if (entryClasses.contains("alle")) return true;
-
-    return entryClasses.any(
-      (ec) => terms.any((t) => ec == t || ec.startsWith(t)),
-    );
-  }).toList();
+        return timetable.copyWith(entries: matchingEntries);
+      })
+      .where((timetable) => timetable.entries.isNotEmpty)
+      .toList();
 }
 
 List<Timetable> filterByInfo(
