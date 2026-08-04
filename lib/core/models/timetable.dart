@@ -57,10 +57,10 @@ class Timetable {
 }
 
 class ClassEntry {
-  final List<String> classNames;
+  List<String> classNames;
   final List<TimetableEntry> entries;
 
-  const ClassEntry({required this.classNames, required this.entries});
+  ClassEntry({required this.classNames, required this.entries});
 
   Map<String, dynamic> toJson() {
     return {
