@@ -104,7 +104,12 @@ class DataRepository extends ChangeNotifier {
     final oldEntries = cachedEntries;
     final entries = await api.fetchEntries();
 
-    final changed = !const DeepCollectionEquality().equals(oldEntries, entries);
+    const equality = DeepCollectionEquality();
+
+    final changed = !equality.equals(
+      oldEntries.map((e) => e.toJson()).toList(),
+      entries.map((e) => e.toJson()).toList(),
+    );
 
     await validateSelectedDayDate(
       entries
