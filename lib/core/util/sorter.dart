@@ -16,40 +16,24 @@ Map<DayDate, Timetable> groupEntriesByDayDate(List<Timetable> timetables) {
   return grouped;
 }
 
-List<Map<String, dynamic>> simplifyEntries(List<Map<String, dynamic>> entries) {
-  final grouped = <String, Map<String, dynamic>>{};
+Timetable decollapseTimetable(Timetable timetable) {
+  final Map<String, ClassEntry> result = {};
+  final List<String> order = [];
 
-  for (final entry in entries) {
-    final key = [
-      entry['type'],
-      entry['lesson'],
-      entry['subject'],
-      entry['room'],
-      entry['new_subject'],
-      entry['new_teacher'],
-      entry['teacher'],
-      entry["day"],
-      entry["date"],
-    ].join('|');
+  for (final collapsedEntry in timetable.entries) {
+    for (final className in collapsedEntry.classNames) {
+      if (!result.containsKey(className)) {
+        result[className] = ClassEntry(classNames: [className], entries: []);
+        order.add(className);
+      }
 
-    final classList = (entry['class'] as String? ?? '')
-        .split(RegExp(r'\s*,\s*'))
-        .map((c) => c.trim())
-        .where((c) => c.isNotEmpty)
-        .toSet();
-
-    if (!grouped.containsKey(key)) {
-      grouped[key] = {...entry, '_classes': classList};
-    } else {
-      (grouped[key]!['_classes'] as Set<String>).addAll(classList);
+      result[className]!.entries.addAll(collapsedEntry.entries);
     }
   }
 
-  return grouped.values.map((entry) {
-    final classes = (entry.remove('_classes') as Set<String>).toList()..sort();
-    entry['class'] = classes.join(', ');
-    return entry;
-  }).toList();
+  return timetable.copyWith(
+    entries: order.map((className) => result[className]!).toList(),
+  );
 }
 
 bool isDigit(String c) {
@@ -449,9 +433,9 @@ Timetable enhanceTimetable(
     );
   }
 
-  //if (!simplify) {
-  //  res = deSimplifyEntries(res);
-  //}
+  if (!simplify) {
+    res = decollapseTimetable(res);
+  }
 
   //groupedByDay[entry.key] = groupEntries(res);
 
