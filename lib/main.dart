@@ -1,4 +1,12 @@
 import 'dart:io';
+import 'dart:ui';
+
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart';
+import 'package:planner/core/models/daydate.dart';
+import 'package:planner/l10n/l10extension.dart';
+import 'package:planner/core/util/translations.dart';
+import 'l10n/app_localizations.dart';
 
 import 'package:crypto/crypto.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -6,11 +14,10 @@ import 'package:flutter/material.dart';
 import 'package:planner/screens/home_screen.dart';
 import 'package:planner/screens/plan_screen.dart';
 import 'package:planner/services/data_repository.dart';
-import 'package:planner/services/notification_service.dart'
-    show NotificationService;
+import 'package:planner/services/notification_service.dart';
 import 'package:planner/theme.dart';
-import 'package:planner/util/date.dart';
-import 'package:planner/util/sorter.dart';
+import 'package:planner/core/util/date.dart';
+import 'package:planner/core/util/sorter.dart';
 
 import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -34,7 +41,8 @@ Future<void> main() async {
 
   await FirebaseMessaging.instance.subscribeToTopic("vertretungsplan");
 
-  await initializeDateFormatting('de_DE');
+  final locale = PlatformDispatcher.instance.locale.toString();
+  await initializeDateFormatting(locale);
 
   final dataRepository = DataRepository();
   await dataRepository.init();
@@ -76,6 +84,14 @@ class MyApp extends StatelessWidget {
         AppThemes.light => ThemeMode.light,
         AppThemes.dark => ThemeMode.dark,
       },
+
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [Locale('en'), Locale('de')],
 
       home: const NavigatorScreen(),
     );
@@ -120,8 +136,8 @@ class _NavigatorScreenState extends State<NavigatorScreen> {
     _sub = data.updates.listen((_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Neue Einträge!"),
+        SnackBar(
+          content: Text(context.l10n.newEntries),
           duration: Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
         ),
@@ -139,7 +155,7 @@ class _NavigatorScreenState extends State<NavigatorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Vertretungsplan"),
+        title: Text(context.l10n.substPlan),
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
         actions: [
@@ -150,11 +166,14 @@ class _NavigatorScreenState extends State<NavigatorScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: index,
         onTap: (i) => setState(() => index = i),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: context.l10n.home,
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_view_month),
-            label: "Plan",
+            label: context.l10n.plan,
           ),
         ],
       ),
@@ -166,8 +185,6 @@ class _NavigatorScreenState extends State<NavigatorScreen> {
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  await initializeDateFormatting('de_DE');
-
   if (message.data["type"] != "timetable_updated") return;
 
   final settings = await SharedPreferences.getInstance();
@@ -175,113 +192,89 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   final backgroundNotifications = settings.getBool("notifications") ?? true;
 
   if (!backgroundNotifications) {
-    return; // don't show notification, but still allow Firebase processing
+    return;
   }
 
   final data = DataRepository();
   await data.init();
+
   final oldData = await data.sync();
-
-  /*[
-    {
-      "dayDate": "Freitag",
-      "date": "26.06.2026",
-      "updated": "26.06.2026",
-      "class": "7b",
-      "lesson": "1",
-      "subject": "D",
-      "teacher": "Loh",
-      "room": "102",
-      "type": "Entfall",
-    },
-    {
-      "dayDate": "Donnerstag",
-      "date": "25.06.2026",
-      "updated": "26.06.2026",
-      "class": "7b",
-      "lesson": "3",
-      "subject": "M",
-      "teacher": "Cyb",
-      "room": "102",
-      "type": "Entfall",
-    },
-  ];*/
-
   final newData = data.cachedEntries;
 
-  /*[
-    {
-      "dayDate": "Freitag",
-      "date": "26.06.2026",
-      "updated": "26.06.2026",
-      "class": "7b",
-      "lesson": "2",
-      "subject": "M",
-      "teacher": "Cyb",
-      "room": "102",
-      "type": "Entfall",
-    },
-  ];*/
+  final groupedOld = {
+    for (final timetable in oldData)
+      DayDate(timetable.day, timetable.date): timetable,
+  };
 
-  final groupedNew = groupEntriesByAllowedDayDates(
-    newData,
-    data.availableDayDates,
-  );
-  final groupedOld = groupEntriesByAllowedDayDates(
-    oldData,
-    data.availableDayDates,
-  );
+  final groupedNew = {
+    for (final timetable in newData)
+      DayDate(timetable.day, timetable.date): timetable,
+  };
+
+  final localeCode = PlatformDispatcher.instance.locale.languageCode;
+  final l10n = await AppLocalizations.delegate.load(Locale(localeCode));
+  await initializeDateFormatting(localeCode);
 
   for (final dayDate in data.availableDayDates) {
     final diff = diffByClass(
-      groupedOld[dayDate] ?? [],
-      groupedNew[dayDate] ?? [],
+      groupedOld[dayDate],
+      groupedNew[dayDate],
       data.classFilter,
     );
 
-    if (diff.added.isNotEmpty || diff.removed.isNotEmpty) {
-      final sample = diff.added.isNotEmpty
-          ? diff.added.first
-          : diff.removed.first;
+    if (!diff.hasChanges) continue;
 
-      final relativeDay = getRelativeDay(sample["date"]);
-      final dayName =
-          relativeDay.toLowerCase() == "heute" ||
-              relativeDay.toLowerCase() == "heute"
-          ? relativeDay
-          : "$dayDate $relativeDay";
-      final title = diff.added.isNotEmpty && diff.removed.isNotEmpty
-          ? "$dayName: Vertretungsplanänderung"
-          : diff.added.isNotEmpty
-          ? "$dayName: Neue Einträge"
-          : "$dayName: Gelöschte Einträge";
+    final date = dayDate.date!;
+    final formattedDate = DateFormat.yMd(Locale(localeCode)).format(date);
 
-      final addedEntries = diff.added
-          .map(
-            (entry) =>
-                "${entry["lesson"]}. Std.: ${entry["type"]} (${entry["subject"]} ${entry["teacher"]})",
-          )
-          .join("\n");
+    final relativeDay = getRelativeDay(date);
 
-      final removedEntries = diff.removed
-          .map(
-            (entry) =>
-                "${entry["lesson"]}. Std.: ${entry["type"]} (${entry["subject"]} ${entry["teacher"]}) - Entfernt",
-          )
-          .join("\n");
+    final dayName = switch (relativeDay) {
+      0 => l10n.today,
+      1 => l10n.tomorrow,
+      -1 => l10n.yesterday,
+      _ => "${dayDate.day} ($formattedDate)",
+    };
 
-      final details = [
-        if (diff.added.isNotEmpty) addedEntries,
-        if (diff.removed.isNotEmpty) removedEntries,
-      ].join("\n");
+    final title = diff.added.isNotEmpty && diff.removed.isNotEmpty
+        ? "$dayName: ${l10n.timetableChanged}"
+        : diff.added.isNotEmpty
+        ? "$dayName: ${l10n.newEntries}"
+        : "$dayName: ${l10n.deletedEntries}";
 
-      await NotificationService.makeUpdateNotification(
-        DateTime.now().millisecondsSinceEpoch ~/ 1000 +
-            data.availableDayDates.indexOf(dayDate),
-        title,
-        details,
-      );
-    }
+    final addedEntries = diff.added
+        .map(
+          (entry) => l10n.entryInfo(
+            ordinal(entry.entry.lesson, Locale(localeCode)),
+            entry.entry.type ?? "",
+            entry.entry.subject ?? "",
+            entry.entry.teacher ?? "",
+          ),
+        )
+        .join("\n");
+
+    final removedEntries = diff.removed
+        .map(
+          (entry) => l10n.entryInfoDeleted(
+            ordinal(entry.entry.lesson, Locale(localeCode)),
+            entry.entry.type ?? "",
+            entry.entry.subject ?? "",
+            entry.entry.teacher ?? "",
+          ),
+        )
+        .join("\n");
+
+    final details = [
+      if (diff.added.isNotEmpty) addedEntries,
+      if (diff.removed.isNotEmpty) removedEntries,
+    ].join("\n");
+
+    await NotificationService.makeUpdateNotification(
+      DateTime.now().millisecondsSinceEpoch ~/ 1000 +
+          data.availableDayDates.indexOf(dayDate),
+      title,
+      details,
+    );
   }
 }
 
