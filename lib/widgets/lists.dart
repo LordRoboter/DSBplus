@@ -33,24 +33,17 @@ class EntryList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool matchesAnyFilter(
-      TimetableEntry entry,
-      ClassEntry classEntry,
-      Timetable timetable,
-      List<Map<String, String>> filters,
-    ) {
-      if (filters.isEmpty) return true;
-
-      return filters.any(
-        (filter) => matchesFilter(entry, classEntry, timetable, filter),
-      );
-    }
-
     return ListView(
       children: timetable.entries.map((classEntry) {
         final groupMarked = matchesClass(classEntry, classFilter);
 
-        return EntryCard(entry: classEntry, marked: groupMarked);
+        return EntryCard(
+          timetable: timetable,
+          entry: classEntry,
+          marked: groupMarked,
+          filters: filters,
+          classFilter: classFilter,
+        );
       }).toList(),
     );
   }
@@ -58,10 +51,40 @@ class EntryList extends StatelessWidget {
 
 //TODO: Bring back singular marked entries
 class EntryCard extends StatelessWidget {
+  final Timetable? timetable;
   final ClassEntry entry;
   final bool marked;
+  final List<Map<String, String>>? filters;
+  final String? classFilter;
 
-  const EntryCard({super.key, required this.entry, required this.marked});
+  const EntryCard({
+    super.key,
+    this.timetable,
+    required this.entry,
+    required this.marked,
+    this.filters,
+    this.classFilter,
+  });
+
+  bool matchesAnyFilter(
+    TimetableEntry entry,
+    ClassEntry classEntry,
+    Timetable timetable,
+    List<Map<String, String>> filters,
+    String classFilter,
+  ) {
+    if (filters.isEmpty) return false;
+
+    return filters.any(
+      (filter) =>
+          (classFilter
+                  .split(RegExp(r'[\s,]+'))
+                  .where((t) => t.isNotEmpty)
+                  .isEmpty ||
+              matchesClass(classEntry, classFilter)) &&
+          matchesFilter(entry, classEntry, timetable, filter),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,48 +110,72 @@ class EntryCard extends StatelessWidget {
                   lesson.type == "Entfall" ||
                   lesson.type == "Eigenverantwortliches Arbeiten";
 
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "${lesson.lesson}. Std"
-                          "${lesson.subject != "---" ? " • ${lesson.subject}" : ""}",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            decoration: isSpecial
-                                ? TextDecoration.lineThrough
-                                : null,
-                            fontStyle: isSpecial ? FontStyle.italic : null,
+              final entryMarked =
+                  (timetable != null && filters != null && classFilter != null)
+                  ? matchesAnyFilter(
+                      lesson,
+                      entry,
+                      timetable!,
+                      filters!,
+                      classFilter!,
+                    )
+                  : false;
+
+              return Container(
+                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+                decoration: entryMarked
+                    ? BoxDecoration(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.secondary.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(8),
+                      )
+                    : null,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "${lesson.lesson}. Std"
+                            "${lesson.subject != "---" ? " • ${lesson.subject}" : ""}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              decoration: isSpecial
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                              fontStyle: isSpecial ? FontStyle.italic : null,
+                            ),
                           ),
+
+                          teacherText(lesson.teacher ?? ""),
+
+                          if ((lesson.text ?? "").isNotEmpty)
+                            Text(
+                              lesson.text!,
+                              style: const TextStyle(
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Chip(
+                          label: Text(lesson.type ?? ""),
+                          backgroundColor: typeColor(lesson.type ?? ""),
                         ),
 
-                        teacherText(lesson.teacher ?? ""),
-
-                        if ((lesson.text ?? "").isNotEmpty)
-                          Text(
-                            lesson.text!,
-                            style: const TextStyle(fontStyle: FontStyle.italic),
-                          ),
+                        roomText(context, lesson.room ?? ""),
                       ],
                     ),
-                  ),
-
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Chip(
-                        label: Text(lesson.type ?? ""),
-                        backgroundColor: typeColor(lesson.type ?? ""),
-                      ),
-
-                      roomText(context, lesson.room ?? ""),
-                    ],
-                  ),
-                ],
+                  ],
+                ),
               );
             }),
           ],
