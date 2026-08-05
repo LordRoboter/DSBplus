@@ -1,9 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/rendering.dart';
+import 'package:html/dom.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart';
+import 'package:planner/core/models/timetable.dart';
 import 'package:uuid/uuid.dart';
+
+import 'package:intl/intl.dart';
 
 //TODO: Get additional resources (Aushänge/ Infos/ ...) -> GetData on normal website, .....
 class DSBApi {
@@ -34,7 +38,7 @@ class DSBApi {
     classIndex = tableMapper.indexOf("class");
   }
 
-  Future<List<Map<String, dynamic>>> fetchEntries() async {
+  Future<List<Timetable>> fetchEntries() async {
     final now = DateTime.now().toUtc().toIso8601String();
 
     final params = {
@@ -88,23 +92,35 @@ class DSBApi {
       }
     }
 
-    List<Map<String, dynamic>> output = [];
+    final List<Timetable> output = [];
 
     for (final url in urls) {
       if (url.endsWith(".htm") &&
           !url.endsWith(".html") &&
           !url.endsWith("news.htm")) {
-        final put = await fetchTimetable(url);
-        if (put != null) {
-          output.addAll(put);
+        final timetables = await fetchTimetable(url);
+
+        if (timetables != null) {
+          output.addAll(timetables);
         }
       }
     }
 
-    return output;
+    return mergeTimetables(output);
   }
 
-  Future<List<Map<String, dynamic>>?> fetchTimetable(String url) async {
+  String? valueFor(String key, List<Element> cells) {
+    final index = tableMapper.indexOf(key);
+
+    if (index == -1 || index >= cells.length) {
+      return null;
+    }
+
+    final text = cells[index].text.trim();
+    return text.isEmpty || text == "---" ? null : text;
+  }
+
+  Future<List<Timetable>?> fetchTimetable(String url) async {
     http.Response response;
     try {
       response = await http.get(Uri.parse(url));
@@ -116,7 +132,7 @@ class DSBApi {
 
     final document = parse(response.body);
 
-    final results = <Map<String, dynamic>>[];
+    final List<Timetable> results = [];
 
     final tables = document.querySelectorAll(".mon_list");
 
@@ -127,26 +143,32 @@ class DSBApi {
     final infos = document.querySelectorAll("td.info");
 
     for (int t = 0; t < tables.length; t++) {
+      final timetable = Timetable(entries: []);
+
       final title = titles[t].text.trim();
 
       final split = title.split(" ");
 
       final date = split.first;
+      final inputFormat = DateFormat("dd.MM.yyyy", 'de_DE');
+      final dateTime = inputFormat.parse(date);
 
-      final day = split.length > 1 ? split[1].replaceAll(",", "") : "";
+      final day = split.length > 1 ? split[1].replaceAll(",", "") : null;
 
       final match = RegExp(
         r'Stand:\s*([\d.]+\s+\d{2}:\d{2})',
       ).firstMatch(headers[t].text);
 
       final updated = match?.group(1) ?? '';
+      final updatedFormat = DateFormat("dd.MM.yyyy HH:mm", 'de_DE');
+      final updatedDateTime = updatedFormat.parse(updated);
 
       final rows = tables[t].querySelectorAll("tr");
 
       var classs = "Unknown";
 
       //TODO: Display infos
-      final Map<String, dynamic> theInfos = {};
+      final Map<String, String> theInfos = {};
 
       var field = "";
 
@@ -155,21 +177,14 @@ class DSBApi {
           if (i % 2 == 1) {
             if (field.replaceFirst(RegExp(r'&.*'), '').toLowerCase().trim() ==
                 "unterrichtsfrei") {
-              final entry = {
-                "class": "Alle",
-                "day": day,
-                "date": date,
-                "updated": updated,
-                "type": "Eigenverantwortliches Arbeiten",
+              final entry = TimetableEntry(
+                lesson: infos[i].text.replaceAll("Std.", "").trim(),
+                type: "Eigenverantwortliches Arbeiten",
+              );
 
-                "lesson": infos[i].text.replaceAll("Std.", "").trim(),
-              };
-              for (final item in tableMapper) {
-                if (!entry.containsKey(item)) {
-                  entry[item] = "---";
-                }
-              }
-              results.add(entry);
+              timetable.entries.add(
+                ClassEntry(classNames: ["Alle"], entries: [entry]),
+              );
             } else {
               theInfos[field] = infos[i].text;
             }
@@ -181,11 +196,16 @@ class DSBApi {
         //This is what you call amazing error handling
       }
 
+      timetable.date = dateTime;
+      timetable.updated = updatedDateTime;
+      timetable.day = day;
+      timetable.extraInfos = theInfos;
+
       for (int r = 1; r < rows.length; r++) {
         final cells = rows[r].querySelectorAll("td");
 
         if (cells.length == 1) {
-          classs = cells[0].text.trim();
+          classs = cells[0].text.trim().split(" ")[0];
           continue;
         } else if (cells.length < 2) {
           continue;
@@ -198,28 +218,153 @@ class DSBApi {
         }
 
         for (final cls in classes) {
-          Map<String, dynamic> entry = {
-            "date": date,
-            "day": day,
-            "class": classs,
-            "updated": updated,
-          };
+          final entry = TimetableEntry(
+            lesson: valueFor("lesson", cells),
+            teacher: valueFor("teacher", cells),
+            subject: valueFor("subject", cells),
+            room: valueFor("room", cells),
+            type: valueFor("type", cells),
+            text: valueFor("text", cells),
+          );
 
-          for (int i = 0; i < cells.length; i++) {
-            final key = i < tableMapper.length ? tableMapper[i] : "col$i";
+          final existing = timetable.entries
+              .where(
+                (e) => e.classNames.contains(classIndex != -1 ? cls : classs),
+              )
+              .firstOrNull;
 
-            final value = cells[i].text.trim().isEmpty
-                ? "---"
-                : cells[i].text.trim();
-
-            entry[key] = key == "class" ? cls : value;
+          if (existing != null) {
+            existing.entries.add(entry);
+          } else {
+            timetable.entries.add(
+              ClassEntry(
+                classNames: classIndex != -1 ? [cls] : [classs],
+                entries: [entry],
+              ),
+            );
           }
-
-          results.add(entry);
         }
       }
+      results.add(timetable);
     }
 
     return results;
   }
+
+  List<Timetable> mergeTimetables(List<Timetable> timetables) {
+    String entryGroupKey(ClassEntry entry) {
+      final lessons = entry.entries.map((lesson) {
+        return [
+          lesson.type,
+          lesson.lesson,
+          lesson.subject,
+          lesson.room,
+          lesson.teacher,
+          lesson.text,
+        ].join("|");
+      }).toList();
+
+      lessons.sort();
+
+      return lessons.join(";");
+    }
+
+    List<Timetable> mergeByDate(List<Timetable> timetables) {
+      final Map<String, Timetable> result = {};
+
+      for (final timetable in timetables) {
+        final key =
+            "${timetable.date?.year}-${timetable.date?.month}-${timetable.date?.day}-${timetable.day}";
+
+        if (!result.containsKey(key)) {
+          result[key] = timetable;
+        } else {
+          result[key]!.entries.addAll(timetable.entries);
+        }
+      }
+
+      return result.values.toList();
+    }
+
+    List<ClassEntry> mergeClasses(List<ClassEntry> entries) {
+      final Map<String, ClassEntry> result = {};
+
+      for (final entry in entries) {
+        final classes = [...entry.classNames]..sort();
+        final key = classes.join(",");
+
+        if (result.containsKey(key)) {
+          result[key]!.entries.addAll(entry.entries);
+        } else {
+          result[key] = ClassEntry(
+            classNames: classes,
+            entries: [...entry.entries],
+          );
+        }
+      }
+
+      return result.values.toList();
+    }
+
+    List<ClassEntry> combineCommonLessons(List<ClassEntry> classEntries) {
+      // First: invert class -> lessons into lesson -> classes
+      final Map<String, _LessonGroup> lessons = {};
+
+      for (final classEntry in classEntries) {
+        for (final lesson in classEntry.entries) {
+          final lessonKey = [
+            lesson.lesson,
+            lesson.subject,
+            lesson.teacher,
+            lesson.room,
+            lesson.type,
+            lesson.text,
+          ].join("|");
+
+          final group = lessons.putIfAbsent(
+            lessonKey,
+            () => _LessonGroup(lesson),
+          );
+
+          group.classes.addAll(classEntry.classNames);
+        }
+      }
+
+      // Second: group identical class sets back together
+      final Map<String, ClassEntry> result = {};
+
+      for (final group in lessons.values) {
+        final classes = group.classes.toSet().toList()..sort();
+
+        final classKey = classes.join(",");
+
+        final existing = result[classKey];
+
+        if (existing != null) {
+          existing.entries.add(group.lesson);
+        } else {
+          result[classKey] = ClassEntry(
+            classNames: classes,
+            entries: [group.lesson],
+          );
+        }
+      }
+
+      return result.values.toList();
+    }
+
+    return mergeByDate(timetables).map((timetable) {
+      final mergedClasses = mergeClasses(timetable.entries);
+      final simplified = combineCommonLessons(mergedClasses);
+
+      return timetable.copyWith(entries: simplified);
+    }).toList();
+  }
+}
+
+class _LessonGroup {
+  final TimetableEntry lesson;
+  final List<String> classes = [];
+
+  _LessonGroup(this.lesson);
 }

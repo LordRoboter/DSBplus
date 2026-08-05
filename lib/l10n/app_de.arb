@@ -1,0 +1,23 @@
+{
+  "@@locale": "de",
+
+  "home": "Home",
+  "plan": "Plan",
+
+  "substPlan": "Vertretungsplan",
+
+
+  "newEntries": "Neue Einträge!",
+
+  "entryInfo": "{lessonOrdinal} Stunde: {type} {subject} {teacher}",
+  "entryInfoDeleted": "{lessonOrdinal} Stunde: {type} {subject} {teacher} - Entfernt",
+  
+  
+  "today" : "Heute",
+  "tomorrow" : "Morgen",
+  "yesterday" : "Gestern",
+
+  "newEntriess": "Neue Einträge",
+  "timetableChanged": "Vertretungsplanänderung",
+  "deletedEntries": "Gelöschte Einträge"
+}

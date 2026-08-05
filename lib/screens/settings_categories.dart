@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:planner/components/dialogues.dart';
-import 'package:planner/components/settings.dart';
+import 'package:planner/widgets/dialogues.dart';
+import 'package:planner/widgets/settings.dart';
 import 'package:planner/services/data_repository.dart';
 import 'package:planner/theme.dart';
 import 'package:provider/provider.dart';

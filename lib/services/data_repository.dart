@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:planner/core/models/daydate.dart';
+import 'package:planner/core/models/timetable.dart';
 import 'package:planner/services/dsb_api.dart';
 import 'package:planner/theme.dart';
+import 'package:planner/core/util/date.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'package:collection/collection.dart';
@@ -26,9 +29,9 @@ class DataRepository extends ChangeNotifier {
   List<Map<String, String>> filters = [];
 
   String lastUpdated = "";
-  String? selectedDayDate;
+  DayDate? selectedDayDate;
 
-  List<Map<String, dynamic>> cachedEntries = [];
+  List<Timetable> cachedEntries = [];
 
   final _updates = StreamController<void>.broadcast();
 
@@ -37,11 +40,10 @@ class DataRepository extends ChangeNotifier {
 
   Stream<void> get updates => _updates.stream;
 
-  List<String> get availableDayDates => cachedEntries
-      .map(
-        (e) =>
-            "${e["day"] as String? ?? "Unknown"} (${e["date"] as String? ?? "Unknown"})",
-      )
+  List<DayDate> get availableDayDates => cachedEntries
+      .map((e) {
+        return formatDayDate(e);
+      })
       .toSet()
       .toList();
 
@@ -51,8 +53,8 @@ class DataRepository extends ChangeNotifier {
   }
 
   Future<void> load() async {
-    loadSettings();
-    loadCache();
+    await loadSettings();
+    await loadCache();
   }
 
   Future<void> loadSettings() async {
@@ -83,12 +85,16 @@ class DataRepository extends ChangeNotifier {
       filters = [];
     }
 
-    selectedDayDate = prefs.getString("selectedDayDate");
+    final selected = prefs.getString("selectedDayDate");
+
+    if (selected != null) {
+      selectedDayDate = DayDate.fromJson(jsonDecode(selected));
+    }
 
     notifyListeners();
   }
 
-  Future<List<Map<String, dynamic>>> sync() async {
+  Future<List<Timetable>> sync() async {
     final api = DSBApi(
       "166162",
       "20Bueffel21",
@@ -98,14 +104,18 @@ class DataRepository extends ChangeNotifier {
     final oldEntries = cachedEntries;
     final entries = await api.fetchEntries();
 
-    final changed = !const DeepCollectionEquality().equals(oldEntries, entries);
+    const equality = DeepCollectionEquality();
+
+    final changed = !equality.equals(
+      oldEntries.map((e) => e.toJson()).toList(),
+      entries.map((e) => e.toJson()).toList(),
+    );
 
     await validateSelectedDayDate(
       entries
-          .map(
-            (e) =>
-                "${e["day"] as String? ?? "Unknown"} (${e["date"] as String? ?? "Unknown"})",
-          )
+          .map((e) {
+            return formatDayDate(e);
+          })
           .toSet()
           .toList(),
     );
@@ -123,20 +133,23 @@ class DataRepository extends ChangeNotifier {
     return oldEntries;
   }
 
-  Future<void> setSelectedDayDate(String dayDate) async {
+  Future<void> setSelectedDayDate(DayDate dayDate) async {
     selectedDayDate = dayDate;
 
-    await prefs.setString("selectedDayDate", dayDate);
+    await prefs.setString("selectedDayDate", jsonEncode(dayDate.toJson()));
 
     notifyListeners();
   }
 
-  Future<void> validateSelectedDayDate(List<String> dayDates) async {
+  Future<void> validateSelectedDayDate(List<DayDate> dayDates) async {
     if (selectedDayDate == null || !dayDates.contains(selectedDayDate)) {
       selectedDayDate = dayDates.isNotEmpty ? dayDates.first : null;
 
       if (selectedDayDate != null) {
-        await prefs.setString("selectedDayDate", selectedDayDate!);
+        await prefs.setString(
+          "selectedDayDate",
+          jsonEncode(selectedDayDate!.toJson()),
+        );
       } else {
         await prefs.remove("selectedDayDate");
       }
@@ -145,20 +158,29 @@ class DataRepository extends ChangeNotifier {
     }
   }
 
+  int encodeDate(DateTime date) =>
+      date.difference(DateTime.utc(1970, 1, 1)).inDays;
+
+  DateTime decodeDate(int days) =>
+      DateTime.utc(1970, 1, 1).add(Duration(days: days));
+
   Future<void> loadCache() async {
     lastUpdated = prefs.getString("updated") ?? "";
 
     final entriesJson = prefs.getString("entries");
     if (entriesJson != null) {
       final decoded = jsonDecode(entriesJson) as List;
-      cachedEntries = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
+
+      cachedEntries = decoded.map((e) => Timetable.fromJson(e)).toList();
     }
   }
 
-  Future<void> saveEntries(List<Map<String, dynamic>> entries) async {
+  Future<void> saveEntries(List<Timetable> entries) async {
     cachedEntries = entries;
 
-    await prefs.setString("entries", jsonEncode(entries));
+    final jsonEntries = entries.map((e) => e.toJson()).toList();
+
+    await prefs.setString("entries", jsonEncode(jsonEntries));
 
     notifyListeners();
   }

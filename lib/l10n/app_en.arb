@@ -1,0 +1,24 @@
+{
+  "@@locale": "en",
+  
+  "home": "Home",
+  "plan": "Plan",
+
+  "substPlan": "Substitution Plan",
+
+
+  "newEntries": "New Entries!",
+
+  "entryInfo": "{lessonOrdinal} lesson: {type} {subject} {teacher}",
+  "entryInfoDeleted": "{lessonOrdinal} lesson: {type} {subject} {teacher} - Deleted",
+  
+  
+  "today" : "Today",
+  "tomorrow" : "Tomorrow",
+  "yesterday" : "Yesterday",
+
+  "newEntriess": "New Entries",
+  "timetableChanged": "Timetable changed",
+  "deletedEntries": "Deleted Entries"
+  
+}

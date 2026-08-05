@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:planner/components/lists.dart';
+import 'package:intl/intl.dart';
+import 'package:planner/core/models/timetable.dart';
+import 'package:planner/l10n/l10extension.dart';
+import 'package:planner/widgets/lists.dart';
 import 'package:planner/services/data_repository.dart';
-import 'package:planner/util/date.dart';
+import 'package:planner/core/util/date.dart';
 import 'package:provider/provider.dart';
 
 import '../services/plan_repository.dart';
-import '../util/sorter.dart';
+import '../core/util/sorter.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -36,24 +39,36 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final classResults = filterByClass(repo.entries, data.classFilter);
 
-    final uniqueResults = <String, Map<String, dynamic>>{};
+    final uniqueResults = <String, Timetable>{};
 
     for (final filter in data.filters) {
       final results = filterByInfo(classResults, filter);
-      for (final item in results) {
-        final key =
-            "${item["class"]}_${item["lesson"]}_${item["subject"]}_${item["teacher"]}_${item["day"]}_${item["date"]}}";
 
-        uniqueResults[key] = item;
+      for (final timetable in results) {
+        for (final classEntry in timetable.entries) {
+          for (final entry in classEntry.entries) {
+            final key =
+                "${classEntry.className}_${entry.lesson}_${entry.subject}_${entry.teacher}_${timetable.day}_${timetable.date}";
+
+            uniqueResults[key] = timetable;
+          }
+        }
       }
     }
 
-    List<Map<String, dynamic>> finalResults;
-    if (data.filters.isNotEmpty) {
-      finalResults = uniqueResults.values.toList();
-    } else {
-      finalResults = classResults;
+    final mergedResults = <Timetable>[];
+
+    for (final filter in data.filters) {
+      final results = filterByInfo(classResults, filter);
+
+      for (final timetable in results) {
+        if (!mergedResults.contains(timetable)) {
+          mergedResults.add(timetable);
+        }
+      }
     }
+
+    final finalResults = data.filters.isNotEmpty ? mergedResults : classResults;
 
     /*if (repo.loading && _refreshKey.currentState == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -61,26 +76,30 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }*/
 
-    final groupedByDay = sortEntries(
-      finalResults,
-      data.clean,
-      data.simplify,
-      disposeTut: data.disposeTut,
-      cleanClassNames: data.cleanClassNames,
-      remapTypes: data.remapTypes,
-      cleanupCourses: data.cleanupCourses,
-      disposeCourseNumbers: data.disposeCourseNumbers,
-      mapCourses: data.mapCourses,
-    );
+    final enhancedTimetables = finalResults
+        .map(
+          (timetable) => enhanceTimetable(
+            timetable,
+            data.clean,
+            data.simplify,
+            disposeTut: data.disposeTut,
+            cleanClassNames: data.cleanClassNames,
+            remapTypes: data.remapTypes,
+            cleanupCourses: data.cleanupCourses,
+            disposeCourseNumbers: data.disposeCourseNumbers,
+            mapCourses: data.mapCourses,
+          ),
+        )
+        .toList();
     return RefreshIndicator(
       //key: _refreshKey,
       onRefresh: () async {
         await repo.loadData();
       },
 
-      child: groupedByDay.isEmpty && repo.loading
+      child: enhancedTimetables.isEmpty && repo.loading
           ? const Center(child: CircularProgressIndicator())
-          : groupedByDay.isEmpty
+          : enhancedTimetables.isEmpty
           ? LayoutBuilder(
               builder: (context, constraints) {
                 return SingleChildScrollView(
@@ -96,10 +115,23 @@ class _HomeScreenState extends State<HomeScreen> {
             )
           : ListView.separated(
               padding: const EdgeInsets.symmetric(vertical: 12),
-              itemCount: groupedByDay.length,
+              itemCount: enhancedTimetables.length,
               separatorBuilder: (_, _) => const SizedBox(height: 48),
               itemBuilder: (context, index) {
-                final dayEntry = groupedByDay.entries.elementAt(index);
+                final dayTimetable = enhancedTimetables.elementAt(index);
+                final relativeDay = dayTimetable.date != null
+                    ? getRelativeDay(dayTimetable.date!)
+                    : null;
+                final date = dayTimetable.date;
+                final formattedDate = date != null
+                    ? "(${DateFormat.yMd().format(date)})"
+                    : "";
+                final dayName = switch (relativeDay) {
+                  0 => context.l10n.today,
+                  1 => context.l10n.tomorrow,
+                  -1 => context.l10n.yesterday,
+                  _ => "${dayTimetable.day ?? ""} $formattedDate",
+                };
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             Expanded(
                               child: Text(
-                                "${dayEntry.value.values.first.first["day"]} ${getRelativeDay(dayEntry.value.values.first.first["date"])}",
+                                dayName,
                                 style: Theme.of(context).textTheme.titleLarge
                                     ?.copyWith(
                                       fontWeight: FontWeight.bold,
@@ -130,9 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                               ),
                             ),
-                            if (isOutdated(
-                              dayEntry.value.values.first.first["date"],
-                            ))
+                            if (isOutdated(dayTimetable.date!))
                               Tooltip(
                                 message:
                                     "Dieser Eintrag ist wahrscheinlich veraltet",
@@ -151,7 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: EntryListNoScroll(groups: dayEntry.value),
+                      child: EntryListNoScroll(timetable: dayTimetable),
                     ),
                   ],
                 );

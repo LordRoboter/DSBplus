@@ -1,11 +1,9 @@
 import 'package:intl/intl.dart';
+import 'package:planner/core/models/daydate.dart';
+import 'package:planner/core/models/timetable.dart';
 
-String getRelativeDay(String dateString) {
-  final formatter = DateFormat('dd.MM.yyyy');
-
+int getRelativeDay(DateTime date) {
   try {
-    final date = formatter.parseStrict(dateString);
-
     final today = DateTime.now();
     final todayDate = DateTime(today.year, today.month, today.day);
 
@@ -13,28 +11,15 @@ String getRelativeDay(String dateString) {
 
     final difference = targetDate.difference(todayDate).inDays;
 
-    switch (difference) {
-      case -1:
-        return "(Gestern)";
-      case 0:
-        return "(Heute)";
-      case 1:
-        return "(Morgen)";
-      default:
-        return "($dateString)";
-    }
+    return difference;
   } catch (_) {
-    // Invalid date format
-    return "";
+    //TODO: Make this return more informative
+    return 2;
   }
 }
 
-bool isOutdated(String dateString) {
-  final formatter = DateFormat('dd.MM.yyyy');
-
+bool isOutdated(DateTime date) {
   try {
-    final date = formatter.parseStrict(dateString);
-
     final today = DateTime.now();
     final todayDate = DateTime(today.year, today.month, today.day);
 
@@ -50,4 +35,11 @@ bool isOutdated(String dateString) {
   } catch (e) {
     return false;
   }
+}
+
+DayDate formatDayDate(Timetable timetable) {
+  final day = timetable.day;
+  final date = timetable.date;
+
+  return DayDate(day, date);
 }

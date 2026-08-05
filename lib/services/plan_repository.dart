@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:planner/core/models/daydate.dart';
+import 'package:planner/core/models/timetable.dart';
+import 'package:planner/core/util/date.dart';
 
 import 'data_repository.dart';
 
@@ -7,20 +10,15 @@ class PlanRepository extends ChangeNotifier {
 
   PlanRepository(this.data);
 
-  List<Map<String, dynamic>> entries = [];
+  List<Timetable> entries = [];
 
   bool loading = true;
   String? error;
 
   String get lastUpdated => data.lastUpdated;
 
-  List<String> get availableDayDates => entries
-      .map(
-        (e) =>
-            "${e["day"] as String? ?? "Unknown"} (${e["date"] as String? ?? "Unknown"})",
-      )
-      .toSet()
-      .toList();
+  List<DayDate> get availableDayDates =>
+      entries.map((e) => formatDayDate(e)).toSet().toList();
 
   Future<void> init() async {
     entries = data.cachedEntries;
