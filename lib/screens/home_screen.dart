@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:planner/core/models/timetable.dart';
+import 'package:planner/l10n/l10extension.dart';
 import 'package:planner/widgets/lists.dart';
 import 'package:planner/services/data_repository.dart';
 import 'package:planner/core/util/date.dart';
@@ -117,6 +119,19 @@ class _HomeScreenState extends State<HomeScreen> {
               separatorBuilder: (_, _) => const SizedBox(height: 48),
               itemBuilder: (context, index) {
                 final dayTimetable = enhancedTimetables.elementAt(index);
+                final relativeDay = dayTimetable.date != null
+                    ? getRelativeDay(dayTimetable.date!)
+                    : null;
+                final date = dayTimetable.date;
+                final formattedDate = date != null
+                    ? "(${DateFormat.yMd().format(date)})"
+                    : "";
+                final dayName = switch (relativeDay) {
+                  0 => context.l10n.today,
+                  1 => context.l10n.tomorrow,
+                  -1 => context.l10n.yesterday,
+                  _ => "${dayTimetable.day ?? ""} $formattedDate",
+                };
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             Expanded(
                               child: Text(
-                                "${dayTimetable.day} ${dayTimetable.date != null ? getRelativeDay(dayTimetable.date!) : ""}",
+                                dayName,
                                 style: Theme.of(context).textTheme.titleLarge
                                     ?.copyWith(
                                       fontWeight: FontWeight.bold,
