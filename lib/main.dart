@@ -14,8 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:planner/screens/home_screen.dart';
 import 'package:planner/screens/plan_screen.dart';
 import 'package:planner/services/data_repository.dart';
-import 'package:planner/services/notification_service.dart'
-    show NotificationService;
+import 'package:planner/services/notification_service.dart';
 import 'package:planner/theme.dart';
 import 'package:planner/core/util/date.dart';
 import 'package:planner/core/util/sorter.dart';
@@ -224,10 +223,6 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     );
 
     if (!diff.hasChanges) continue;
-
-    final sample = diff.added.isNotEmpty
-        ? diff.added.first
-        : diff.removed.first;
 
     final date = dayDate.date!;
     final formattedDate = DateFormat.yMd(Locale(localeCode)).format(date);

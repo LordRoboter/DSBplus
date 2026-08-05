@@ -88,7 +88,6 @@ class ClassEntry {
     );
   }
 
-  /// Convenience getter for displaying classes.
   String get className => classNames.join(", ");
 }
 
