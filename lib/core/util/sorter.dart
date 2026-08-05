@@ -399,8 +399,9 @@ String classBase(String c) {
   return c;
 }
 
-bool matchesClass(Map<String, dynamic> entry, String query) {
-  if ((entry["class"] ?? "").toString().toLowerCase() == "alle") {
+bool matchesClass(ClassEntry entry, String query) {
+  final expanded = entry.classNames.expand((e) => {e.toLowerCase()});
+  if (expanded.contains("alle")) {
     return true;
   }
 
@@ -413,9 +414,7 @@ bool matchesClass(Map<String, dynamic> entry, String query) {
 
   if (terms.isEmpty) return false;
 
-  final entryClasses = (entry["class"] as String? ?? "")
-      .toLowerCase()
-      .split(RegExp(r'\s*,\s*|\s+'))
+  final entryClasses = expanded
       .where((c) => c.isNotEmpty)
       .map(classBase)
       .toSet();

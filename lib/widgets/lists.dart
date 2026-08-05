@@ -48,9 +48,7 @@ class EntryList extends StatelessWidget {
 
     return ListView(
       children: timetable.entries.map((classEntry) {
-        final groupMarked =
-            classFilter.isNotEmpty &&
-            classEntry.classNames.contains(classFilter);
+        final groupMarked = matchesClass(classEntry, classFilter);
 
         return EntryCard(entry: classEntry, marked: groupMarked);
       }).toList(),
