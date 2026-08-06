@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:planner/core/models/daydate.dart';
 import 'package:planner/core/models/timetable.dart';
+import 'package:planner/core/util/translations.dart';
+import 'package:planner/l10n/l10extension.dart';
 import 'package:planner/widgets/lists.dart';
 import 'package:planner/services/data_repository.dart';
 import 'package:planner/core/util/sorter.dart';
@@ -154,16 +156,19 @@ class _PlanScreenState extends State<PlanScreen>
                                     itemBuilder: (context, index) {
                                       final dayDate =
                                           repo.availableDayDates[index];
-                                      final day =
-                                          dayDate.day ??
-                                          (dayDate.date == null
-                                              ? "Unbekannt"
-                                              : DateFormat.yMd().format(
-                                                  dayDate.date!,
-                                                ));
+                                      final label = dayDate.day != null
+                                          ? localizedWeekday(
+                                              context,
+                                              dayDate.day!,
+                                            )
+                                          : dayDate.date == null
+                                          ? context.l10n.unknown
+                                          : DateFormat.yMd().format(
+                                              dayDate.date!,
+                                            );
 
                                       return ChoiceChip(
-                                        label: Text(day),
+                                        label: Text(label),
                                         selected:
                                             data.selectedDayDate == dayDate,
                                         onSelected: (_) {

@@ -1,5 +1,9 @@
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
+import 'package:planner/core/models/timetable.dart';
+import 'package:planner/l10n/l10extension.dart';
+
 String ordinal(String? value, Locale locale) {
   if (value == null || value.isEmpty) return "";
 
@@ -30,4 +34,16 @@ String ordinal(String? value, Locale locale) {
     default:
       return number.toString();
   }
+}
+
+String localizedWeekday(BuildContext context, Weekday day) {
+  return switch (day) {
+    Weekday.monday => context.l10n.monday,
+    Weekday.tuesday => context.l10n.tuesday,
+    Weekday.wednesday => context.l10n.wednesday,
+    Weekday.thursday => context.l10n.thursday,
+    Weekday.friday => context.l10n.friday,
+    Weekday.saturday => context.l10n.saturday,
+    Weekday.sunday => context.l10n.sunday,
+  };
 }
