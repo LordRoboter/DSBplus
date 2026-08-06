@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:planner/core/models/filter.dart';
 import 'package:planner/widgets/dialogues.dart';
 import 'package:planner/widgets/settings.dart';
 import 'package:planner/services/data_repository.dart';
@@ -29,16 +30,7 @@ class _FiltersSettingsPageState extends State<FiltersSettingsPage> {
   @override
   void initState() {
     super.initState();
-
     data = context.read<DataRepository>();
-    classController.text = data.classFilter;
-
-    classFocusNode.addListener(() {
-      if (!classFocusNode.hasFocus &&
-          classController.text != data.classFilter) {
-        data.setClassFilter(classController.text);
-      }
-    });
   }
 
   @override
@@ -46,6 +38,25 @@ class _FiltersSettingsPageState extends State<FiltersSettingsPage> {
     classController.dispose();
     classFocusNode.dispose();
     super.dispose();
+  }
+
+  void _addClass() {
+    if (classController.text.isNotEmpty) {
+      final updatedClasses = {
+        ...data.classFilter.classes,
+        classController.text,
+      };
+      data.setClassFilter(data.classFilter.copyWith(classes: updatedClasses));
+      classController.clear();
+      setState(() {});
+    }
+  }
+
+  void _removeClass(String className) {
+    final updatedClasses = {...data.classFilter.classes};
+    updatedClasses.remove(className);
+    data.setClassFilter(data.classFilter.copyWith(classes: updatedClasses));
+    setState(() {});
   }
 
   @override
@@ -58,15 +69,47 @@ class _FiltersSettingsPageState extends State<FiltersSettingsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SettingsSectionCard(
-                child: TextField(
-                  controller: classController,
-                  focusNode: classFocusNode,
-                  decoration: const InputDecoration(
-                    labelText: 'Klassenfilter',
-                    hintText: 'z.B. 10a (Mehrere Klassen möglich)',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.class_),
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Input field
+                    TextField(
+                      controller: classController,
+                      focusNode: classFocusNode,
+                      decoration: InputDecoration(
+                        labelText: 'Klassenfilter',
+                        hintText: 'z.B. 10a',
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.class_),
+                        suffixIcon: classController.text.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.add),
+                                onPressed: _addClass,
+                              )
+                            : null,
+                      ),
+                      onSubmitted: (_) => _addClass(),
+                      onChanged: (value) {
+                        setState(() {}); // Refresh to show/hide add button
+                      },
+                    ),
+                    if (data.classFilter.classes.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          ...data.classFilter.classes.map((className) {
+                            return Chip(
+                              label: Text(className),
+                              onDeleted: () => _removeClass(className),
+                              deleteIcon: const Icon(Icons.close),
+                            );
+                          }),
+                        ],
+                      ),
+                    ],
+                  ],
                 ),
               ),
               const SizedBox(height: 16),
@@ -92,17 +135,15 @@ class _FiltersSettingsPageState extends State<FiltersSettingsPage> {
                     ...data.filters.map(
                       (filter) => SettingsFilterTile(
                         filter: filter,
-                        labels: labels,
                         onEdit: () async {
                           final updatedFilter =
-                              await showDialog<Map<String, String>>(
+                              await showDialog<TimetableFilter>(
                                 context: context,
                                 builder: (_) =>
                                     FilterDialog(initialFilter: filter),
                               );
 
-                          if (updatedFilter != null &&
-                              updatedFilter.isNotEmpty) {
+                          if (updatedFilter != null) {
                             data.updateFilter(filter, updatedFilter);
                           }
                         },
@@ -111,12 +152,12 @@ class _FiltersSettingsPageState extends State<FiltersSettingsPage> {
                     ),
                     FilledButton.icon(
                       onPressed: () async {
-                        final filter = await showDialog<Map<String, String>>(
+                        final filter = await showDialog<TimetableFilter>(
                           context: context,
                           builder: (_) => const FilterDialog(),
                         );
 
-                        if (filter != null && filter.isNotEmpty) {
+                        if (filter != null) {
                           data.addFilter(filter);
                         }
                       },

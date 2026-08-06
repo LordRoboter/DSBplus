@@ -37,38 +37,13 @@ class _HomeScreenState extends State<HomeScreen> {
     final repo = context.watch<PlanRepository>();
     final data = context.watch<DataRepository>();
 
-    final classResults = filterByClass(repo.entries, data.classFilter);
+    final classResults = filterTimetables(repo.entries, [data.classFilter]);
 
-    final uniqueResults = <String, Timetable>{};
+    final filteredResults = filterTimetables(classResults, data.filters);
 
-    for (final filter in data.filters) {
-      final results = filterByInfo(classResults, filter);
-
-      for (final timetable in results) {
-        for (final classEntry in timetable.entries) {
-          for (final entry in classEntry.entries) {
-            final key =
-                "${classEntry.className}_${entry.lesson}_${entry.subject}_${entry.teacher}_${timetable.day}_${timetable.date}";
-
-            uniqueResults[key] = timetable;
-          }
-        }
-      }
-    }
-
-    final mergedResults = <Timetable>[];
-
-    for (final filter in data.filters) {
-      final results = filterByInfo(classResults, filter);
-
-      for (final timetable in results) {
-        if (!mergedResults.contains(timetable)) {
-          mergedResults.add(timetable);
-        }
-      }
-    }
-
-    final finalResults = data.filters.isNotEmpty ? mergedResults : classResults;
+    final finalResults = data.filters.isNotEmpty
+        ? filteredResults
+        : classResults;
 
     /*if (repo.loading && _refreshKey.currentState == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {

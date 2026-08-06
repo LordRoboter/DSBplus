@@ -19,6 +19,15 @@
 
   "newEntriess": "New Entries",
   "timetableChanged": "Timetable changed",
-  "deletedEntries": "Deleted Entries"
+  "deletedEntries": "Deleted Entries",
   
+  "monday": "Monday",
+  "tuesday": "Tuesday",
+  "wednesday": "Wednesday",
+  "thursday": "Thursday",
+  "friday": "Friday",
+  "saturday": "Saturday",
+  "sunday": "Sunday",
+  
+  "unknown": "Unknown"
 }

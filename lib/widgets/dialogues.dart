@@ -1,10 +1,12 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:planner/core/models/filter.dart';
+import 'package:planner/core/models/timetable.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class FilterDialog extends StatefulWidget {
-  final Map<String, String>? initialFilter;
+  final TimetableFilter? initialFilter;
   const FilterDialog({super.key, this.initialFilter});
 
   @override
@@ -18,15 +20,19 @@ class _FilterDialogState extends State<FilterDialog> {
   final subjectController = TextEditingController();
   final dayController = TextEditingController();
 
+  late Set<String> classes;
+  late Set<String> teachers;
+  late Set<String> subjects;
+  late Set<Weekday> days;
+
   @override
   void initState() {
     super.initState();
 
-    classController.text = widget.initialFilter?["class"] ?? "";
-    lessonController.text = widget.initialFilter?["lesson"] ?? "";
-    teacherController.text = widget.initialFilter?["teacher"] ?? "";
-    subjectController.text = widget.initialFilter?["subject"] ?? "";
-    dayController.text = widget.initialFilter?["day"] ?? "";
+    classes = Set.from(widget.initialFilter?.classes ?? {});
+    teachers = Set.from(widget.initialFilter?.teachers ?? {});
+    subjects = Set.from(widget.initialFilter?.subjects ?? {});
+    days = Set.from(widget.initialFilter?.days ?? {});
   }
 
   @override
@@ -39,6 +45,65 @@ class _FilterDialogState extends State<FilterDialog> {
     super.dispose();
   }
 
+  void _addToSet(TextEditingController controller, Set<String> set) {
+    if (controller.text.isNotEmpty) {
+      setState(() {
+        set.add(controller.text.trim());
+        controller.clear();
+      });
+    }
+  }
+
+  void _removeFromSet(String value, Set<String> set) {
+    setState(() {
+      set.remove(value);
+    });
+  }
+
+  Widget _buildChipSection(
+    String label,
+    Set<String> items,
+    TextEditingController controller,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            labelText: label,
+            border: const OutlineInputBorder(),
+            suffixIcon: controller.text.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(Icons.add),
+                    onPressed: () => _addToSet(controller, items),
+                  )
+                : null,
+          ),
+          onSubmitted: (_) => _addToSet(controller, items),
+          onChanged: (value) => setState(() {}),
+        ),
+        if (items.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              ...items.map((item) {
+                return Chip(
+                  label: Text(item),
+                  onDeleted: () => _removeFromSet(item, items),
+                  deleteIcon: const Icon(Icons.close),
+                );
+              }),
+            ],
+          ),
+        ],
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -46,26 +111,42 @@ class _FilterDialogState extends State<FilterDialog> {
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              controller: classController,
-              decoration: const InputDecoration(labelText: "Klasse"),
-            ),
+            _buildChipSection("Klasse", classes, classController),
+            _buildChipSection("Fach", subjects, subjectController),
+            _buildChipSection("Lehrerkürzel", teachers, teacherController),
+            // TextField for lesson (keeping as simple text for now)
             TextField(
               controller: lessonController,
-              decoration: const InputDecoration(labelText: "Stunde"),
+              decoration: const InputDecoration(
+                labelText: "Stunde",
+                border: OutlineInputBorder(),
+              ),
             ),
-            TextField(
-              controller: subjectController,
-              decoration: const InputDecoration(labelText: "Fach"),
-            ),
-            TextField(
-              controller: teacherController,
-              decoration: const InputDecoration(labelText: "Lehrerkürzel"),
-            ),
-            TextField(
-              controller: dayController,
-              decoration: const InputDecoration(labelText: "Tag"),
+            const SizedBox(height: 16),
+            // Day selection as chips
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                ...Weekday.values.map((weekday) {
+                  final isSelected = days.contains(weekday);
+                  return FilterChip(
+                    label: Text(weekday.name),
+                    selected: isSelected,
+                    onSelected: (selected) {
+                      setState(() {
+                        if (selected) {
+                          days.add(weekday);
+                        } else {
+                          days.remove(weekday);
+                        }
+                      });
+                    },
+                  );
+                }),
+              ],
             ),
           ],
         ),
@@ -77,21 +158,12 @@ class _FilterDialogState extends State<FilterDialog> {
         ),
         FilledButton(
           onPressed: () {
-            final filter = <String, String>{};
-
-            void add(String key, TextEditingController controller) {
-              final text = controller.text.trim();
-              if (text.isNotEmpty) {
-                filter[key] = text;
-              }
-            }
-
-            add("class", classController);
-            add("lesson", lessonController);
-            add("subject", subjectController);
-            add("teacher", teacherController);
-            add("day", dayController);
-
+            final filter = TimetableFilter(
+              classes: classes,
+              subjects: subjects,
+              teachers: teachers,
+              days: days,
+            );
             Navigator.pop(context, filter);
           },
           child: const Text("Hinzufügen"),

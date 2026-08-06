@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:planner/core/models/daydate.dart';
+import 'package:planner/core/models/filter.dart';
 import 'package:planner/core/models/timetable.dart';
 import 'package:planner/services/dsb_api.dart';
 import 'package:planner/theme.dart';
@@ -25,8 +26,8 @@ class DataRepository extends ChangeNotifier {
 
   bool notifications = true;
 
-  String classFilter = "";
-  List<Map<String, String>> filters = [];
+  TimetableFilter classFilter = const TimetableFilter();
+  List<TimetableFilter> filters = [];
 
   String lastUpdated = "";
   DayDate? selectedDayDate;
@@ -73,14 +74,26 @@ class DataRepository extends ChangeNotifier {
 
     notifications = prefs.getBool("notifications") ?? true;
 
-    classFilter = prefs.getString("classFilter") ?? "";
+    final classJson = prefs.getString("classFilter");
+
+    if (classJson != null) {
+      classFilter = TimetableFilter.fromJson(jsonDecode(classJson));
+    } else {
+      classFilter = const TimetableFilter();
+    }
 
     final filtersJson = prefs.getString("filters");
 
     if (filtersJson != null) {
       final decoded = jsonDecode(filtersJson) as List;
 
-      filters = decoded.map((e) => Map<String, String>.from(e)).toList();
+      filters =
+          decoded
+              .map(
+                (e) => TimetableFilter.fromJson(Map<String, dynamic>.from(e)),
+              )
+              .toList()
+            ..sort();
     } else {
       filters = [];
     }
@@ -209,10 +222,10 @@ class DataRepository extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setClassFilter(String value) async {
+  Future<void> setClassFilter(TimetableFilter value) async {
     classFilter = value;
 
-    await prefs.setString("classFilter", value);
+    await prefs.setString("classFilter", jsonEncode(value.toJson()));
 
     notifyListeners();
   }
@@ -266,11 +279,15 @@ class DataRepository extends ChangeNotifier {
   }
 
   Future<void> saveFilters() async {
-    await prefs.setString("filters", jsonEncode(filters));
+    await prefs.setString(
+      "filters",
+      jsonEncode(filters.map((e) => e.toJson()).toList()),
+    );
+
     notifyListeners();
   }
 
-  Future<void> addFilter(Map<String, String> filter) async {
+  Future<void> addFilter(TimetableFilter filter) async {
     filters.add(filter);
 
     await saveFilters();
@@ -283,15 +300,12 @@ class DataRepository extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> removeFilter(Map<String, String> filter) async {
+  Future<void> removeFilter(TimetableFilter filter) async {
     filters.remove(filter);
     await saveFilters();
   }
 
-  void updateFilter(
-    Map<String, String> oldFilter,
-    Map<String, String> newFilter,
-  ) {
+  void updateFilter(TimetableFilter oldFilter, TimetableFilter newFilter) {
     final index = filters.indexOf(oldFilter);
 
     if (index != -1) {
