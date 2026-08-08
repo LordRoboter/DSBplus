@@ -341,6 +341,23 @@ class AppearanceSettingsPage extends StatelessWidget {
                           data.setTheme(newSelection.first);
                         }
                       },
+                      style: SegmentedButton.styleFrom(
+                        side: BorderSide.none,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        backgroundColor: Colors.transparent,
+                        selectedBackgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.primaryContainer,
+                        selectedForegroundColor: Theme.of(
+                          context,
+                        ).colorScheme.primary,
+                        foregroundColor: Theme.of(
+                          context,
+                        ).colorScheme.onSurface,
+                      ),
                     ),
                     const SizedBox(height: 24),
                     // Dark Theme
@@ -367,6 +384,23 @@ class AppearanceSettingsPage extends StatelessWidget {
                           data.setDarkTheme(newSelection.first);
                         }
                       },
+                      style: SegmentedButton.styleFrom(
+                        side: BorderSide.none,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        backgroundColor: Colors.transparent,
+                        selectedBackgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.primaryContainer,
+                        selectedForegroundColor: Theme.of(
+                          context,
+                        ).colorScheme.primary,
+                        foregroundColor: Theme.of(
+                          context,
+                        ).colorScheme.onSurface,
+                      ),
                     ),
                   ],
                 ),
