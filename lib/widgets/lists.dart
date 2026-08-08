@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:planner/core/models/filter.dart';
 import 'package:planner/core/models/timetable.dart';
+import 'package:planner/core/util/translations.dart';
+import '../l10n/l10extension.dart';
 import 'texts.dart';
 import '../res/maps.dart';
 import '../core/util/sorter.dart';
@@ -21,8 +24,8 @@ class EntryListNoScroll extends StatelessWidget {
 
 class EntryList extends StatelessWidget {
   final Timetable timetable;
-  final List<Map<String, String>> filters;
-  final String classFilter;
+  final List<TimetableFilter> filters;
+  final TimetableFilter classFilter;
 
   const EntryList({
     super.key,
@@ -54,8 +57,8 @@ class EntryCard extends StatelessWidget {
   final Timetable? timetable;
   final ClassEntry entry;
   final bool marked;
-  final List<Map<String, String>>? filters;
-  final String? classFilter;
+  final List<TimetableFilter>? filters;
+  final TimetableFilter? classFilter;
 
   const EntryCard({
     super.key,
@@ -70,17 +73,14 @@ class EntryCard extends StatelessWidget {
     TimetableEntry entry,
     ClassEntry classEntry,
     Timetable timetable,
-    List<Map<String, String>> filters,
-    String classFilter,
+    List<TimetableFilter> filters,
+    TimetableFilter classFilter,
   ) {
     if (filters.isEmpty) return false;
 
     return filters.any(
       (filter) =>
-          (classFilter
-                  .split(RegExp(r'[\s,]+'))
-                  .where((t) => t.isNotEmpty)
-                  .isEmpty ||
+          (classFilter.classes.isEmpty ||
               matchesClass(classEntry, classFilter)) &&
           matchesFilter(entry, classEntry, timetable, filter),
     );
@@ -139,7 +139,7 @@ class EntryCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "${lesson.lesson}. Std"
+                            "${ordinal(lesson.lesson, Localizations.localeOf(context))} ${context.l10n.lsn}"
                             "${lesson.subject != "---" ? " • ${lesson.subject}" : ""}",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,

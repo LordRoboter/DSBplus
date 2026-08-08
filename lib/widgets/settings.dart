@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:planner/core/models/filter.dart';
 
 enum SettingsCategoryTilePosition { single, top, middle, bottom }
 
@@ -172,15 +173,13 @@ class SettingsLabeledRow extends StatelessWidget {
 }
 
 class SettingsFilterTile extends StatelessWidget {
-  final Map<String, String> filter;
-  final Map<String, String> labels;
+  final TimetableFilter filter;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
   const SettingsFilterTile({
     super.key,
     required this.filter,
-    required this.labels,
     required this.onEdit,
     required this.onDelete,
   });
@@ -190,11 +189,7 @@ class SettingsFilterTile extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
-        title: Text(
-          filter.entries
-              .map((e) => "${labels[e.key] ?? e.key}: ${e.value}")
-              .join(" • "),
-        ),
+        title: Text("Klassen: ${filter.classes.join(", ")}"),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
