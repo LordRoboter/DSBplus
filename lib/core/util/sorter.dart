@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:planner/core/models/daydate.dart';
 import 'package:planner/core/models/filter.dart';
 import 'package:planner/core/models/timetable.dart';
-import 'package:planner/core/util/date.dart';
 import 'package:planner/core/util/translations.dart';
-
-import '../../res/maps.dart';
 
 Map<DayDate, Timetable> groupEntriesByDayDate(List<Timetable> timetables) {
   final grouped = <DayDate, Timetable>{};

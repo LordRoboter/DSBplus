@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:planner/core/models/daydate.dart';
-import 'package:planner/core/models/timetable.dart';
 import 'package:planner/core/util/translations.dart';
 import 'package:planner/l10n/l10extension.dart';
 import 'package:planner/widgets/lists.dart';
