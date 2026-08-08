@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:planner/core/models/filter.dart';
 import 'package:planner/core/models/timetable.dart';
+import 'package:planner/core/util/translations.dart';
+import '../l10n/l10extension.dart';
 import 'texts.dart';
 import '../res/maps.dart';
 import '../core/util/sorter.dart';
@@ -137,7 +139,7 @@ class EntryCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "${lesson.lesson}. Std"
+                            "${ordinal(lesson.lesson, Localizations.localeOf(context))} ${context.l10n.lsn}"
                             "${lesson.subject != "---" ? " • ${lesson.subject}" : ""}",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,

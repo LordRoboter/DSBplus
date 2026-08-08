@@ -6,12 +6,22 @@
 
   "substPlan": "Substitution Plan",
 
-
+  "noRelevantEntries": "No relevant Entries •︵•",
+  "noEntries": "No Entries ( – ⤙ – )",
   "newEntries": "New Entries!",
+  "outdatedEntry": "This entry is probably outdated",
 
   "entryInfo": "{lessonOrdinal} lesson: {type} {subject} {teacher}",
   "entryInfoDeleted": "{lessonOrdinal} lesson: {type} {subject} {teacher} - Deleted",
   
+  "lsn": "lesson",
+  "lesson": "lesson",
+  "classs": "Class",
+  "subject": "Subject",
+  
+  "addFilter": "Add Filter",
+  "add": "Add",
+  "cancel": "Cancel",
   
   "today" : "Today",
   "tomorrow" : "Tomorrow",
@@ -28,6 +38,52 @@
   "friday": "Friday",
   "saturday": "Saturday",
   "sunday": "Sunday",
+
+  "unknown": "Unknown",
+
+  "search": "Search...",
+  "date": "Date: ",
+  "updated": "Updated: ",
+
+
+
+  "settings": "Settings",
+
+  "notificationsExp": "Notifications for new entries",
+  "enhanceEntries": "Enhance Entries",
+  "filters": "Filters",
+  "filtersExp": "Filter by classes and lessons",
+
+
+  "filter": "Filter",
+  "classFilter": "Class Filter",
+  "classFilterHint": "e.g. 10a",
+  "advancedFilters": "Advanced Filters",
+  "help": "Help",
+
+  "cleanup": "Cleanup",
+  "simplifyEntries": "Simplify Entries",
+  "simplifyEntriesSub": "Merge duplicate entries",
+  "cleanupEntries": "Cleanup Entries",
+  "cleanupEntriesSub": "Make entries easier to read",
+
   
-  "unknown": "Unknown"
+  "cleanupOptions": "Cleanup options",
+  "simplifyClassNames": "Simplify class names",
+  "simplifyLessonStatus": "Simplify lesson status",
+  "simplifyCourses": "Simplify courses",
+  "mergeTutorCourses": "Merge tutor courses",
+  "renameSubjects": "Rename subjects",
+  "removeCourseNumbers": "Remove course numbers",
+
+  "notifications": "Notifications",
+
+  "appearance": "Appearance",
+  "appTheme": "App theme",
+  "system": "System",
+  "light": "Light",
+  "dark": "Dark",
+  "darkTheme": "Dark theme",
+  "standard": "Default",
+  "amoled": "AMOLED"
 }
