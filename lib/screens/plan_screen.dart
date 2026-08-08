@@ -121,24 +121,68 @@ class _PlanScreenState extends State<PlanScreen>
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 250),
                 child: isSearching
-                    ? TextField(
-                        key: const ValueKey('search'),
-                        autofocus: true,
-                        decoration: InputDecoration(
-                          hintText: context.l10n.search,
-                          prefixIcon: Icon(Icons.search),
-                          suffixIcon: IconButton(
-                            icon: const Icon(Icons.close),
-                            onPressed: () {
-                              setState(() => isSearching = false);
-                            },
+                    ? Column(
+                        children: [
+                          SizedBox(
+                            height: 50,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              padding: const EdgeInsets.all(8),
+                              itemCount: repo.availableDayDates.length,
+                              separatorBuilder: (_, _) =>
+                                  const SizedBox(width: 8),
+                              itemBuilder: (context, index) {
+                                final dayDate = repo.availableDayDates[index];
+                                final label = dayDate.day != null
+                                    ? localizedWeekday(context, dayDate.day!)
+                                    : dayDate.date == null
+                                    ? context.l10n.unknown
+                                    : DateFormat.yMd(
+                                        locale,
+                                      ).format(dayDate.date!);
+
+                                return ChoiceChip(
+                                  label: Text(label),
+                                  selected: data.selectedDayDate == dayDate,
+                                  onSelected: (_) {
+                                    data.setSelectedDayDate(dayDate);
+                                  },
+                                );
+                              },
+                            ),
                           ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            search = value.toLowerCase();
-                          });
-                        },
+
+                          SizedBox(
+                            height: 36,
+                            child: TextField(
+                              key: const ValueKey('search'),
+                              autofocus: true,
+                              decoration: InputDecoration(
+                                hintText: context.l10n.search,
+                                prefixIcon: const Icon(Icons.search),
+                                suffixIcon: IconButton(
+                                  icon: const Icon(Icons.close),
+                                  onPressed: () {
+                                    setState(() => isSearching = false);
+                                  },
+                                ),
+                                isDense: true,
+
+                                contentPadding: const EdgeInsets.fromLTRB(
+                                  12,
+                                  14,
+                                  12,
+                                  6,
+                                ),
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  search = value.toLowerCase();
+                                });
+                              },
+                            ),
+                          ),
+                        ],
                       )
                     : Column(
                         children: [
