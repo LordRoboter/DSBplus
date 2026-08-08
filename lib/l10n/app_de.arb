@@ -54,6 +54,8 @@
   "enhanceEntries": "Einträge verbessern",
   "filters": "Filter",
   "filtersExp": "Filtern nach Klasse und Stunden",
+  "language": "Sprache",
+  "languageExp": "Die Sprache der App",
 
 
   "filter": "Filter",
@@ -86,5 +88,9 @@
   "dark": "Dunkel",
   "darkTheme": "Dunkles Thema",
   "standard": "Standard",
-  "amoled": "AMOLED"
+  "amoled": "AMOLED",
+
+  "systemDefault": "Systemstandard",
+  "german": "Deustch",
+  "english": "Englisch"
 }

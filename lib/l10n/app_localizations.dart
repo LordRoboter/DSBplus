@@ -336,6 +336,18 @@ abstract class AppLocalizations {
   /// **'Filter by classes and lessons'**
   String get filtersExp;
 
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @languageExp.
+  ///
+  /// In en, this message translates to:
+  /// **'The display language of the app'**
+  String get languageExp;
+
   /// No description provided for @filter.
   ///
   /// In en, this message translates to:
@@ -491,6 +503,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'AMOLED'**
   String get amoled;
+
+  /// No description provided for @systemDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'System Default'**
+  String get systemDefault;
+
+  /// No description provided for @german.
+  ///
+  /// In en, this message translates to:
+  /// **'German'**
+  String get german;
+
+  /// No description provided for @english.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get english;
 }
 
 class _AppLocalizationsDelegate

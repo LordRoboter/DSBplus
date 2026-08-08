@@ -137,6 +137,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get filtersExp => 'Filtern nach Klasse und Stunden';
 
   @override
+  String get language => 'Sprache';
+
+  @override
+  String get languageExp => 'Die Sprache der App';
+
+  @override
   String get filter => 'Filter';
 
   @override
@@ -213,4 +219,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get amoled => 'AMOLED';
+
+  @override
+  String get systemDefault => 'Systemstandard';
+
+  @override
+  String get german => 'Deustch';
+
+  @override
+  String get english => 'Englisch';
 }

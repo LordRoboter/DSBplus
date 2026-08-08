@@ -14,6 +14,8 @@ import 'package:collection/collection.dart';
 class DataRepository extends ChangeNotifier {
   late final SharedPreferences prefs;
 
+  Locale? locale;
+
   bool simplify = true;
   bool clean = true;
 
@@ -58,7 +60,22 @@ class DataRepository extends ChangeNotifier {
     await loadCache();
   }
 
+  Locale? _parseLocale(String? value) {
+    if (value == null || value.isEmpty) {
+      return null;
+    }
+
+    final parts = value.split('-');
+
+    return Locale.fromSubtags(
+      languageCode: parts[0],
+      countryCode: parts.length > 1 ? parts[1] : null,
+    );
+  }
+
   Future<void> loadSettings() async {
+    locale = _parseLocale(prefs.getString("locale"));
+
     clean = prefs.getBool("clean") ?? true;
     simplify = prefs.getBool("simplify") ?? true;
 
@@ -144,6 +161,18 @@ class DataRepository extends ChangeNotifier {
     );
 
     return oldEntries;
+  }
+
+  Future<void> setLocale(Locale? value) async {
+    locale = value;
+
+    if (value == null) {
+      await prefs.remove("locale");
+    } else {
+      await prefs.setString("locale", value.toLanguageTag());
+    }
+
+    notifyListeners();
   }
 
   Future<void> setSelectedDayDate(DayDate dayDate) async {
