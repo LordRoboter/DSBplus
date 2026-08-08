@@ -7,6 +7,8 @@ import 'package:planner/services/data_repository.dart';
 import 'package:planner/theme.dart';
 import 'package:provider/provider.dart';
 
+const nativeLanguageNames = {'de': 'Deutsch', 'en': 'English'};
+
 class FiltersSettingsPage extends StatefulWidget {
   const FiltersSettingsPage({super.key});
 
@@ -368,6 +370,51 @@ class AppearanceSettingsPage extends StatelessWidget {
   }
 }
 
+class LanguageSettingsPage extends StatelessWidget {
+  const LanguageSettingsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final systemLocale = WidgetsBinding.instance.platformDispatcher.locale;
+    return Consumer<DataRepository>(
+      builder: (context, data, _) {
+        return SettingsPageScaffold(
+          title: context.l10n.language,
+          child: SettingsSectionCard(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: SettingsLabeledRow(
+              title: context.l10n.language,
+              child: DropdownMenu<Locale?>(
+                initialSelection: data.locale,
+                dropdownMenuEntries: [
+                  DropdownMenuEntry<Locale?>(
+                    value: null,
+                    label:
+                        '${context.l10n.systemDefault} (${nativeLanguageNames[systemLocale.languageCode] ?? 'English'})',
+                  ),
+                  DropdownMenuEntry<Locale?>(
+                    value: Locale('en'),
+                    label: context.l10n.english == 'English'
+                        ? 'English'
+                        : '${context.l10n.english} (English)',
+                  ),
+                  DropdownMenuEntry<Locale?>(
+                    value: Locale('de'),
+                    label: context.l10n.german == 'Deutsch'
+                        ? 'Deutsch'
+                        : '${context.l10n.german} (Deutsch)',
+                  ),
+                ],
+                onSelected: data.setLocale,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
 class SettingsCategoriesPage extends StatelessWidget {
   const SettingsCategoriesPage({super.key});
 
@@ -398,10 +445,17 @@ class SettingsCategoriesPage extends StatelessWidget {
         children: [
           _stackedCategories([
             SettingsCategoryTile(
+              title: context.l10n.language,
+              subtitle: context.l10n.languageExp,
+              icon: Icons.language_outlined,
+              position: SettingsCategoryTilePosition.top,
+              onTap: () => _open(context, const LanguageSettingsPage()),
+            ),
+            SettingsCategoryTile(
               title: context.l10n.appearance,
               subtitle: context.l10n.darkTheme,
               icon: Icons.palette_outlined,
-              position: SettingsCategoryTilePosition.top,
+              position: SettingsCategoryTilePosition.middle,
               onTap: () => _open(context, const AppearanceSettingsPage()),
             ),
             SettingsCategoryTile(

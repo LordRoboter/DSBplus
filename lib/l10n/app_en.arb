@@ -53,6 +53,8 @@
   "enhanceEntries": "Enhance Entries",
   "filters": "Filters",
   "filtersExp": "Filter by classes and lessons",
+  "language": "Language",
+  "languageExp": "The display language of the app",
 
 
   "filter": "Filter",
@@ -85,5 +87,9 @@
   "dark": "Dark",
   "darkTheme": "Dark theme",
   "standard": "Default",
-  "amoled": "AMOLED"
+  "amoled": "AMOLED",
+
+  "systemDefault": "System Default",
+  "german": "German",
+  "english": "English"
 }
