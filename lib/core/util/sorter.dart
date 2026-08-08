@@ -50,13 +50,6 @@ Timetable cleanupTimetable(
   bool disposeCourseNumbers = true,
   bool mapCourses = true,
 }) {
-  for (final c in timetable.entries) {
-    if (c.className.startsWith("E")) {
-      print(
-        '${c.classNames} -> ${c.entries.map((e) => '${e.subject} ${e.lesson} ${e.teacher}').join(", ")}',
-      );
-    }
-  }
   final cleanedClasses = timetable.entries.map((classEntry) {
     final cleanedClassNames = classEntry.classNames.map((className) {
       var cleaned = className;
@@ -74,12 +67,6 @@ Timetable cleanupTimetable(
 
     final cleanedEntries = classEntry.entries.map((entry) {
       var subject = entry.subject ?? "";
-      var type = entry.type ?? "";
-
-      // ----- Type -----
-      if (remapTypes) {
-        type = typeMap[type.toLowerCase()] ?? type;
-      }
 
       // ----- Subject -----
       if (cleanupCourses) {
@@ -112,7 +99,7 @@ Timetable cleanupTimetable(
         room: entry.room,
         text: entry.text,
         subject: subject + suffix,
-        type: type,
+        type: entry.type,
       );
     }).toList();
 

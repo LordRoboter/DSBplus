@@ -521,6 +521,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'English'**
   String get english;
+
+  /// No description provided for @substitution.
+  ///
+  /// In en, this message translates to:
+  /// **'Substitution'**
+  String get substitution;
+
+  /// No description provided for @cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get cancelled;
+
+  /// No description provided for @classChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Class changed'**
+  String get classChanged;
+
+  /// No description provided for @specialAssignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Special assignment'**
+  String get specialAssignment;
+
+  /// No description provided for @roomSubstitution.
+  ///
+  /// In en, this message translates to:
+  /// **'Room substitution'**
+  String get roomSubstitution;
+
+  /// No description provided for @event.
+  ///
+  /// In en, this message translates to:
+  /// **'Event'**
+  String get event;
+
+  /// No description provided for @despiteAbsence.
+  ///
+  /// In en, this message translates to:
+  /// **'Despite absence'**
+  String get despiteAbsence;
+
+  /// No description provided for @substituteLesson.
+  ///
+  /// In en, this message translates to:
+  /// **'Substitute lesson'**
+  String get substituteLesson;
+
+  /// No description provided for @supervision.
+  ///
+  /// In en, this message translates to:
+  /// **'Supervision'**
+  String get supervision;
 }
 
 class _AppLocalizationsDelegate

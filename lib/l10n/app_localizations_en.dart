@@ -228,4 +228,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get english => 'English';
+
+  @override
+  String get substitution => 'Substitution';
+
+  @override
+  String get cancelled => 'Cancelled';
+
+  @override
+  String get classChanged => 'Class changed';
+
+  @override
+  String get specialAssignment => 'Special assignment';
+
+  @override
+  String get roomSubstitution => 'Room substitution';
+
+  @override
+  String get event => 'Event';
+
+  @override
+  String get despiteAbsence => 'Despite absence';
+
+  @override
+  String get substituteLesson => 'Substitute lesson';
+
+  @override
+  String get supervision => 'Supervision';
 }

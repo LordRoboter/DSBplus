@@ -248,7 +248,14 @@ class CleanupSettingsPage extends StatelessWidget {
                             SwitchListTile(
                               title: Text(context.l10n.renameSubjects),
                               value: data.mapCourses,
-                              onChanged: data.clean ? data.setMapCourses : null,
+                              onChanged:
+                                  Localizations.localeOf(
+                                            context,
+                                          ).languageCode ==
+                                          'de' &&
+                                      data.clean
+                                  ? data.setMapCourses
+                                  : null,
                             ),
                             SwitchListTile(
                               title: Text(context.l10n.removeCourseNumbers),
