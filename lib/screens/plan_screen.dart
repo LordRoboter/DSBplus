@@ -58,6 +58,8 @@ class _PlanScreenState extends State<PlanScreen>
     final repo = context.watch<PlanRepository>();
     final data = context.watch<DataRepository>();
 
+    final locale = Localizations.localeOf(context).toString();
+
     if (repo.loading) {
       if (!_rotationController.isAnimating) {
         _rotationController.repeat();
@@ -124,7 +126,7 @@ class _PlanScreenState extends State<PlanScreen>
                         key: const ValueKey('search'),
                         autofocus: true,
                         decoration: InputDecoration(
-                          hintText: 'Search...',
+                          hintText: context.l10n.search,
                           prefixIcon: Icon(Icons.search),
                           suffixIcon: IconButton(
                             icon: const Icon(Icons.close),
@@ -163,9 +165,9 @@ class _PlanScreenState extends State<PlanScreen>
                                             )
                                           : dayDate.date == null
                                           ? context.l10n.unknown
-                                          : DateFormat.yMd().format(
-                                              dayDate.date!,
-                                            );
+                                          : DateFormat.yMd(
+                                              locale,
+                                            ).format(dayDate.date!);
 
                                       return ChoiceChip(
                                         label: Text(label),
@@ -200,16 +202,16 @@ class _PlanScreenState extends State<PlanScreen>
                                   TextSpan(
                                     children: [
                                       TextSpan(
-                                        text: "Datum: ",
+                                        text: context.l10n.date,
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                       TextSpan(
                                         text: visibleTimetable?.date != null
-                                            ? DateFormat.yMd().format(
-                                                visibleTimetable!.date!,
-                                              )
+                                            ? DateFormat.yMd(
+                                                locale,
+                                              ).format(visibleTimetable!.date!)
                                             : '',
                                       ),
                                     ],
@@ -246,14 +248,14 @@ class _PlanScreenState extends State<PlanScreen>
                                   TextSpan(
                                     children: [
                                       TextSpan(
-                                        text: "Updated: ",
+                                        text: context.l10n.updated,
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                       TextSpan(
                                         text: visibleTimetable?.updated != null
-                                            ? DateFormat.yMd().format(
+                                            ? DateFormat.yMd(locale).format(
                                                 visibleTimetable!.updated!,
                                               )
                                             : '',
@@ -283,8 +285,8 @@ class _PlanScreenState extends State<PlanScreen>
                               physics: const AlwaysScrollableScrollPhysics(),
                               child: SizedBox(
                                 height: constraints.maxHeight,
-                                child: const Center(
-                                  child: Text('Keine Einträge ( – ⤙ – )'),
+                                child: Center(
+                                  child: Text(context.l10n.noEntries),
                                 ),
                               ),
                             );

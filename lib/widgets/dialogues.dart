@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:planner/core/models/filter.dart';
 import 'package:planner/core/models/timetable.dart';
+import 'package:planner/l10n/l10extension.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class FilterDialog extends StatefulWidget {
@@ -107,20 +108,24 @@ class _FilterDialogState extends State<FilterDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Filter hinzufügen"),
+      title: Text(context.l10n.addFilter),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildChipSection("Klasse", classes, classController),
-            _buildChipSection("Fach", subjects, subjectController),
+            _buildChipSection(context.l10n.classs, classes, classController),
+            _buildChipSection(
+              context.l10n.subject,
+              subjects,
+              subjectController,
+            ),
             _buildChipSection("Lehrerkürzel", teachers, teacherController),
             // TextField for lesson (keeping as simple text for now)
             TextField(
               controller: lessonController,
-              decoration: const InputDecoration(
-                labelText: "Stunde",
+              decoration: InputDecoration(
+                labelText: context.l10n.lesson,
                 border: OutlineInputBorder(),
               ),
             ),
@@ -154,7 +159,7 @@ class _FilterDialogState extends State<FilterDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text("Abbrechen"),
+          child: Text(context.l10n.cancel),
         ),
         FilledButton(
           onPressed: () {
@@ -166,7 +171,7 @@ class _FilterDialogState extends State<FilterDialog> {
             );
             Navigator.pop(context, filter);
           },
-          child: const Text("Hinzufügen"),
+          child: Text(context.l10n.add),
         ),
       ],
     );

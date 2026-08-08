@@ -207,13 +207,15 @@ bool matchesFilter(
 ) {
   if (filter.isEmpty) return true;
 
-  if (filter.classes.isNotEmpty &&
-      !classEntry.classNames.any((c) => filter.classes.contains(c))) {
+  if (filter.classes.isNotEmpty && !matchesClass(classEntry, filter)) {
     return false;
   }
 
-  if (filter.lessons != null &&
-      (entry.lesson == null || !entry.lesson!.overlaps(filter.lessons!))) {
+  if (filter.lessons != null && entry.lesson != null) {
+    if (!filter.lessons!.overlaps(entry.lesson!)) {
+      return false;
+    }
+  } else if (filter.lessons != null && entry.lesson == null) {
     return false;
   }
 
@@ -291,7 +293,10 @@ bool matchesClass(ClassEntry entry, TimetableFilter filter) {
 
   return entryClasses.any(
     (ec) => filter.classes.any(
-      (t) => ec == t || ec.startsWith(t) || t.startsWith(ec),
+      (t) =>
+          ec == classBase(t) ||
+          ec.startsWith(classBase(t)) ||
+          classBase(t).startsWith(ec),
     ),
   );
 }

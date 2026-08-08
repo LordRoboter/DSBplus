@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:planner/core/models/filter.dart';
+import 'package:planner/l10n/l10extension.dart';
 import 'package:planner/widgets/dialogues.dart';
 import 'package:planner/widgets/settings.dart';
 import 'package:planner/services/data_repository.dart';
@@ -64,7 +65,7 @@ class _FiltersSettingsPageState extends State<FiltersSettingsPage> {
     return Consumer<DataRepository>(
       builder: (context, data, _) {
         return SettingsPageScaffold(
-          title: 'Filter',
+          title: context.l10n.filter,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -77,8 +78,8 @@ class _FiltersSettingsPageState extends State<FiltersSettingsPage> {
                       controller: classController,
                       focusNode: classFocusNode,
                       decoration: InputDecoration(
-                        labelText: 'Klassenfilter',
-                        hintText: 'z.B. 10a',
+                        labelText: context.l10n.classFilter,
+                        hintText: context.l10n.classFilterHint,
                         border: const OutlineInputBorder(),
                         prefixIcon: const Icon(Icons.class_),
                         suffixIcon: classController.text.isNotEmpty
@@ -120,14 +121,14 @@ class _FiltersSettingsPageState extends State<FiltersSettingsPage> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8),
                       child: SettingsSectionHeader(
-                        title: 'Erweiterte Filter',
+                        title: context.l10n.advancedFilters,
                         action: TextButton.icon(
                           onPressed: () => showDialog(
                             context: context,
                             builder: (_) => const HelpDialog(),
                           ),
                           icon: const Icon(Icons.help_outline),
-                          label: const Text('Hilfe'),
+                          label: Text(context.l10n.help),
                         ),
                       ),
                     ),
@@ -162,7 +163,7 @@ class _FiltersSettingsPageState extends State<FiltersSettingsPage> {
                         }
                       },
                       icon: const Icon(Icons.add),
-                      label: const Text('Filter hinzufügen'),
+                      label: Text(context.l10n.addFilter),
                     ),
                   ],
                 ),
@@ -183,13 +184,13 @@ class CleanupSettingsPage extends StatelessWidget {
     return Consumer<DataRepository>(
       builder: (context, data, _) {
         return SettingsPageScaffold(
-          title: 'Cleanup',
+          title: context.l10n.cleanup,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SettingsSwitchCard(
-                title: 'Einträge vereinfachen',
-                subtitle: 'Gedoppelte Einträge zusammenfassen',
+                title: context.l10n.simplifyEntries,
+                subtitle: context.l10n.simplifyEntriesSub,
                 value: data.simplify,
                 onChanged: data.setSimplify,
               ),
@@ -199,8 +200,8 @@ class CleanupSettingsPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SwitchListTile(
-                      title: const Text("Einträge bereinigen"),
-                      subtitle: const Text("Einträge besser lesbar machen"),
+                      title: Text(context.l10n.cleanupEntries),
+                      subtitle: Text(context.l10n.cleanupEntriesSub),
                       value: data.clean,
                       onChanged: data.setClean,
                     ),
@@ -214,43 +215,41 @@ class CleanupSettingsPage extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Padding(
+                            Padding(
                               padding: EdgeInsets.fromLTRB(16, 12, 16, 4),
-                              child: Text('Bereinigungsoptionen'),
+                              child: Text(context.l10n.cleanupOptions),
                             ),
                             SwitchListTile(
-                              title: const Text('Klassennamen vereinfachen'),
+                              title: Text(context.l10n.simplifyClassNames),
                               value: data.cleanClassNames,
                               onChanged: data.clean
                                   ? data.setCleanClassNames
                                   : null,
                             ),
                             SwitchListTile(
-                              title: const Text(
-                                'Unterrichtsstatus vereinfachen',
-                              ),
+                              title: Text(context.l10n.simplifyLessonStatus),
                               value: data.remapTypes,
                               onChanged: data.clean ? data.setRemapTypes : null,
                             ),
                             SwitchListTile(
-                              title: const Text('Kurse vereinfachen'),
+                              title: Text(context.l10n.simplifyCourses),
                               value: data.cleanupCourses,
                               onChanged: data.clean
                                   ? data.setCleanupCourses
                                   : null,
                             ),
                             SwitchListTile(
-                              title: const Text('Tutorenkurse zusammenfassen'),
+                              title: Text(context.l10n.mergeTutorCourses),
                               value: data.disposeTut,
                               onChanged: data.clean ? data.setDisposeTut : null,
                             ),
                             SwitchListTile(
-                              title: const Text('Fächer umbenennen'),
+                              title: Text(context.l10n.renameSubjects),
                               value: data.mapCourses,
                               onChanged: data.clean ? data.setMapCourses : null,
                             ),
                             SwitchListTile(
-                              title: const Text('Kursnummern entfernen'),
+                              title: Text(context.l10n.removeCourseNumbers),
                               value: data.disposeCourseNumbers,
                               onChanged: data.clean
                                   ? data.setDisposeCourseNumbers
@@ -279,9 +278,9 @@ class NotificationsSettingsPage extends StatelessWidget {
     return Consumer<DataRepository>(
       builder: (context, data, _) {
         return SettingsPageScaffold(
-          title: 'Benachrichtigungen',
+          title: context.l10n.notifications,
           child: SettingsSwitchCard(
-            title: 'Benachrichtigungen',
+            title: context.l10n.notifications,
             value: data.notifications,
             onChanged: data.setNotifications,
           ),
@@ -299,7 +298,7 @@ class AppearanceSettingsPage extends StatelessWidget {
     return Consumer<DataRepository>(
       builder: (context, data, _) {
         return SettingsPageScaffold(
-          title: 'Aussehen',
+          title: context.l10n.appearance,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -312,21 +311,21 @@ class AppearanceSettingsPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SettingsLabeledRow(
-                      title: 'App Thema',
+                      title: context.l10n.appTheme,
                       child: DropdownMenu<AppThemes>(
                         initialSelection: data.theme,
-                        dropdownMenuEntries: const [
+                        dropdownMenuEntries: [
                           DropdownMenuEntry(
                             value: AppThemes.system,
-                            label: 'System',
+                            label: context.l10n.system,
                           ),
                           DropdownMenuEntry(
                             value: AppThemes.light,
-                            label: 'Light',
+                            label: context.l10n.light,
                           ),
                           DropdownMenuEntry(
                             value: AppThemes.dark,
-                            label: 'Dark',
+                            label: context.l10n.dark,
                           ),
                         ],
                         onSelected: (value) {
@@ -338,17 +337,17 @@ class AppearanceSettingsPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     SettingsLabeledRow(
-                      title: 'Dunkles Thema',
+                      title: context.l10n.darkTheme,
                       child: DropdownMenu<DarkTheme>(
                         initialSelection: data.darkTheme,
-                        dropdownMenuEntries: const [
+                        dropdownMenuEntries: [
                           DropdownMenuEntry(
                             value: DarkTheme.dark,
-                            label: 'Standard',
+                            label: context.l10n.standard,
                           ),
                           DropdownMenuEntry(
                             value: DarkTheme.amoled,
-                            label: 'Amoled',
+                            label: context.l10n.amoled,
                           ),
                         ],
                         onSelected: (value) {
@@ -393,21 +392,21 @@ class SettingsCategoriesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Einstellungen')),
+      appBar: AppBar(title: Text(context.l10n.settings)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           _stackedCategories([
             SettingsCategoryTile(
-              title: 'Aussehen',
-              subtitle: 'Dunkles Thema',
+              title: context.l10n.appearance,
+              subtitle: context.l10n.darkTheme,
               icon: Icons.palette_outlined,
               position: SettingsCategoryTilePosition.top,
               onTap: () => _open(context, const AppearanceSettingsPage()),
             ),
             SettingsCategoryTile(
-              title: 'Benachrichtigungen',
-              subtitle: 'Benachrichtigungen bei neuen Einträgen',
+              title: context.l10n.notifications,
+              subtitle: context.l10n.notificationsExp,
               icon: Icons.notifications_outlined,
               position: SettingsCategoryTilePosition.bottom,
               onTap: () => _open(context, const NotificationsSettingsPage()),
@@ -416,15 +415,15 @@ class SettingsCategoriesPage extends StatelessWidget {
           const SizedBox(height: 16),
           _stackedCategories([
             SettingsCategoryTile(
-              title: 'Bereinigung',
-              subtitle: 'Einträge verbessern',
+              title: context.l10n.cleanup,
+              subtitle: context.l10n.enhanceEntries,
               icon: Icons.cleaning_services_outlined,
               position: SettingsCategoryTilePosition.top,
               onTap: () => _open(context, const CleanupSettingsPage()),
             ),
             SettingsCategoryTile(
-              title: 'Filter',
-              subtitle: 'Filter nach Klasse und Stunden',
+              title: context.l10n.filters,
+              subtitle: context.l10n.filtersExp,
               icon: Icons.filter_alt_outlined,
               position: SettingsCategoryTilePosition.bottom,
               onTap: () => _open(context, const FiltersSettingsPage()),

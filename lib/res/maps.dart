@@ -11,6 +11,7 @@ const typeMap = {
 
 const subjectMap = {
   "d": "Deutsch",
+  "ds": "Darstellendes Spiel",
   "f": "Französisch",
   "spa": "Spanisch",
   "lat": "Latein",
@@ -20,6 +21,7 @@ const subjectMap = {
   "bio": "Biologie",
   "powi": "PoWi",
   "m": "Mathematik",
+  "mu": "Musik",
   "ethi": "Ethik",
   "rka": "Reli Katholisch",
   "g": "Geschichte",

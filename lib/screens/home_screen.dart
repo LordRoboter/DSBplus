@@ -1,6 +1,9 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:planner/core/models/timetable.dart';
+import 'package:planner/core/util/translations.dart';
 import 'package:planner/l10n/l10extension.dart';
 import 'package:planner/widgets/lists.dart';
 import 'package:planner/services/data_repository.dart';
@@ -81,9 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   physics: const AlwaysScrollableScrollPhysics(),
                   child: SizedBox(
                     height: constraints.maxHeight,
-                    child: const Center(
-                      child: Text("Keine relevanten Einträge •︵•"),
-                    ),
+                    child: Center(child: Text(context.l10n.noRelevantEntries)),
                   ),
                 );
               },
@@ -99,13 +100,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     : null;
                 final date = dayTimetable.date;
                 final formattedDate = date != null
-                    ? "(${DateFormat.yMd().format(date)})"
+                    ? "(${DateFormat.yMd(Localizations.localeOf(context).toString()).format(date)})"
                     : "";
                 final dayName = switch (relativeDay) {
                   0 => context.l10n.today,
                   1 => context.l10n.tomorrow,
                   -1 => context.l10n.yesterday,
-                  _ => "${dayTimetable.day ?? ""} $formattedDate",
+                  _ =>
+                    "${localizedWeekday(context, dayTimetable.day)} $formattedDate",
                 };
 
                 return Column(
@@ -139,8 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             if (isOutdated(dayTimetable.date!))
                               Tooltip(
-                                message:
-                                    "Dieser Eintrag ist wahrscheinlich veraltet",
+                                message: context.l10n.outdatedEntry,
                                 child: IconButton(
                                   icon: const Icon(Icons.warning_amber_rounded),
                                   color: Theme.of(context).colorScheme.error,

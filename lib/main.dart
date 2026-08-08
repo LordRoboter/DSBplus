@@ -92,6 +92,7 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: [Locale('en'), Locale('de')],
+      locale: const Locale('en'),
 
       home: const NavigatorScreen(),
     );
@@ -245,7 +246,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     final addedEntries = diff.added
         .map(
           (entry) => l10n.entryInfo(
-            ordinal(entry.entry.lesson.toString(), Locale(localeCode)),
+            ordinal(entry.entry.lesson, Locale(localeCode)),
             entry.entry.type ?? "",
             entry.entry.subject ?? "",
             entry.entry.teacher ?? "",
@@ -256,7 +257,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     final removedEntries = diff.removed
         .map(
           (entry) => l10n.entryInfoDeleted(
-            ordinal(entry.entry.lesson.toString(), Locale(localeCode)),
+            ordinal(entry.entry.lesson, Locale(localeCode)),
             entry.entry.type ?? "",
             entry.entry.subject ?? "",
             entry.entry.teacher ?? "",
