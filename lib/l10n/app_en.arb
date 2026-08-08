@@ -91,5 +91,16 @@
 
   "systemDefault": "System Default",
   "german": "German",
-  "english": "English"
+  "english": "English",
+
+  
+  "substitution": "Substitution",
+  "cancelled": "Cancelled",
+  "classChanged": "Class changed",
+  "specialAssignment": "Special assignment",
+  "roomSubstitution": "Room substitution",
+  "event": "Event",
+  "despiteAbsence": "Despite absence",
+  "substituteLesson": "Substitute lesson",
+  "supervision": "Supervision"
 }

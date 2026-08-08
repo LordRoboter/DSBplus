@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:planner/core/models/filter.dart';
 import 'package:planner/core/models/timetable.dart';
 import 'package:planner/core/util/translations.dart';
+import 'package:planner/services/data_repository.dart';
+import 'package:provider/provider.dart';
 import '../l10n/l10extension.dart';
 import 'texts.dart';
 import '../res/maps.dart';
@@ -52,7 +54,6 @@ class EntryList extends StatelessWidget {
   }
 }
 
-//TODO: Bring back singular marked entries
 class EntryCard extends StatelessWidget {
   final Timetable? timetable;
   final ClassEntry entry;
@@ -88,6 +89,8 @@ class EntryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final data = context.watch<DataRepository>();
+    final isGerman = Localizations.localeOf(context).languageCode == 'de';
     return Card(
       margin: const EdgeInsets.all(8),
       color: marked
@@ -106,9 +109,7 @@ class EntryCard extends StatelessWidget {
             const Divider(),
 
             ...entry.entries.map((lesson) {
-              final isSpecial =
-                  lesson.type == "Entfall" ||
-                  lesson.type == "Eigenverantwortliches Arbeiten";
+              final isSpecial = lesson.type == TimetableStatusType.cancelled;
 
               final entryMarked =
                   (timetable != null && filters != null && classFilter != null)
@@ -167,8 +168,14 @@ class EntryCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Chip(
-                          label: Text(lesson.type ?? ""),
-                          backgroundColor: typeColor(lesson.type ?? ""),
+                          label: Text(
+                            localizedStatus(
+                              context,
+                              lesson.type,
+                              original: !data.remapTypes && isGerman,
+                            ),
+                          ),
+                          backgroundColor: typeColor(lesson.type),
                         ),
 
                         roomText(context, lesson.room ?? ""),

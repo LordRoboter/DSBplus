@@ -180,7 +180,7 @@ class DSBApi {
                 "unterrichtsfrei") {
               final entry = TimetableEntry(
                 lesson: parseLesson(infos[i].text),
-                type: "Eigenverantwortliches Arbeiten",
+                type: TimetableStatusType.cancelled,
               );
 
               timetable.entries.add(
@@ -224,7 +224,7 @@ class DSBApi {
             teacher: valueFor("teacher", cells),
             subject: valueFor("subject", cells),
             room: valueFor("room", cells),
-            type: valueFor("type", cells),
+            type: parseStatus(valueFor("type", cells)),
             text: valueFor("text", cells),
           );
 

@@ -92,5 +92,16 @@
 
   "systemDefault": "Systemstandard",
   "german": "Deutsch",
-  "english": "Englisch"
+  "english": "Englisch",
+
+  
+  "substitution": "Vertretung",
+  "cancelled": "Entfall",
+  "classChanged": "Unterricht geändert",
+  "specialAssignment": "Sondereinsatz",
+  "roomSubstitution": "Raum-Vertretung",
+  "event": "Veranstaltung",
+  "despiteAbsence": "Trotz Absenz",
+  "substituteLesson": "Statt-Vertretung",
+  "supervision": "Betreuung"
 }

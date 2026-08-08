@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:planner/core/models/timetable.dart';
 import 'package:planner/theme.dart';
 
 const typeMap = {
@@ -41,33 +42,33 @@ const themeMap = {
   AppThemes.dark: "Dunkel",
 };
 
-Color typeColor(String type) {
-  switch (type.toLowerCase()) {
-    case "entfall" || "eigenverantwortliches arbeiten":
+Color typeColor(TimetableStatusType? type) {
+  switch (type) {
+    case TimetableStatusType.cancelled:
       return Colors.red.shade100;
 
-    case "vertretung":
+    case TimetableStatusType.substitution:
       return Colors.orange.shade100;
 
-    case "unterricht geändert":
+    case TimetableStatusType.classChanged:
       return Colors.purple.shade100;
 
-    case "sondereinsatz" || "sondereins.":
+    case TimetableStatusType.specialAssignment:
       return Colors.blue.shade50;
 
-    case "raum-vertretung" || "raum-vtr.":
+    case TimetableStatusType.roomSubstitution:
       return Colors.orange.shade50;
 
-    case "veranstaltung" || "veranst.":
+    case TimetableStatusType.event:
       return Colors.green.shade100;
 
-    case "trotz absenz" || "trotzabsenz":
+    case TimetableStatusType.despiteAbsence:
       return Colors.yellow.shade100;
 
-    case "statt-vertretung":
+    case TimetableStatusType.substituteLesson:
       return Colors.amber.shade100;
 
-    case "betreuung":
+    case TimetableStatusType.supervision:
       return Colors.orangeAccent.shade100;
 
     default:

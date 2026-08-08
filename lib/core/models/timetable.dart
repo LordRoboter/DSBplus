@@ -47,6 +47,18 @@ extension LessonRangeExtension on LessonRange {
   }
 }
 
+enum TimetableStatusType {
+  substitution,
+  cancelled,
+  classChanged,
+  roomSubstitution,
+  event,
+  despiteAbsence,
+  substituteLesson,
+  supervision,
+  specialAssignment,
+}
+
 class Timetable {
   DateTime? date;
   Weekday? day;
@@ -145,7 +157,7 @@ class TimetableEntry {
   final String? teacher;
   final String? subject;
   final String? room;
-  final String? type;
+  final TimetableStatusType? type;
   final String? text;
 
   const TimetableEntry({
@@ -163,7 +175,7 @@ class TimetableEntry {
       "teacher": teacher,
       "subject": subject,
       "room": room,
-      "type": type,
+      "type": type?.index,
       "text": text,
     };
   }
@@ -176,7 +188,9 @@ class TimetableEntry {
       teacher: json["teacher"],
       subject: json["subject"],
       room: json["room"],
-      type: json["type"],
+      type: json["type"] != null
+          ? TimetableStatusType.values[json["type"]]
+          : null,
       text: json["text"],
     );
   }
@@ -186,7 +200,7 @@ class TimetableEntry {
     String? teacher,
     String? subject,
     String? room,
-    String? type,
+    TimetableStatusType? type,
     String? text,
   }) {
     return TimetableEntry(
