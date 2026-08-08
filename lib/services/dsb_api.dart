@@ -253,23 +253,6 @@ class DSBApi {
   }
 
   List<Timetable> mergeTimetables(List<Timetable> timetables) {
-    String entryGroupKey(ClassEntry entry) {
-      final lessons = entry.entries.map((lesson) {
-        return [
-          lesson.type,
-          lesson.lesson,
-          lesson.subject,
-          lesson.room,
-          lesson.teacher,
-          lesson.text,
-        ].join("|");
-      }).toList();
-
-      lessons.sort();
-
-      return lessons.join(";");
-    }
-
     List<Timetable> mergeByDate(List<Timetable> timetables) {
       final Map<String, Timetable> result = {};
 
