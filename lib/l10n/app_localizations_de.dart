@@ -18,7 +18,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get substPlan => 'Vertretungsplan';
 
   @override
+  String get noRelevantEntries => 'Keine relevanten Einträge •︵•';
+
+  @override
+  String get noEntries => 'Keine Einträge ( – ⤙ – )';
+
+  @override
   String get newEntries => 'Neue Einträge!';
+
+  @override
+  String get outdatedEntry => 'Dieser Eintrag ist wahrscheinlich veraltet';
 
   @override
   String entryInfo(
@@ -41,6 +50,27 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get lsn => 'Std';
+
+  @override
+  String get lesson => 'Stunde';
+
+  @override
+  String get classs => 'Klasse';
+
+  @override
+  String get subject => 'Fach';
+
+  @override
+  String get addFilter => 'Filter hinzufügen';
+
+  @override
+  String get add => 'Hinzufügen';
+
+  @override
+  String get cancel => 'Abbrechen';
+
+  @override
   String get today => 'Heute';
 
   @override
@@ -57,4 +87,145 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get deletedEntries => 'Gelöschte Einträge';
+
+  @override
+  String get monday => 'Montag';
+
+  @override
+  String get tuesday => 'Dienstag';
+
+  @override
+  String get wednesday => 'Mittwoch';
+
+  @override
+  String get thursday => 'Donnerstag';
+
+  @override
+  String get friday => 'Freitag';
+
+  @override
+  String get saturday => 'Samstag';
+
+  @override
+  String get sunday => 'Sonntag';
+
+  @override
+  String get unknown => 'Unknown';
+
+  @override
+  String get search => 'Suchen...';
+
+  @override
+  String get date => 'Datum: ';
+
+  @override
+  String get updated => 'Updated: ';
+
+  @override
+  String get settings => 'Einstellungen';
+
+  @override
+  String get notificationsExp => 'Benachrichtigungen bei neuen Einträgen';
+
+  @override
+  String get enhanceEntries => 'Einträge verbessern';
+
+  @override
+  String get filters => 'Filter';
+
+  @override
+  String get filtersExp => 'Filtern nach Klasse und Stunden';
+
+  @override
+  String get language => 'Sprache';
+
+  @override
+  String get languageExp => 'Die Sprache der App';
+
+  @override
+  String get filter => 'Filter';
+
+  @override
+  String get classFilter => 'Klassenfilter';
+
+  @override
+  String get classFilterHint => 'z.B. 10a';
+
+  @override
+  String get advancedFilters => 'Erweiterte Filter';
+
+  @override
+  String get help => 'Hilfe';
+
+  @override
+  String get cleanup => 'Bereinigung';
+
+  @override
+  String get simplifyEntries => 'Einträge vereinfachen';
+
+  @override
+  String get simplifyEntriesSub => 'Gedoppelte Einträge zusammenfassen';
+
+  @override
+  String get cleanupEntries => 'Einträge bereinigen';
+
+  @override
+  String get cleanupEntriesSub => 'Einträge besser lesbar machen';
+
+  @override
+  String get cleanupOptions => 'Bereinigungsoptionen';
+
+  @override
+  String get simplifyClassNames => 'Klassennamen vereinfachen';
+
+  @override
+  String get simplifyLessonStatus => 'Unterrichtsstatus vereinfachen';
+
+  @override
+  String get simplifyCourses => 'Kurse vereinfachen';
+
+  @override
+  String get mergeTutorCourses => 'Tutorenkurse zusammenfassen';
+
+  @override
+  String get renameSubjects => 'Fächer umbenennen';
+
+  @override
+  String get removeCourseNumbers => 'Kursnummern entfernen';
+
+  @override
+  String get notifications => 'Benachrichtigungen';
+
+  @override
+  String get appearance => 'Aussehen';
+
+  @override
+  String get appTheme => 'App-Thema';
+
+  @override
+  String get system => 'System';
+
+  @override
+  String get light => 'Hell';
+
+  @override
+  String get dark => 'Dunkel';
+
+  @override
+  String get darkTheme => 'Dunkles Thema';
+
+  @override
+  String get standard => 'Standard';
+
+  @override
+  String get amoled => 'AMOLED';
+
+  @override
+  String get systemDefault => 'Systemstandard';
+
+  @override
+  String get german => 'Deustch';
+
+  @override
+  String get english => 'Englisch';
 }

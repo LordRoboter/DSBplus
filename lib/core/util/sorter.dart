@@ -1,4 +1,5 @@
 import 'package:planner/core/models/daydate.dart';
+import 'package:planner/core/models/filter.dart';
 import 'package:planner/core/models/timetable.dart';
 import 'package:planner/core/util/date.dart';
 
@@ -38,31 +39,6 @@ Timetable decollapseTimetable(Timetable timetable) {
 
 bool isDigit(String c) {
   return c.length == 1 && c.codeUnitAt(0) >= 48 && c.codeUnitAt(0) <= 57;
-}
-
-({int start, int end})? parseLessonRange(String value) {
-  final matches = RegExp(r'\d+').allMatches(value).toList();
-
-  if (matches.isEmpty) return null;
-
-  final start = int.tryParse(matches.first.group(0)!);
-  final end = int.tryParse(
-    matches.length > 1 ? matches.last.group(0)! : matches.first.group(0)!,
-  );
-
-  if (start == null || end == null) return null;
-
-  return (start: start, end: end);
-}
-
-bool lessonRangesOverlap(String entryValue, String filterValue) {
-  final entryRange = parseLessonRange(entryValue);
-  final filterRange = parseLessonRange(filterValue);
-
-  if (entryRange == null || filterRange == null) return false;
-
-  return entryRange.start <= filterRange.end &&
-      filterRange.start <= entryRange.end;
 }
 
 Timetable cleanupTimetable(
@@ -185,37 +161,9 @@ String classNamesKey(List<String> classNames) {
   return normalized.join(",");
 }
 
-List<Timetable> filterByClass(List<Timetable> timetables, String classes) {
-  final terms = classes
-      .toLowerCase()
-      .split(RegExp(r'[\s,]+'))
-      .where((t) => t.isNotEmpty)
-      .map(classBase)
-      .toSet();
-
-  if (terms.isEmpty) return timetables;
-
-  return timetables
-      .map((timetable) {
-        final matchingEntries = timetable.entries.where((entry) {
-          final entryClasses = entry.classNames.map(classBase).toSet();
-
-          if (entryClasses.contains("alle")) return true;
-
-          return entryClasses.any(
-            (ec) => terms.any((t) => ec == t || ec.startsWith(t)),
-          );
-        }).toList();
-
-        return timetable.copyWith(entries: matchingEntries);
-      })
-      .where((timetable) => timetable.entries.isNotEmpty)
-      .toList();
-}
-
-List<Timetable> filterByInfo(
+List<Timetable> filterTimetables(
   List<Timetable> timetables,
-  Map<String, String> filters,
+  List<TimetableFilter> filters,
 ) {
   if (filters.isEmpty) return timetables;
 
@@ -225,59 +173,25 @@ List<Timetable> filterByInfo(
     final filteredClasses = <ClassEntry>[];
 
     for (final classEntry in timetable.entries) {
-      if ((classEntry.className ?? "").toLowerCase() == "alle") {
+      if (classEntry.classNames.any((c) => c.toLowerCase() == "alle")) {
         filteredClasses.add(classEntry);
         continue;
       }
 
-      final matchingEntries = classEntry.entries.where((entry) {
-        final entryClass = (classEntry.className ?? "").toLowerCase();
-        final entryLesson = (entry.lesson ?? "").toLowerCase();
-        final entrySubject = (entry.subject ?? "").toLowerCase();
-        final entryTeacher = (entry.teacher ?? "").toLowerCase();
-        final entryDay = (timetable.day ?? "").toLowerCase();
-
-        for (final filter in filters.entries) {
-          final value = filter.value.toLowerCase().trim();
-
-          if (value.isEmpty) continue;
-
-          switch (filter.key.toLowerCase()) {
-            case "class":
-              if (!entryClass.contains(value)) return false;
-              break;
-
-            case "lesson":
-              if (!lessonRangesOverlap(entryLesson, value)) return false;
-              break;
-
-            case "subject":
-              if (!entrySubject.contains(value)) return false;
-              break;
-
-            case "teacher":
-              if (!entryTeacher.contains(value)) return false;
-              break;
-
-            case "day":
-              if (!entryDay.contains(value)) return false;
-              break;
-          }
-        }
-
-        return true;
-      }).toList();
+      final matchingEntries = classEntry.entries
+          .where(
+            (entry) => filters.any(
+              (filter) => matchesFilter(entry, classEntry, timetable, filter),
+            ),
+          )
+          .toList();
 
       if (matchingEntries.isNotEmpty) {
         filteredClasses.add(classEntry.copyWith(entries: matchingEntries));
       }
     }
 
-    final hasRealMatch = filteredClasses.any(
-      (c) => (c.className ?? "").toLowerCase() != "alle",
-    );
-
-    if (hasRealMatch) {
+    if (filteredClasses.isNotEmpty) {
       result.add(timetable.copyWith(entries: filteredClasses));
     }
   }
@@ -289,57 +203,38 @@ bool matchesFilter(
   TimetableEntry entry,
   ClassEntry classEntry,
   Timetable timetable,
-  Map<String, String> filters,
+  TimetableFilter filter,
 ) {
-  if (filters.isEmpty) return true;
+  if (filter.isEmpty) return true;
 
-  final lesson = (entry.lesson ?? "").toLowerCase();
-  final subject = (entry.subject ?? "").toLowerCase();
-  final teacher = (entry.teacher ?? "").toLowerCase();
-  final day = (timetable.day ?? "").toLowerCase();
+  if (filter.classes.isNotEmpty && !matchesClass(classEntry, filter)) {
+    return false;
+  }
 
-  for (final filter in filters.entries) {
-    final key = filter.key.toLowerCase();
-    final value = filter.value.trim().toLowerCase();
-
-    if (value.isEmpty) continue;
-
-    switch (key) {
-      case "class":
-        if (!classEntry.classNames.any(
-          (c) => c.toLowerCase().contains(value),
-        )) {
-          return false;
-        }
-        break;
-
-      case "lesson":
-        if (!lessonRangesOverlap(lesson, value)) {
-          return false;
-        }
-        break;
-
-      case "subject":
-        if (!subject.contains(value)) {
-          return false;
-        }
-        break;
-
-      case "teacher":
-        if (!teacher.contains(value)) {
-          return false;
-        }
-        break;
-
-      case "day":
-        if (!day.contains(value)) {
-          return false;
-        }
-        break;
-
-      default:
-        return false;
+  if (filter.lessons != null && entry.lesson != null) {
+    if (!filter.lessons!.overlaps(entry.lesson!)) {
+      return false;
     }
+  } else if (filter.lessons != null && entry.lesson == null) {
+    return false;
+  }
+
+  if (filter.subjects.isNotEmpty &&
+      !filter.subjects.any(
+        (s) => entry.subject?.toLowerCase().contains(s.toLowerCase()) ?? false,
+      )) {
+    return false;
+  }
+
+  if (filter.teachers.isNotEmpty &&
+      !filter.teachers.any(
+        (t) => entry.teacher?.toLowerCase().contains(t.toLowerCase()) ?? false,
+      )) {
+    return false;
+  }
+
+  if (filter.days.isNotEmpty && !filter.days.contains(timetable.day)) {
+    return false;
   }
 
   return true;
@@ -383,20 +278,13 @@ String classBase(String c) {
   return c;
 }
 
-bool matchesClass(ClassEntry entry, String query) {
+bool matchesClass(ClassEntry entry, TimetableFilter filter) {
   final expanded = entry.classNames.expand((e) => {e.toLowerCase()});
   if (expanded.contains("alle")) {
     return true;
   }
 
-  final terms = query
-      .toLowerCase()
-      .split(RegExp(r'[\s,]+'))
-      .where((t) => t.isNotEmpty)
-      .map(classBase)
-      .toSet();
-
-  if (terms.isEmpty) return false;
+  if (filter.classes.isEmpty) return false;
 
   final entryClasses = expanded
       .where((c) => c.isNotEmpty)
@@ -404,7 +292,12 @@ bool matchesClass(ClassEntry entry, String query) {
       .toSet();
 
   return entryClasses.any(
-    (ec) => terms.any((t) => ec == t || ec.startsWith(t) || t.startsWith(ec)),
+    (ec) => filter.classes.any(
+      (t) =>
+          ec == classBase(t) ||
+          ec.startsWith(classBase(t)) ||
+          classBase(t).startsWith(ec),
+    ),
   );
 }
 
@@ -445,7 +338,7 @@ Timetable enhanceTimetable(
 ClassDiff diffByClass(
   Timetable? oldTimetable,
   Timetable? newTimetable,
-  String classes,
+  Set<String> classes,
 ) {
   final oldEntries = _flattenEntries(oldTimetable, classes);
   final newEntries = _flattenEntries(newTimetable, classes);
@@ -479,7 +372,11 @@ ClassDiff diffByClass(
 }
 
 String entryKey(_ClassedEntry e) {
-  return [e.day ?? "", e.entry.lesson ?? "", e.className].join("|");
+  return [
+    e.day?.index ?? -1,
+    e.entry.lesson?.lessons.toList()?..sort(),
+    e.className,
+  ].join("|");
 }
 
 bool isModified(_ClassedEntry oldE, _ClassedEntry newE) {
@@ -489,13 +386,14 @@ bool isModified(_ClassedEntry oldE, _ClassedEntry newE) {
       oldE.entry.type != newE.entry.type;
 }
 
-List<_ClassedEntry> _flattenEntries(Timetable? timetable, String classes) {
+List<_ClassedEntry> _flattenEntries(Timetable? timetable, Set<String> classes) {
   if (timetable == null) return [];
 
   return timetable.entries
       .where(
         (classEntry) =>
-            classes.isEmpty || classEntry.classNames.contains(classes),
+            classes.isEmpty ||
+            classes.any((c) => classEntry.classNames.contains(c)),
       )
       .expand(
         (classEntry) => classEntry.entries.map(
@@ -511,7 +409,7 @@ List<_ClassedEntry> _flattenEntries(Timetable? timetable, String classes) {
 
 class _ClassedEntry {
   final String className;
-  final String? day;
+  final Weekday? day;
   final TimetableEntry entry;
 
   _ClassedEntry({

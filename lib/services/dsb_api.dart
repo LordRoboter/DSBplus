@@ -5,6 +5,7 @@ import 'package:html/dom.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart';
 import 'package:planner/core/models/timetable.dart';
+import 'package:planner/core/util/lessons.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:intl/intl.dart';
@@ -178,7 +179,7 @@ class DSBApi {
             if (field.replaceFirst(RegExp(r'&.*'), '').toLowerCase().trim() ==
                 "unterrichtsfrei") {
               final entry = TimetableEntry(
-                lesson: infos[i].text.replaceAll("Std.", "").trim(),
+                lesson: parseLesson(infos[i].text),
                 type: "Eigenverantwortliches Arbeiten",
               );
 
@@ -198,7 +199,7 @@ class DSBApi {
 
       timetable.date = dateTime;
       timetable.updated = updatedDateTime;
-      timetable.day = day;
+      timetable.day = parseWeekday(day);
       timetable.extraInfos = theInfos;
 
       for (int r = 1; r < rows.length; r++) {
@@ -219,7 +220,7 @@ class DSBApi {
 
         for (final cls in classes) {
           final entry = TimetableEntry(
-            lesson: valueFor("lesson", cells),
+            lesson: parseLesson(valueFor("lesson", cells)),
             teacher: valueFor("teacher", cells),
             subject: valueFor("subject", cells),
             room: valueFor("room", cells),
