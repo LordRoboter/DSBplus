@@ -224,7 +224,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get systemDefault => 'Systemstandard';
 
   @override
-  String get german => 'Deustch';
+  String get german => 'Deutsch';
 
   @override
   String get english => 'Englisch';
