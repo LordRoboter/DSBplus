@@ -57,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final enhancedTimetables = finalResults
         .map(
           (timetable) => enhanceTimetable(
+            context,
             timetable,
             data.clean,
             data.simplify,

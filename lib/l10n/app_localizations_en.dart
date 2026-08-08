@@ -255,4 +255,70 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supervision => 'Supervision';
+
+  @override
+  String get subjectGerman => 'German';
+
+  @override
+  String get subjectDrama => 'Drama';
+
+  @override
+  String get subjectFrench => 'French';
+
+  @override
+  String get subjectSpanish => 'Spanish';
+
+  @override
+  String get subjectLatin => 'Latin';
+
+  @override
+  String get subjectPhysics => 'Physics';
+
+  @override
+  String get subjectChemistry => 'Chemistry';
+
+  @override
+  String get subjectBiology => 'Biology';
+
+  @override
+  String get subjectPoliticsEconomics => 'Politics & Economics';
+
+  @override
+  String get subjectMathematics => 'Mathematics';
+
+  @override
+  String get subjectMusic => 'Music';
+
+  @override
+  String get subjectEthics => 'Ethics';
+
+  @override
+  String get subjectCatholicReligion => 'Catholic Religion';
+
+  @override
+  String get subjectHistory => 'History';
+
+  @override
+  String get subjectProtestantReligion => 'Protestant Religion';
+
+  @override
+  String get subjectSports => 'PE';
+
+  @override
+  String get subjectEnglish => 'English';
+
+  @override
+  String get subjectArt => 'Art';
+
+  @override
+  String get subjectTutorCourse => 'Tutor Course';
+
+  @override
+  String get subjectChinese => 'Chinese';
+
+  @override
+  String get subjectComputerScience => 'Computer Science';
+
+  @override
+  String get subjectGeography => 'Geography';
 }

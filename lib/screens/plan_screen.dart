@@ -74,6 +74,7 @@ class _PlanScreenState extends State<PlanScreen>
     final enhancedTimetables = repo.entries
         .map(
           (timetable) => enhanceTimetable(
+            context,
             timetable,
             data.clean,
             data.simplify,

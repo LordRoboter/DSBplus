@@ -575,6 +575,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Supervision'**
   String get supervision;
+
+  /// No description provided for @subjectGerman.
+  ///
+  /// In en, this message translates to:
+  /// **'German'**
+  String get subjectGerman;
+
+  /// No description provided for @subjectDrama.
+  ///
+  /// In en, this message translates to:
+  /// **'Drama'**
+  String get subjectDrama;
+
+  /// No description provided for @subjectFrench.
+  ///
+  /// In en, this message translates to:
+  /// **'French'**
+  String get subjectFrench;
+
+  /// No description provided for @subjectSpanish.
+  ///
+  /// In en, this message translates to:
+  /// **'Spanish'**
+  String get subjectSpanish;
+
+  /// No description provided for @subjectLatin.
+  ///
+  /// In en, this message translates to:
+  /// **'Latin'**
+  String get subjectLatin;
+
+  /// No description provided for @subjectPhysics.
+  ///
+  /// In en, this message translates to:
+  /// **'Physics'**
+  String get subjectPhysics;
+
+  /// No description provided for @subjectChemistry.
+  ///
+  /// In en, this message translates to:
+  /// **'Chemistry'**
+  String get subjectChemistry;
+
+  /// No description provided for @subjectBiology.
+  ///
+  /// In en, this message translates to:
+  /// **'Biology'**
+  String get subjectBiology;
+
+  /// No description provided for @subjectPoliticsEconomics.
+  ///
+  /// In en, this message translates to:
+  /// **'Politics & Economics'**
+  String get subjectPoliticsEconomics;
+
+  /// No description provided for @subjectMathematics.
+  ///
+  /// In en, this message translates to:
+  /// **'Mathematics'**
+  String get subjectMathematics;
+
+  /// No description provided for @subjectMusic.
+  ///
+  /// In en, this message translates to:
+  /// **'Music'**
+  String get subjectMusic;
+
+  /// No description provided for @subjectEthics.
+  ///
+  /// In en, this message translates to:
+  /// **'Ethics'**
+  String get subjectEthics;
+
+  /// No description provided for @subjectCatholicReligion.
+  ///
+  /// In en, this message translates to:
+  /// **'Catholic Religion'**
+  String get subjectCatholicReligion;
+
+  /// No description provided for @subjectHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get subjectHistory;
+
+  /// No description provided for @subjectProtestantReligion.
+  ///
+  /// In en, this message translates to:
+  /// **'Protestant Religion'**
+  String get subjectProtestantReligion;
+
+  /// No description provided for @subjectSports.
+  ///
+  /// In en, this message translates to:
+  /// **'PE'**
+  String get subjectSports;
+
+  /// No description provided for @subjectEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get subjectEnglish;
+
+  /// No description provided for @subjectArt.
+  ///
+  /// In en, this message translates to:
+  /// **'Art'**
+  String get subjectArt;
+
+  /// No description provided for @subjectTutorCourse.
+  ///
+  /// In en, this message translates to:
+  /// **'Tutor Course'**
+  String get subjectTutorCourse;
+
+  /// No description provided for @subjectChinese.
+  ///
+  /// In en, this message translates to:
+  /// **'Chinese'**
+  String get subjectChinese;
+
+  /// No description provided for @subjectComputerScience.
+  ///
+  /// In en, this message translates to:
+  /// **'Computer Science'**
+  String get subjectComputerScience;
+
+  /// No description provided for @subjectGeography.
+  ///
+  /// In en, this message translates to:
+  /// **'Geography'**
+  String get subjectGeography;
 }
 
 class _AppLocalizationsDelegate
