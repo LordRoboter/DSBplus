@@ -14,7 +14,7 @@ Widget roomText(BuildContext context, String room) {
           text: parts[0],
           style: TextStyle(
             decoration: TextDecoration.lineThrough,
-            color: Theme.of(context).colorScheme.onSecondary,
+            color: Theme.of(context).colorScheme.onSecondaryContainer,
             fontStyle: FontStyle.italic,
           ),
         ),
