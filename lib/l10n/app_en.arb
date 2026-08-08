@@ -93,7 +93,7 @@
   "german": "German",
   "english": "English",
 
-  
+
   "substitution": "Substitution",
   "cancelled": "Cancelled",
   "classChanged": "Class changed",
@@ -102,5 +102,28 @@
   "event": "Event",
   "despiteAbsence": "Despite absence",
   "substituteLesson": "Substitute lesson",
-  "supervision": "Supervision"
+  "supervision": "Supervision",
+
+    "subjectGerman": "German",
+  "subjectDrama": "Drama",
+  "subjectFrench": "French",
+  "subjectSpanish": "Spanish",
+  "subjectLatin": "Latin",
+  "subjectPhysics": "Physics",
+  "subjectChemistry": "Chemistry",
+  "subjectBiology": "Biology",
+  "subjectPoliticsEconomics": "Politics & Economics",
+  "subjectMathematics": "Mathematics",
+  "subjectMusic": "Music",
+  "subjectEthics": "Ethics",
+  "subjectCatholicReligion": "Catholic Religion",
+  "subjectHistory": "History",
+  "subjectProtestantReligion": "Protestant Religion",
+  "subjectSports": "PE",
+  "subjectEnglish": "English",
+  "subjectArt": "Art",
+  "subjectTutorCourse": "Tutor Course",
+  "subjectChinese": "Chinese",
+  "subjectComputerScience": "Computer Science",
+  "subjectGeography": "Geography"
 }

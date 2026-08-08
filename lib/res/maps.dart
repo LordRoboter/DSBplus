@@ -1,46 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:planner/core/models/timetable.dart';
-import 'package:planner/theme.dart';
-
-const typeMap = {
-  "eigenverantwortliches arbeiten": "Entfall",
-  "veranst.": "Veranstaltung",
-  "trotzabsenz": "Trotz Absenz",
-  "sondereins.": "Sondereinsatz",
-  "raum-vtr.": "Raum-Vertretung",
-};
-
-const subjectMap = {
-  "d": "Deutsch",
-  "ds": "Darstellendes Spiel",
-  "f": "Französisch",
-  "spa": "Spanisch",
-  "lat": "Latein",
-  "l": "Latein",
-  "ph": "Physik",
-  "ch": "Chemie",
-  "bio": "Biologie",
-  "powi": "PoWi",
-  "m": "Mathematik",
-  "mu": "Musik",
-  "ethi": "Ethik",
-  "rka": "Reli Katholisch",
-  "g": "Geschichte",
-  "rev": "Reli Evangelisch",
-  "spo": "Sport",
-  "e": "Englisch",
-  "ku": "Kunst",
-  "tut": "Tutorenkurs",
-  "chin": "Chinesisch",
-  "info": "Informatik",
-  "geo": "Erdkunde",
-};
-
-const themeMap = {
-  AppThemes.system: "System",
-  AppThemes.light: "Hell",
-  AppThemes.dark: "Dunkel",
-};
 
 Color typeColor(TimetableStatusType? type) {
   switch (type) {

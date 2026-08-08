@@ -1,7 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:planner/core/models/daydate.dart';
 import 'package:planner/core/models/filter.dart';
 import 'package:planner/core/models/timetable.dart';
 import 'package:planner/core/util/date.dart';
+import 'package:planner/core/util/translations.dart';
 
 import '../../res/maps.dart';
 
@@ -42,6 +44,7 @@ bool isDigit(String c) {
 }
 
 Timetable cleanupTimetable(
+  BuildContext context,
   Timetable timetable, {
   bool disposeTut = true,
   bool cleanClassNames = true,
@@ -90,7 +93,7 @@ Timetable cleanupTimetable(
           subject = subject.substring(0, match.start);
         }
 
-        subject = subjectMap[subject.toLowerCase()] ?? subject;
+        subject = localizedSubject(context, subject);
       }
 
       return TimetableEntry(
@@ -289,6 +292,7 @@ bool matchesClass(ClassEntry entry, TimetableFilter filter) {
 }
 
 Timetable enhanceTimetable(
+  BuildContext context,
   Timetable timetable,
   bool clean,
   bool simplify, {
@@ -303,6 +307,7 @@ Timetable enhanceTimetable(
 
   if (clean) {
     res = cleanupTimetable(
+      context,
       res,
       disposeTut: disposeTut,
       cleanClassNames: cleanClassNames,

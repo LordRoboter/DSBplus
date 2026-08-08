@@ -103,3 +103,33 @@ String localizedStatus(
     null => "",
   };
 }
+
+String localizedSubject(BuildContext context, String? subject) {
+  if (subject == null || subject.isEmpty) return "";
+
+  return switch (subject.toLowerCase()) {
+    "d" => context.l10n.subjectGerman,
+    "ds" => context.l10n.subjectDrama,
+    "f" => context.l10n.subjectFrench,
+    "spa" => context.l10n.subjectSpanish,
+    "lat" || "l" => context.l10n.subjectLatin,
+    "ph" => context.l10n.subjectPhysics,
+    "ch" => context.l10n.subjectChemistry,
+    "bio" => context.l10n.subjectBiology,
+    "powi" => context.l10n.subjectPoliticsEconomics,
+    "m" => context.l10n.subjectMathematics,
+    "mu" => context.l10n.subjectMusic,
+    "ethi" => context.l10n.subjectEthics,
+    "rka" => context.l10n.subjectCatholicReligion,
+    "g" => context.l10n.subjectHistory,
+    "rev" => context.l10n.subjectProtestantReligion,
+    "spo" => context.l10n.subjectSports,
+    "e" => context.l10n.subjectEnglish,
+    "ku" => context.l10n.subjectArt,
+    "tut" => context.l10n.subjectTutorCourse,
+    "chin" => context.l10n.subjectChinese,
+    "info" => context.l10n.subjectComputerScience,
+    "geo" => context.l10n.subjectGeography,
+    _ => subject,
+  };
+}
