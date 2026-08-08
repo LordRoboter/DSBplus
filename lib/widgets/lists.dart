@@ -106,7 +106,11 @@ class EntryCard extends StatelessWidget {
               style: Theme.of(context).textTheme.titleLarge,
             ),
 
-            const Divider(),
+            Divider(
+              color: marked
+                  ? Theme.of(context).colorScheme.onSurface
+                  : Theme.of(context).dividerColor,
+            ),
 
             ...entry.entries.map((lesson) {
               final isSpecial = lesson.type == TimetableStatusType.cancelled;
@@ -174,6 +178,7 @@ class EntryCard extends StatelessWidget {
                               lesson.type,
                               original: !data.remapTypes && isGerman,
                             ),
+                            style: TextStyle(color: Colors.black),
                           ),
                           backgroundColor: typeColor(lesson.type),
                         ),
