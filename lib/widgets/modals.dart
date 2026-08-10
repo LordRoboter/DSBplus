@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:planner/core/models/timetable.dart';
+import 'package:planner/core/model/timetable.dart';
 import 'package:planner/core/util/translations.dart';
 import 'package:planner/l10n/l10extension.dart';
 
@@ -48,6 +48,26 @@ class PlanDetailsSheet extends StatelessWidget {
               label: context.l10n.updatedP,
               value: timetable.updated != null
                   ? DateFormat.yMd(locale).add_Hm().format(timetable.updated!)
+                  : context.l10n.unknown,
+            ),
+
+            _MetadataRow(
+              icon: Icons.download,
+              label: context.l10n.fetchedAt,
+              value: timetable.firstFetched != null
+                  ? DateFormat.yMd(
+                      locale,
+                    ).add_Hms().format(timetable.firstFetched!)
+                  : context.l10n.unknown,
+            ),
+
+            _MetadataRow(
+              icon: Icons.sync,
+              label: context.l10n.lastFetchedAt,
+              value: timetable.lastFetched != null
+                  ? DateFormat.yMd(
+                      locale,
+                    ).add_Hms().format(timetable.lastFetched!)
                   : context.l10n.unknown,
             ),
 

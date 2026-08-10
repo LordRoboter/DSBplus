@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:planner/core/models/daydate.dart';
-import 'package:planner/core/models/filter.dart';
-import 'package:planner/core/models/timetable.dart';
+import 'package:planner/core/model/daydate.dart';
+import 'package:planner/core/model/filter.dart';
+import 'package:planner/core/model/timetable.dart';
 import 'package:planner/services/dsb_api.dart';
 import 'package:planner/theme.dart';
 import 'package:planner/core/util/date.dart';
@@ -132,13 +132,28 @@ class DataRepository extends ChangeNotifier {
     );
 
     final oldEntries = cachedEntries;
-    final entries = await api.fetchEntries();
+    var entries = await api.fetchEntries();
+
+    entries = entries.map((newEntry) {
+      final existingEntry = oldEntries.firstWhereOrNull(
+        (old) =>
+            old.date?.year == newEntry.date?.year &&
+            old.date?.month == newEntry.date?.month &&
+            old.date?.day == newEntry.date?.day &&
+            old.day == newEntry.day,
+      );
+
+      if (existingEntry != null) {
+        return newEntry.copyWith(firstFetched: existingEntry.firstFetched);
+      }
+      return newEntry;
+    }).toList();
 
     const equality = DeepCollectionEquality();
 
     final changed = !equality.equals(
-      oldEntries.map((e) => e.toJson()).toList(),
-      entries.map((e) => e.toJson()).toList(),
+      oldEntries.map((e) => e.toComparableJson()).toList(),
+      entries.map((e) => e.toComparableJson()).toList(),
     );
 
     await validateSelectedDayDate(

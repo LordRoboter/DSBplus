@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:planner/core/models/daydate.dart';
-import 'package:planner/core/models/timetable.dart';
+import 'package:planner/core/model/daydate.dart';
+import 'package:planner/core/model/timetable.dart';
 import 'package:planner/core/util/date.dart';
 
 import 'data_repository.dart';

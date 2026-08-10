@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:planner/core/models/timetable.dart';
+import 'package:planner/core/model/timetable.dart';
 
 Color typeColor(TimetableStatusType? type) {
   switch (type) {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:planner/core/models/timetable.dart';
+import 'package:planner/core/model/timetable.dart';
 import 'package:planner/l10n/l10extension.dart';
 
 String ordinal(LessonRange? value, Locale locale) {

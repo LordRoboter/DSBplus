@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:planner/core/models/filter.dart';
+import 'package:planner/core/model/filter.dart';
 import 'package:planner/l10n/l10extension.dart';
 import 'package:planner/widgets/dialogues.dart';
 import 'package:planner/widgets/settings.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:planner/core/models/daydate.dart';
-import 'package:planner/core/models/filter.dart';
-import 'package:planner/core/models/timetable.dart';
+import 'package:planner/core/model/daydate.dart';
+import 'package:planner/core/model/filter.dart';
+import 'package:planner/core/model/timetable.dart';
 import 'package:planner/core/util/translations.dart';
 
 Map<DayDate, Timetable> groupEntriesByDayDate(List<Timetable> timetables) {
@@ -135,6 +135,8 @@ Timetable cleanupTimetable(
     date: timetable.date,
     day: timetable.day,
     updated: timetable.updated,
+    firstFetched: timetable.firstFetched,
+    lastFetched: timetable.lastFetched,
     extraInfos: timetable.extraInfos,
     entries: resultEntries,
   );
