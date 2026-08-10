@@ -137,6 +137,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get planDetails => 'Plan Details';
 
   @override
+  String get fetchedAt => 'First Fetch';
+
+  @override
+  String get lastFetchedAt => 'Most recent Fetch';
+
+  @override
   String get settings => 'Settings';
 
   @override

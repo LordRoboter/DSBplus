@@ -137,6 +137,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get planDetails => 'Plan Details';
 
   @override
+  String get fetchedAt => 'Erster Fetch';
+
+  @override
+  String get lastFetchedAt => 'Letzter Fetch';
+
+  @override
   String get settings => 'Einstellungen';
 
   @override

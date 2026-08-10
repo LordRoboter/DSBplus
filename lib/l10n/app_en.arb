@@ -52,6 +52,9 @@
   "additionalInformation": "Additional Information",
   "planDetails": "Plan Details",
 
+  "fetchedAt": "First Fetch",
+  "lastFetchedAt": "Most recent Fetch",
+
 
 
   "settings": "Settings",

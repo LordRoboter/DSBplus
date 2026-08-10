@@ -336,6 +336,18 @@ abstract class AppLocalizations {
   /// **'Plan Details'**
   String get planDetails;
 
+  /// No description provided for @fetchedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'First Fetch'**
+  String get fetchedAt;
+
+  /// No description provided for @lastFetchedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Most recent Fetch'**
+  String get lastFetchedAt;
+
   /// No description provided for @settings.
   ///
   /// In en, this message translates to:

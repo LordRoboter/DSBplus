@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:planner/core/models/filter.dart';
-import 'package:planner/core/models/timetable.dart';
+import 'package:planner/core/model/filter.dart';
+import 'package:planner/core/model/timetable.dart';
 import 'package:planner/core/util/translations.dart';
 import 'package:planner/services/data_repository.dart';
 import 'package:provider/provider.dart';

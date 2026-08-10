@@ -1,4 +1,4 @@
-import 'package:planner/core/models/timetable.dart';
+import 'package:planner/core/model/timetable.dart';
 
 LessonRange? parseLesson(String? value) {
   if (value == null || value.trim().isEmpty) {

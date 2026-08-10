@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
-import 'package:planner/core/models/daydate.dart';
+import 'package:planner/core/model/daydate.dart';
 import 'package:planner/l10n/l10extension.dart';
 import 'package:planner/core/util/translations.dart';
 import 'l10n/app_localizations.dart';

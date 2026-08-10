@@ -1,5 +1,5 @@
-import 'package:planner/core/models/daydate.dart';
-import 'package:planner/core/models/timetable.dart';
+import 'package:planner/core/model/daydate.dart';
+import 'package:planner/core/model/timetable.dart';
 
 int getRelativeDay(DateTime date) {
   try {
