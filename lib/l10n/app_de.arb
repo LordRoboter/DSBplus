@@ -46,6 +46,13 @@
   "date": "Datum: ",
   "updated": "Updated: ",
 
+  "dateP": "Datum",
+  "updatedP": "Updated",
+  "day": "Tag",
+
+  "additionalInformation": "Zusätzliche Informationen",
+  "planDetails": "Plan Details",
+
 
 
   "settings": "Einstellungen",

@@ -306,6 +306,36 @@ abstract class AppLocalizations {
   /// **'Updated: '**
   String get updated;
 
+  /// No description provided for @dateP.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get dateP;
+
+  /// No description provided for @updatedP.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated'**
+  String get updatedP;
+
+  /// No description provided for @day.
+  ///
+  /// In en, this message translates to:
+  /// **'Day'**
+  String get day;
+
+  /// No description provided for @additionalInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional Information'**
+  String get additionalInformation;
+
+  /// No description provided for @planDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan Details'**
+  String get planDetails;
+
   /// No description provided for @settings.
   ///
   /// In en, this message translates to:

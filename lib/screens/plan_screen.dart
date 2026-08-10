@@ -298,7 +298,9 @@ class _PlanScreenState extends State<PlanScreen>
                                       ),
                                       TextSpan(
                                         text: visibleTimetable?.updated != null
-                                            ? DateFormat.yMd(locale).format(
+                                            ? DateFormat.yMd(
+                                                locale,
+                                              ).add_Hm().format(
                                                 visibleTimetable!.updated!,
                                               )
                                             : '',
