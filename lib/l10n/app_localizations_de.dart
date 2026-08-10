@@ -122,6 +122,21 @@ class AppLocalizationsDe extends AppLocalizations {
   String get updated => 'Updated: ';
 
   @override
+  String get dateP => 'Datum';
+
+  @override
+  String get updatedP => 'Updated';
+
+  @override
+  String get day => 'Tag';
+
+  @override
+  String get additionalInformation => 'Zusätzliche Informationen';
+
+  @override
+  String get planDetails => 'Plan Details';
+
+  @override
   String get settings => 'Einstellungen';
 
   @override
