@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:planner/core/util/date.dart';
 import 'package:planner/core/util/translations.dart';
 import 'package:planner/l10n/l10extension.dart';
 import 'package:planner/widgets/lists.dart';
@@ -134,14 +135,11 @@ class _PlanScreenState extends State<PlanScreen>
                                   const SizedBox(width: 8),
                               itemBuilder: (context, index) {
                                 final dayDate = repo.availableDayDates[index];
-                                final label = dayDate.day != null
-                                    ? localizedWeekday(context, dayDate.day!)
-                                    : dayDate.date == null
-                                    ? context.l10n.unknown
-                                    : DateFormat.yMd(
-                                        locale,
-                                      ).format(dayDate.date!);
-
+                                final label = getDayName(
+                                  dayDate.date,
+                                  dayDate.day,
+                                  context,
+                                );
                                 return ChoiceChip(
                                   label: Text(label),
                                   selected: data.selectedDayDate == dayDate,
@@ -202,16 +200,11 @@ class _PlanScreenState extends State<PlanScreen>
                                     itemBuilder: (context, index) {
                                       final dayDate =
                                           repo.availableDayDates[index];
-                                      final label = dayDate.day != null
-                                          ? localizedWeekday(
-                                              context,
-                                              dayDate.day!,
-                                            )
-                                          : dayDate.date == null
-                                          ? context.l10n.unknown
-                                          : DateFormat.yMd(
-                                              locale,
-                                            ).format(dayDate.date!);
+                                      final label = getDayName(
+                                        dayDate.date,
+                                        dayDate.day,
+                                        context,
+                                      );
 
                                       return ChoiceChip(
                                         label: Text(label),

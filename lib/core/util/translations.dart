@@ -133,3 +133,12 @@ String localizedSubject(BuildContext context, String? subject) {
     _ => subject,
   };
 }
+
+String localizedRelativeWeekday(int diff, BuildContext context) {
+  return switch (diff) {
+    -1 => context.l10n.yesterday,
+    0 => context.l10n.today,
+    1 => context.l10n.tomorrow,
+    _ => "",
+  };
+}
