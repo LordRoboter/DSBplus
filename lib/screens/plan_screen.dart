@@ -256,92 +256,122 @@ class _PlanScreenState extends State<PlanScreen>
                                   ),
                                   child: Row(
                                     children: [
-                                      const Icon(
-                                        Icons.calendar_today,
-                                        size: 16,
-                                      ),
-                                      const SizedBox(width: 6),
-
-                                      Text.rich(
-                                        TextSpan(
+                                      Flexible(
+                                        fit: FlexFit.loose,
+                                        flex: 8,
+                                        child: Row(
                                           children: [
-                                            TextSpan(
-                                              text: context.l10n.date,
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                            const Icon(
+                                              Icons.calendar_today,
+                                              size: 16,
                                             ),
-                                            TextSpan(
-                                              text:
-                                                  visibleTimetable?.date != null
-                                                  ? DateFormat.yMd(
-                                                      locale,
-                                                    ).format(
-                                                      visibleTimetable!.date!,
-                                                    )
-                                                  : '',
+                                            const SizedBox(width: 6),
+                                            Flexible(
+                                              child: Text.rich(
+                                                TextSpan(
+                                                  children: [
+                                                    TextSpan(
+                                                      text: context.l10n.date,
+                                                      style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    TextSpan(
+                                                      text:
+                                                          visibleTimetable
+                                                                  ?.date !=
+                                                              null
+                                                          ? DateFormat.yMd(
+                                                              locale,
+                                                            ).format(
+                                                              visibleTimetable!
+                                                                  .date!,
+                                                            )
+                                                          : '',
+                                                    ),
+                                                  ],
+                                                ),
+                                                style: Theme.of(
+                                                  context,
+                                                ).textTheme.bodyMedium,
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 1,
+                                              ),
                                             ),
                                           ],
                                         ),
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.bodyMedium,
                                       ),
 
-                                      const Spacer(),
-
-                                      SizedBox(
-                                        height: 18.0,
-                                        width: 18.0,
-                                        child: IconButton(
-                                          iconSize: 18,
-                                          padding: EdgeInsets.zero,
-                                          constraints: const BoxConstraints(
-                                            minWidth: 18,
-                                            minHeight: 18,
-                                          ),
-                                          visualDensity: VisualDensity.compact,
-                                          splashRadius: 18,
-                                          onPressed: repo.loading
-                                              ? null
-                                              : () async {
-                                                  await repo.loadData();
-                                                },
-                                          icon: RotationTransition(
-                                            turns: _rotationController,
-                                            child: const Icon(Icons.refresh),
-                                          ),
-                                        ),
-                                      ),
-
-                                      const SizedBox(width: 6),
-
-                                      Text.rich(
-                                        TextSpan(
+                                      Flexible(
+                                        flex: 11,
+                                        fit: FlexFit.loose,
+                                        child: Row(
                                           children: [
-                                            TextSpan(
-                                              text: context.l10n.updated,
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
+                                            SizedBox(
+                                              height: 18,
+                                              width: 18,
+                                              child: IconButton(
+                                                iconSize: 18,
+                                                padding: EdgeInsets.zero,
+                                                constraints:
+                                                    const BoxConstraints(
+                                                      minWidth: 18,
+                                                      minHeight: 18,
+                                                    ),
+                                                visualDensity:
+                                                    VisualDensity.compact,
+                                                splashRadius: 18,
+                                                onPressed: repo.loading
+                                                    ? null
+                                                    : () async {
+                                                        await repo.loadData();
+                                                      },
+                                                icon: RotationTransition(
+                                                  turns: _rotationController,
+                                                  child: const Icon(
+                                                    Icons.refresh,
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                            TextSpan(
-                                              text:
-                                                  visibleTimetable?.updated !=
-                                                      null
-                                                  ? DateFormat.yMd(
-                                                      locale,
-                                                    ).add_Hm().format(
-                                                      visibleTimetable!
-                                                          .updated!,
-                                                    )
-                                                  : '',
+                                            const SizedBox(width: 6),
+                                            Flexible(
+                                              child: Text.rich(
+                                                TextSpan(
+                                                  children: [
+                                                    TextSpan(
+                                                      text:
+                                                          context.l10n.updated,
+                                                      style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    TextSpan(
+                                                      text:
+                                                          visibleTimetable
+                                                                  ?.updated !=
+                                                              null
+                                                          ? DateFormat.yMd(
+                                                              locale,
+                                                            ).add_Hm().format(
+                                                              visibleTimetable!
+                                                                  .updated!,
+                                                            )
+                                                          : '',
+                                                    ),
+                                                  ],
+                                                ),
+                                                style: Theme.of(
+                                                  context,
+                                                ).textTheme.bodyMedium,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
                                             ),
                                           ],
                                         ),
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.bodyMedium,
                                       ),
 
                                       const SizedBox(width: 4),
