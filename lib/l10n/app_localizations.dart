@@ -306,6 +306,48 @@ abstract class AppLocalizations {
   /// **'Updated: '**
   String get updated;
 
+  /// No description provided for @dateP.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get dateP;
+
+  /// No description provided for @updatedP.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated'**
+  String get updatedP;
+
+  /// No description provided for @day.
+  ///
+  /// In en, this message translates to:
+  /// **'Day'**
+  String get day;
+
+  /// No description provided for @additionalInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional Information'**
+  String get additionalInformation;
+
+  /// No description provided for @planDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan Details'**
+  String get planDetails;
+
+  /// No description provided for @fetchedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'First Fetch'**
+  String get fetchedAt;
+
+  /// No description provided for @lastFetchedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Most recent Fetch'**
+  String get lastFetchedAt;
+
   /// No description provided for @settings.
   ///
   /// In en, this message translates to:
@@ -521,6 +563,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'English'**
   String get english;
+
+  /// No description provided for @substitution.
+  ///
+  /// In en, this message translates to:
+  /// **'Substitution'**
+  String get substitution;
+
+  /// No description provided for @cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get cancelled;
+
+  /// No description provided for @classChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Class changed'**
+  String get classChanged;
+
+  /// No description provided for @specialAssignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Special assignment'**
+  String get specialAssignment;
+
+  /// No description provided for @roomSubstitution.
+  ///
+  /// In en, this message translates to:
+  /// **'Room substitution'**
+  String get roomSubstitution;
+
+  /// No description provided for @event.
+  ///
+  /// In en, this message translates to:
+  /// **'Event'**
+  String get event;
+
+  /// No description provided for @despiteAbsence.
+  ///
+  /// In en, this message translates to:
+  /// **'Despite absence'**
+  String get despiteAbsence;
+
+  /// No description provided for @substituteLesson.
+  ///
+  /// In en, this message translates to:
+  /// **'Substitute lesson'**
+  String get substituteLesson;
+
+  /// No description provided for @supervision.
+  ///
+  /// In en, this message translates to:
+  /// **'Supervision'**
+  String get supervision;
+
+  /// No description provided for @subjectGerman.
+  ///
+  /// In en, this message translates to:
+  /// **'German'**
+  String get subjectGerman;
+
+  /// No description provided for @subjectDrama.
+  ///
+  /// In en, this message translates to:
+  /// **'Drama'**
+  String get subjectDrama;
+
+  /// No description provided for @subjectFrench.
+  ///
+  /// In en, this message translates to:
+  /// **'French'**
+  String get subjectFrench;
+
+  /// No description provided for @subjectSpanish.
+  ///
+  /// In en, this message translates to:
+  /// **'Spanish'**
+  String get subjectSpanish;
+
+  /// No description provided for @subjectLatin.
+  ///
+  /// In en, this message translates to:
+  /// **'Latin'**
+  String get subjectLatin;
+
+  /// No description provided for @subjectPhysics.
+  ///
+  /// In en, this message translates to:
+  /// **'Physics'**
+  String get subjectPhysics;
+
+  /// No description provided for @subjectChemistry.
+  ///
+  /// In en, this message translates to:
+  /// **'Chemistry'**
+  String get subjectChemistry;
+
+  /// No description provided for @subjectBiology.
+  ///
+  /// In en, this message translates to:
+  /// **'Biology'**
+  String get subjectBiology;
+
+  /// No description provided for @subjectPoliticsEconomics.
+  ///
+  /// In en, this message translates to:
+  /// **'Politics & Economics'**
+  String get subjectPoliticsEconomics;
+
+  /// No description provided for @subjectMathematics.
+  ///
+  /// In en, this message translates to:
+  /// **'Mathematics'**
+  String get subjectMathematics;
+
+  /// No description provided for @subjectMusic.
+  ///
+  /// In en, this message translates to:
+  /// **'Music'**
+  String get subjectMusic;
+
+  /// No description provided for @subjectEthics.
+  ///
+  /// In en, this message translates to:
+  /// **'Ethics'**
+  String get subjectEthics;
+
+  /// No description provided for @subjectCatholicReligion.
+  ///
+  /// In en, this message translates to:
+  /// **'Catholic Religion'**
+  String get subjectCatholicReligion;
+
+  /// No description provided for @subjectHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get subjectHistory;
+
+  /// No description provided for @subjectProtestantReligion.
+  ///
+  /// In en, this message translates to:
+  /// **'Protestant Religion'**
+  String get subjectProtestantReligion;
+
+  /// No description provided for @subjectSports.
+  ///
+  /// In en, this message translates to:
+  /// **'PE'**
+  String get subjectSports;
+
+  /// No description provided for @subjectEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get subjectEnglish;
+
+  /// No description provided for @subjectArt.
+  ///
+  /// In en, this message translates to:
+  /// **'Art'**
+  String get subjectArt;
+
+  /// No description provided for @subjectTutorCourse.
+  ///
+  /// In en, this message translates to:
+  /// **'Tutor Course'**
+  String get subjectTutorCourse;
+
+  /// No description provided for @subjectChinese.
+  ///
+  /// In en, this message translates to:
+  /// **'Chinese'**
+  String get subjectChinese;
+
+  /// No description provided for @subjectComputerScience.
+  ///
+  /// In en, this message translates to:
+  /// **'Computer Science'**
+  String get subjectComputerScience;
+
+  /// No description provided for @subjectGeography.
+  ///
+  /// In en, this message translates to:
+  /// **'Geography'**
+  String get subjectGeography;
 }
 
 class _AppLocalizationsDelegate

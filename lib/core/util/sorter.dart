@@ -1,9 +1,8 @@
-import 'package:planner/core/models/daydate.dart';
-import 'package:planner/core/models/filter.dart';
-import 'package:planner/core/models/timetable.dart';
-import 'package:planner/core/util/date.dart';
-
-import '../../res/maps.dart';
+import 'package:flutter/material.dart';
+import 'package:planner/core/model/daydate.dart';
+import 'package:planner/core/model/filter.dart';
+import 'package:planner/core/model/timetable.dart';
+import 'package:planner/core/util/translations.dart';
 
 Map<DayDate, Timetable> groupEntriesByDayDate(List<Timetable> timetables) {
   final grouped = <DayDate, Timetable>{};
@@ -42,6 +41,7 @@ bool isDigit(String c) {
 }
 
 Timetable cleanupTimetable(
+  BuildContext context,
   Timetable timetable, {
   bool disposeTut = true,
   bool cleanClassNames = true,
@@ -50,13 +50,6 @@ Timetable cleanupTimetable(
   bool disposeCourseNumbers = true,
   bool mapCourses = true,
 }) {
-  for (final c in timetable.entries) {
-    if (c.className.startsWith("E")) {
-      print(
-        '${c.classNames} -> ${c.entries.map((e) => '${e.subject} ${e.lesson} ${e.teacher}').join(", ")}',
-      );
-    }
-  }
   final cleanedClasses = timetable.entries.map((classEntry) {
     final cleanedClassNames = classEntry.classNames.map((className) {
       var cleaned = className;
@@ -74,12 +67,6 @@ Timetable cleanupTimetable(
 
     final cleanedEntries = classEntry.entries.map((entry) {
       var subject = entry.subject ?? "";
-      var type = entry.type ?? "";
-
-      // ----- Type -----
-      if (remapTypes) {
-        type = typeMap[type.toLowerCase()] ?? type;
-      }
 
       // ----- Subject -----
       if (cleanupCourses) {
@@ -103,7 +90,7 @@ Timetable cleanupTimetable(
           subject = subject.substring(0, match.start);
         }
 
-        subject = subjectMap[subject.toLowerCase()] ?? subject;
+        subject = localizedSubject(context, subject);
       }
 
       return TimetableEntry(
@@ -112,7 +99,7 @@ Timetable cleanupTimetable(
         room: entry.room,
         text: entry.text,
         subject: subject + suffix,
-        type: type,
+        type: entry.type,
       );
     }).toList();
 
@@ -148,6 +135,8 @@ Timetable cleanupTimetable(
     date: timetable.date,
     day: timetable.day,
     updated: timetable.updated,
+    firstFetched: timetable.firstFetched,
+    lastFetched: timetable.lastFetched,
     extraInfos: timetable.extraInfos,
     entries: resultEntries,
   );
@@ -302,6 +291,7 @@ bool matchesClass(ClassEntry entry, TimetableFilter filter) {
 }
 
 Timetable enhanceTimetable(
+  BuildContext context,
   Timetable timetable,
   bool clean,
   bool simplify, {
@@ -316,6 +306,7 @@ Timetable enhanceTimetable(
 
   if (clean) {
     res = cleanupTimetable(
+      context,
       res,
       disposeTut: disposeTut,
       cleanClassNames: cleanClassNames,

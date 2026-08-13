@@ -4,7 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:html/dom.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart';
-import 'package:planner/core/models/timetable.dart';
+import 'package:planner/core/model/timetable.dart';
 import 'package:planner/core/util/lessons.dart';
 import 'package:uuid/uuid.dart';
 
@@ -40,7 +40,8 @@ class DSBApi {
   }
 
   Future<List<Timetable>> fetchEntries() async {
-    final now = DateTime.now().toUtc().toIso8601String();
+    final fetchedAt = DateTime.now();
+    final now = fetchedAt.toUtc().toIso8601String();
 
     final params = {
       "UserId": username,
@@ -99,7 +100,7 @@ class DSBApi {
       if (url.endsWith(".htm") &&
           !url.endsWith(".html") &&
           !url.endsWith("news.htm")) {
-        final timetables = await fetchTimetable(url);
+        final timetables = await fetchTimetable(url, fetchedAt);
 
         if (timetables != null) {
           output.addAll(timetables);
@@ -121,7 +122,10 @@ class DSBApi {
     return text.isEmpty || text == "---" ? null : text;
   }
 
-  Future<List<Timetable>?> fetchTimetable(String url) async {
+  Future<List<Timetable>?> fetchTimetable(
+    String url,
+    DateTime fetchedAt,
+  ) async {
     http.Response response;
     try {
       response = await http.get(Uri.parse(url));
@@ -144,7 +148,11 @@ class DSBApi {
     final infos = document.querySelectorAll("td.info");
 
     for (int t = 0; t < tables.length; t++) {
-      final timetable = Timetable(entries: []);
+      final timetable = Timetable(
+        entries: [],
+        firstFetched: fetchedAt,
+        lastFetched: fetchedAt,
+      );
 
       final title = titles[t].text.trim();
 
@@ -180,7 +188,7 @@ class DSBApi {
                 "unterrichtsfrei") {
               final entry = TimetableEntry(
                 lesson: parseLesson(infos[i].text),
-                type: "Eigenverantwortliches Arbeiten",
+                type: TimetableStatusType.cancelled,
               );
 
               timetable.entries.add(
@@ -224,7 +232,7 @@ class DSBApi {
             teacher: valueFor("teacher", cells),
             subject: valueFor("subject", cells),
             room: valueFor("room", cells),
-            type: valueFor("type", cells),
+            type: parseStatus(valueFor("type", cells)),
             text: valueFor("text", cells),
           );
 
@@ -253,23 +261,6 @@ class DSBApi {
   }
 
   List<Timetable> mergeTimetables(List<Timetable> timetables) {
-    String entryGroupKey(ClassEntry entry) {
-      final lessons = entry.entries.map((lesson) {
-        return [
-          lesson.type,
-          lesson.lesson,
-          lesson.subject,
-          lesson.room,
-          lesson.teacher,
-          lesson.text,
-        ].join("|");
-      }).toList();
-
-      lessons.sort();
-
-      return lessons.join(";");
-    }
-
     List<Timetable> mergeByDate(List<Timetable> timetables) {
       final Map<String, Timetable> result = {};
 
@@ -280,7 +271,21 @@ class DSBApi {
         if (!result.containsKey(key)) {
           result[key] = timetable;
         } else {
-          result[key]!.entries.addAll(timetable.entries);
+          final existing = result[key]!;
+
+          existing.entries.addAll(timetable.entries);
+
+          if (timetable.firstFetched != null &&
+              (existing.firstFetched == null ||
+                  timetable.firstFetched!.isBefore(existing.firstFetched!))) {
+            existing.firstFetched = timetable.firstFetched;
+          }
+
+          if (timetable.lastFetched != null &&
+              (existing.lastFetched == null ||
+                  timetable.lastFetched!.isAfter(existing.lastFetched!))) {
+            existing.lastFetched = timetable.lastFetched;
+          }
         }
       }
 

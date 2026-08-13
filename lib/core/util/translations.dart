@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:planner/core/models/timetable.dart';
+import 'package:planner/core/model/timetable.dart';
 import 'package:planner/l10n/l10extension.dart';
 
 String ordinal(LessonRange? value, Locale locale) {
@@ -64,6 +64,81 @@ String localizedWeekday(BuildContext context, Weekday? day) {
     Weekday.friday => context.l10n.friday,
     Weekday.saturday => context.l10n.saturday,
     Weekday.sunday => context.l10n.sunday,
+    _ => "",
+  };
+}
+
+String localizedStatus(
+  BuildContext context,
+  TimetableStatusType? status, {
+  bool original = false,
+}) {
+  return switch (status) {
+    TimetableStatusType.substitution =>
+      original ? "Vertretung" : context.l10n.substitution,
+
+    TimetableStatusType.cancelled =>
+      original ? "Eigenverantwortliches Arbeiten" : context.l10n.cancelled,
+
+    TimetableStatusType.classChanged =>
+      original ? "Unterricht geändert" : context.l10n.classChanged,
+
+    TimetableStatusType.specialAssignment =>
+      original ? "Sondereins." : context.l10n.specialAssignment,
+
+    TimetableStatusType.roomSubstitution =>
+      original ? "Raum-Vtr." : context.l10n.roomSubstitution,
+
+    TimetableStatusType.event => original ? "Veranst." : context.l10n.event,
+
+    TimetableStatusType.despiteAbsence =>
+      original ? "TrotzAbsenz" : context.l10n.despiteAbsence,
+
+    TimetableStatusType.substituteLesson =>
+      original ? "Statt-Vertretung" : context.l10n.substituteLesson,
+
+    TimetableStatusType.supervision =>
+      original ? "Betreuung" : context.l10n.supervision,
+
+    null => "",
+  };
+}
+
+String localizedSubject(BuildContext context, String? subject) {
+  if (subject == null || subject.isEmpty) return "";
+
+  return switch (subject.toLowerCase()) {
+    "d" => context.l10n.subjectGerman,
+    "ds" => context.l10n.subjectDrama,
+    "f" => context.l10n.subjectFrench,
+    "spa" => context.l10n.subjectSpanish,
+    "lat" || "l" => context.l10n.subjectLatin,
+    "ph" => context.l10n.subjectPhysics,
+    "ch" => context.l10n.subjectChemistry,
+    "bio" => context.l10n.subjectBiology,
+    "powi" => context.l10n.subjectPoliticsEconomics,
+    "m" => context.l10n.subjectMathematics,
+    "mu" => context.l10n.subjectMusic,
+    "ethi" => context.l10n.subjectEthics,
+    "rka" => context.l10n.subjectCatholicReligion,
+    "g" => context.l10n.subjectHistory,
+    "rev" => context.l10n.subjectProtestantReligion,
+    "spo" => context.l10n.subjectSports,
+    "e" => context.l10n.subjectEnglish,
+    "ku" => context.l10n.subjectArt,
+    "tut" => context.l10n.subjectTutorCourse,
+    "chin" => context.l10n.subjectChinese,
+    "info" => context.l10n.subjectComputerScience,
+    "geo" => context.l10n.subjectGeography,
+    _ => subject,
+  };
+}
+
+String localizedRelativeWeekday(int diff, BuildContext context) {
+  return switch (diff) {
+    -1 => context.l10n.yesterday,
+    0 => context.l10n.today,
+    1 => context.l10n.tomorrow,
     _ => "",
   };
 }

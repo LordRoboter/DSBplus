@@ -1,8 +1,8 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:planner/core/models/filter.dart';
-import 'package:planner/core/models/timetable.dart';
+import 'package:planner/core/model/filter.dart';
+import 'package:planner/core/model/timetable.dart';
 import 'package:planner/l10n/l10extension.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 

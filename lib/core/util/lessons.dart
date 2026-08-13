@@ -1,4 +1,4 @@
-import 'package:planner/core/models/timetable.dart';
+import 'package:planner/core/model/timetable.dart';
 
 LessonRange? parseLesson(String? value) {
   if (value == null || value.trim().isEmpty) {
@@ -53,6 +53,51 @@ Weekday? parseWeekday(String? value) {
       return Weekday.saturday;
     case "sonntag":
       return Weekday.sunday;
+    default:
+      return null;
+  }
+}
+
+TimetableStatusType? parseStatus(String? value) {
+  if (value == null || value.trim().isEmpty) {
+    return null;
+  }
+
+  final cleaned = value.trim().toLowerCase();
+
+  switch (cleaned) {
+    case "entfall":
+    case "eigenverantwortliches arbeiten":
+      return TimetableStatusType.cancelled;
+
+    case "vertretung":
+      return TimetableStatusType.substitution;
+
+    case "unterricht geändert":
+      return TimetableStatusType.classChanged;
+
+    case "sondereinsatz":
+    case "sondereins.":
+      return TimetableStatusType.specialAssignment;
+
+    case "raum-vertretung":
+    case "raum-vtr.":
+      return TimetableStatusType.roomSubstitution;
+
+    case "veranstaltung":
+    case "veranst.":
+      return TimetableStatusType.event;
+
+    case "trotz absenz":
+    case "trotzabsenz":
+      return TimetableStatusType.despiteAbsence;
+
+    case "statt-vertretung":
+      return TimetableStatusType.substituteLesson;
+
+    case "betreuung":
+      return TimetableStatusType.supervision;
+
     default:
       return null;
   }

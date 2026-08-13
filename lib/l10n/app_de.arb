@@ -32,19 +32,29 @@
   "timetableChanged": "Vertretungsplanänderung",
   "deletedEntries": "Gelöschte Einträge",
 
-      "monday": "Montag",
-      "tuesday": "Dienstag",
-      "wednesday": "Mittwoch",
-      "thursday": "Donnerstag",
-      "friday": "Freitag",
-      "saturday": "Samstag",
-      "sunday": "Sonntag",
+  "monday": "Montag",
+  "tuesday": "Dienstag",
+  "wednesday": "Mittwoch",
+  "thursday": "Donnerstag",
+  "friday": "Freitag",
+  "saturday": "Samstag",
+  "sunday": "Sonntag",
 
   "unknown": "Unknown",
 
   "search": "Suchen...",
   "date": "Datum: ",
   "updated": "Updated: ",
+
+  "dateP": "Datum",
+  "updatedP": "Updated",
+  "day": "Tag",
+
+  "additionalInformation": "Zusätzliche Informationen",
+  "planDetails": "Plan Details",
+
+  "fetchedAt": "Erster Fetch",
+  "lastFetchedAt": "Letzter Fetch",
 
 
 
@@ -91,6 +101,40 @@
   "amoled": "AMOLED",
 
   "systemDefault": "Systemstandard",
-  "german": "Deustch",
-  "english": "Englisch"
+  "german": "Deutsch",
+  "english": "Englisch",
+
+  
+  "substitution": "Vertretung",
+  "cancelled": "Entfall",
+  "classChanged": "Unterricht geändert",
+  "specialAssignment": "Sondereinsatz",
+  "roomSubstitution": "Raum-Vertretung",
+  "event": "Veranstaltung",
+  "despiteAbsence": "Trotz Absenz",
+  "substituteLesson": "Statt-Vertretung",
+  "supervision": "Betreuung",
+
+  "subjectGerman": "Deutsch",
+  "subjectDrama": "Darstellendes Spiel",
+  "subjectFrench": "Französisch",
+  "subjectSpanish": "Spanisch",
+  "subjectLatin": "Latein",
+  "subjectPhysics": "Physik",
+  "subjectChemistry": "Chemie",
+  "subjectBiology": "Biologie",
+  "subjectPoliticsEconomics": "PoWi",
+  "subjectMathematics": "Mathematik",
+  "subjectMusic": "Musik",
+  "subjectEthics": "Ethik",
+  "subjectCatholicReligion": "Reli Katholisch",
+  "subjectHistory": "Geschichte",
+  "subjectProtestantReligion": "Reli Evangelisch",
+  "subjectSports": "Sport",
+  "subjectEnglish": "Englisch",
+  "subjectArt": "Kunst",
+  "subjectTutorCourse": "Tutorenkurs",
+  "subjectChinese": "Chinesisch",
+  "subjectComputerScience": "Informatik",
+  "subjectGeography": "Erdkunde"
 }
