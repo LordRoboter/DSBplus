@@ -122,6 +122,27 @@ class AppLocalizationsDe extends AppLocalizations {
   String get updated => 'Updated: ';
 
   @override
+  String get dateP => 'Datum';
+
+  @override
+  String get updatedP => 'Updated';
+
+  @override
+  String get day => 'Tag';
+
+  @override
+  String get additionalInformation => 'Zusätzliche Informationen';
+
+  @override
+  String get planDetails => 'Plan Details';
+
+  @override
+  String get fetchedAt => 'Erster Fetch';
+
+  @override
+  String get lastFetchedAt => 'Letzter Fetch';
+
+  @override
   String get settings => 'Einstellungen';
 
   @override
@@ -224,8 +245,101 @@ class AppLocalizationsDe extends AppLocalizations {
   String get systemDefault => 'Systemstandard';
 
   @override
-  String get german => 'Deustch';
+  String get german => 'Deutsch';
 
   @override
   String get english => 'Englisch';
+
+  @override
+  String get substitution => 'Vertretung';
+
+  @override
+  String get cancelled => 'Entfall';
+
+  @override
+  String get classChanged => 'Unterricht geändert';
+
+  @override
+  String get specialAssignment => 'Sondereinsatz';
+
+  @override
+  String get roomSubstitution => 'Raum-Vertretung';
+
+  @override
+  String get event => 'Veranstaltung';
+
+  @override
+  String get despiteAbsence => 'Trotz Absenz';
+
+  @override
+  String get substituteLesson => 'Statt-Vertretung';
+
+  @override
+  String get supervision => 'Betreuung';
+
+  @override
+  String get subjectGerman => 'Deutsch';
+
+  @override
+  String get subjectDrama => 'Darstellendes Spiel';
+
+  @override
+  String get subjectFrench => 'Französisch';
+
+  @override
+  String get subjectSpanish => 'Spanisch';
+
+  @override
+  String get subjectLatin => 'Latein';
+
+  @override
+  String get subjectPhysics => 'Physik';
+
+  @override
+  String get subjectChemistry => 'Chemie';
+
+  @override
+  String get subjectBiology => 'Biologie';
+
+  @override
+  String get subjectPoliticsEconomics => 'PoWi';
+
+  @override
+  String get subjectMathematics => 'Mathematik';
+
+  @override
+  String get subjectMusic => 'Musik';
+
+  @override
+  String get subjectEthics => 'Ethik';
+
+  @override
+  String get subjectCatholicReligion => 'Reli Katholisch';
+
+  @override
+  String get subjectHistory => 'Geschichte';
+
+  @override
+  String get subjectProtestantReligion => 'Reli Evangelisch';
+
+  @override
+  String get subjectSports => 'Sport';
+
+  @override
+  String get subjectEnglish => 'Englisch';
+
+  @override
+  String get subjectArt => 'Kunst';
+
+  @override
+  String get subjectTutorCourse => 'Tutorenkurs';
+
+  @override
+  String get subjectChinese => 'Chinesisch';
+
+  @override
+  String get subjectComputerScience => 'Informatik';
+
+  @override
+  String get subjectGeography => 'Erdkunde';
 }

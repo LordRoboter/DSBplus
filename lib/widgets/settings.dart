@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:planner/core/models/filter.dart';
+import 'package:planner/core/model/filter.dart';
 
 enum SettingsCategoryTilePosition { single, top, middle, bottom }
 

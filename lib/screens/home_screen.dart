@@ -1,13 +1,11 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:planner/core/models/timetable.dart';
 import 'package:planner/core/util/translations.dart';
 import 'package:planner/l10n/l10extension.dart';
 import 'package:planner/widgets/lists.dart';
 import 'package:planner/services/data_repository.dart';
 import 'package:planner/core/util/date.dart';
+import 'package:planner/widgets/modals.dart';
 import 'package:provider/provider.dart';
 
 import '../services/plan_repository.dart';
@@ -57,6 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final enhancedTimetables = finalResults
         .map(
           (timetable) => enhanceTimetable(
+            context,
             timetable,
             data.clean,
             data.simplify,
@@ -95,13 +94,17 @@ class _HomeScreenState extends State<HomeScreen> {
               separatorBuilder: (_, _) => const SizedBox(height: 48),
               itemBuilder: (context, index) {
                 final dayTimetable = enhancedTimetables.elementAt(index);
+
                 final relativeDay = dayTimetable.date != null
                     ? getRelativeDay(dayTimetable.date!)
                     : null;
+
                 final date = dayTimetable.date;
+
                 final formattedDate = date != null
                     ? "(${DateFormat.yMd(Localizations.localeOf(context).toString()).format(date)})"
                     : "";
+
                 final dayName = switch (relativeDay) {
                   0 => context.l10n.today,
                   1 => context.l10n.tomorrow,
@@ -115,40 +118,64 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primaryContainer,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                dayName,
-                                style: Theme.of(context).textTheme.titleLarge
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
+                      child: Material(
+                        color: Theme.of(context).colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(12),
+                        clipBehavior: Clip.antiAlias,
+                        child: InkWell(
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              showDragHandle: true,
+                              builder: (context) {
+                                return PlanDetailsSheet(
+                                  timetable: dayTimetable,
+                                );
+                              },
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    dayName,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onPrimaryContainer,
+                                        ),
+                                  ),
+                                ),
+                                if (date != null && isOutdated(date))
+                                  Tooltip(
+                                    message: context.l10n.outdatedEntry,
+                                    child: Icon(
+                                      Icons.warning_amber_rounded,
                                       color: Theme.of(
                                         context,
-                                      ).colorScheme.onPrimaryContainer,
+                                      ).colorScheme.error,
                                     ),
-                              ),
-                            ),
-                            if (isOutdated(dayTimetable.date!))
-                              Tooltip(
-                                message: context.l10n.outdatedEntry,
-                                child: IconButton(
-                                  icon: const Icon(Icons.warning_amber_rounded),
-                                  color: Theme.of(context).colorScheme.error,
-                                  onPressed: () {},
+                                  ),
+                                const SizedBox(width: 8),
+                                Icon(
+                                  Icons.chevron_right,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimaryContainer,
                                 ),
-                              ),
-                          ],
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ),

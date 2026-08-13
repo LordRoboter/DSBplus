@@ -47,10 +47,24 @@ extension LessonRangeExtension on LessonRange {
   }
 }
 
+enum TimetableStatusType {
+  substitution,
+  cancelled,
+  classChanged,
+  roomSubstitution,
+  event,
+  despiteAbsence,
+  substituteLesson,
+  supervision,
+  specialAssignment,
+}
+
 class Timetable {
   DateTime? date;
   Weekday? day;
   DateTime? updated;
+  DateTime? firstFetched;
+  DateTime? lastFetched;
   Map<String, String>? extraInfos;
   final List<ClassEntry> entries;
 
@@ -58,11 +72,25 @@ class Timetable {
     this.date,
     this.day,
     this.updated,
+    this.firstFetched,
+    this.lastFetched,
     this.extraInfos,
     required this.entries,
   });
 
   Map<String, dynamic> toJson() {
+    return {
+      "date": date?.millisecondsSinceEpoch,
+      "updated": updated?.millisecondsSinceEpoch,
+      "firstFetched": firstFetched?.millisecondsSinceEpoch,
+      "lastFetched": lastFetched?.millisecondsSinceEpoch,
+      "day": day?.index,
+      "extraInfos": extraInfos,
+      "entries": entries.map((e) => e.toJson()).toList(),
+    };
+  }
+
+  Map<String, dynamic> toComparableJson() {
     return {
       "date": date?.millisecondsSinceEpoch,
       "updated": updated?.millisecondsSinceEpoch,
@@ -80,6 +108,12 @@ class Timetable {
       updated: json["updated"] != null
           ? DateTime.fromMillisecondsSinceEpoch(json["updated"])
           : null,
+      firstFetched: json["firstFetched"] != null
+          ? DateTime.fromMillisecondsSinceEpoch(json["firstFetched"])
+          : null,
+      lastFetched: json["lastFetched"] != null
+          ? DateTime.fromMillisecondsSinceEpoch(json["lastFetched"])
+          : null,
       day: json["day"] != null ? Weekday.values[json["day"]] : null,
       extraInfos: Map<String, String>.from(json["extraInfos"] ?? {}),
       entries: (json["entries"] as List)
@@ -92,6 +126,8 @@ class Timetable {
     DateTime? date,
     Weekday? day,
     DateTime? updated,
+    DateTime? firstFetched,
+    DateTime? lastFetched,
     Map<String, String>? extraInfos,
     List<ClassEntry>? entries,
   }) {
@@ -99,6 +135,8 @@ class Timetable {
       date: date ?? this.date,
       day: day ?? this.day,
       updated: updated ?? this.updated,
+      firstFetched: firstFetched ?? this.firstFetched,
+      lastFetched: lastFetched ?? this.lastFetched,
       extraInfos: extraInfos ?? this.extraInfos,
       entries: entries ?? this.entries,
     );
@@ -145,7 +183,7 @@ class TimetableEntry {
   final String? teacher;
   final String? subject;
   final String? room;
-  final String? type;
+  final TimetableStatusType? type;
   final String? text;
 
   const TimetableEntry({
@@ -163,7 +201,7 @@ class TimetableEntry {
       "teacher": teacher,
       "subject": subject,
       "room": room,
-      "type": type,
+      "type": type?.index,
       "text": text,
     };
   }
@@ -176,7 +214,9 @@ class TimetableEntry {
       teacher: json["teacher"],
       subject: json["subject"],
       room: json["room"],
-      type: json["type"],
+      type: json["type"] != null
+          ? TimetableStatusType.values[json["type"]]
+          : null,
       text: json["text"],
     );
   }
@@ -186,7 +226,7 @@ class TimetableEntry {
     String? teacher,
     String? subject,
     String? room,
-    String? type,
+    TimetableStatusType? type,
     String? text,
   }) {
     return TimetableEntry(

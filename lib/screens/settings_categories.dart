@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:planner/core/models/filter.dart';
+import 'package:planner/core/model/filter.dart';
 import 'package:planner/l10n/l10extension.dart';
 import 'package:planner/widgets/dialogues.dart';
 import 'package:planner/widgets/settings.dart';
@@ -248,7 +248,14 @@ class CleanupSettingsPage extends StatelessWidget {
                             SwitchListTile(
                               title: Text(context.l10n.renameSubjects),
                               value: data.mapCourses,
-                              onChanged: data.clean ? data.setMapCourses : null,
+                              onChanged:
+                                  Localizations.localeOf(
+                                            context,
+                                          ).languageCode ==
+                                          'de' &&
+                                      data.clean
+                                  ? data.setMapCourses
+                                  : null,
                             ),
                             SwitchListTile(
                               title: Text(context.l10n.removeCourseNumbers),
@@ -312,51 +319,94 @@ class AppearanceSettingsPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SettingsLabeledRow(
-                      title: context.l10n.appTheme,
-                      child: DropdownMenu<AppThemes>(
-                        initialSelection: data.theme,
-                        dropdownMenuEntries: [
-                          DropdownMenuEntry(
-                            value: AppThemes.system,
-                            label: context.l10n.system,
-                          ),
-                          DropdownMenuEntry(
-                            value: AppThemes.light,
-                            label: context.l10n.light,
-                          ),
-                          DropdownMenuEntry(
-                            value: AppThemes.dark,
-                            label: context.l10n.dark,
-                          ),
-                        ],
-                        onSelected: (value) {
-                          if (value != null) {
-                            data.setTheme(value);
-                          }
-                        },
+                    // App Theme
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Text(context.l10n.appTheme),
+                    ),
+                    SegmentedButton<AppThemes>(
+                      segments: [
+                        ButtonSegment<AppThemes>(
+                          value: AppThemes.system,
+                          icon: const Icon(Icons.brightness_auto),
+                          label: Text(context.l10n.system),
+                        ),
+                        ButtonSegment<AppThemes>(
+                          value: AppThemes.light,
+                          icon: const Icon(Icons.light_mode),
+                          label: Text(context.l10n.light),
+                        ),
+                        ButtonSegment<AppThemes>(
+                          value: AppThemes.dark,
+                          icon: const Icon(Icons.dark_mode),
+                          label: Text(context.l10n.dark),
+                        ),
+                      ],
+                      selected: {data.theme},
+                      onSelectionChanged: (Set<AppThemes> newSelection) {
+                        if (newSelection.isNotEmpty) {
+                          data.setTheme(newSelection.first);
+                        }
+                      },
+                      style: SegmentedButton.styleFrom(
+                        side: BorderSide.none,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        backgroundColor: Colors.transparent,
+                        selectedBackgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.primaryContainer,
+                        selectedForegroundColor: Theme.of(
+                          context,
+                        ).colorScheme.primary,
+                        foregroundColor: Theme.of(
+                          context,
+                        ).colorScheme.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    SettingsLabeledRow(
-                      title: context.l10n.darkTheme,
-                      child: DropdownMenu<DarkTheme>(
-                        initialSelection: data.darkTheme,
-                        dropdownMenuEntries: [
-                          DropdownMenuEntry(
-                            value: DarkTheme.dark,
-                            label: context.l10n.standard,
-                          ),
-                          DropdownMenuEntry(
-                            value: DarkTheme.amoled,
-                            label: context.l10n.amoled,
-                          ),
-                        ],
-                        onSelected: (value) {
-                          if (value != null) {
-                            data.setDarkTheme(value);
-                          }
-                        },
+                    const SizedBox(height: 24),
+                    // Dark Theme
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Text(context.l10n.darkTheme),
+                    ),
+                    SegmentedButton<DarkTheme>(
+                      segments: [
+                        ButtonSegment<DarkTheme>(
+                          value: DarkTheme.dark,
+                          icon: const Icon(Icons.dark_mode),
+                          label: Text(context.l10n.standard),
+                        ),
+                        ButtonSegment<DarkTheme>(
+                          value: DarkTheme.amoled,
+                          icon: const Icon(Icons.brightness_2),
+                          label: Text(context.l10n.amoled),
+                        ),
+                      ],
+                      selected: {data.darkTheme},
+                      onSelectionChanged: (Set<DarkTheme> newSelection) {
+                        if (newSelection.isNotEmpty) {
+                          data.setDarkTheme(newSelection.first);
+                        }
+                      },
+                      style: SegmentedButton.styleFrom(
+                        side: BorderSide.none,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        backgroundColor: Colors.transparent,
+                        selectedBackgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.primaryContainer,
+                        selectedForegroundColor: Theme.of(
+                          context,
+                        ).colorScheme.primary,
+                        foregroundColor: Theme.of(
+                          context,
+                        ).colorScheme.onSurface,
                       ),
                     ),
                   ],
@@ -382,30 +432,34 @@ class LanguageSettingsPage extends StatelessWidget {
           title: context.l10n.language,
           child: SettingsSectionCard(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: SettingsLabeledRow(
-              title: context.l10n.language,
-              child: DropdownMenu<Locale?>(
-                initialSelection: data.locale,
-                dropdownMenuEntries: [
-                  DropdownMenuEntry<Locale?>(
+            child: RadioGroup<Locale?>(
+              groupValue: data.locale,
+              onChanged: data.setLocale,
+              child: Column(
+                children: [
+                  RadioListTile<Locale?>(
+                    title: Text(
+                      '${context.l10n.systemDefault} (${nativeLanguageNames[systemLocale.languageCode] ?? 'English'})',
+                    ),
                     value: null,
-                    label:
-                        '${context.l10n.systemDefault} (${nativeLanguageNames[systemLocale.languageCode] ?? 'English'})',
                   ),
-                  DropdownMenuEntry<Locale?>(
-                    value: Locale('en'),
-                    label: context.l10n.english == 'English'
-                        ? 'English'
-                        : '${context.l10n.english} (English)',
+                  RadioListTile<Locale?>(
+                    title: Text(
+                      context.l10n.english == 'English'
+                          ? 'English'
+                          : '${context.l10n.english} (English)',
+                    ),
+                    value: const Locale('en'),
                   ),
-                  DropdownMenuEntry<Locale?>(
-                    value: Locale('de'),
-                    label: context.l10n.german == 'Deutsch'
-                        ? 'Deutsch'
-                        : '${context.l10n.german} (Deutsch)',
+                  RadioListTile<Locale?>(
+                    title: Text(
+                      context.l10n.german == 'Deutsch'
+                          ? 'Deutsch'
+                          : '${context.l10n.german} (Deutsch)',
+                    ),
+                    value: const Locale('de'),
                   ),
                 ],
-                onSelected: data.setLocale,
               ),
             ),
           ),
