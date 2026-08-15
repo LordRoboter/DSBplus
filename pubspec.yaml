@@ -48,6 +48,7 @@ dependencies:
   smooth_page_indicator: ^2.0.1
   collection: ^1.19.1
   crypto: ^3.0.7
+  workmanager: ^0.10.7
 
 dev_dependencies:
   flutter_test:

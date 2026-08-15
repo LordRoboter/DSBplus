@@ -10,6 +10,7 @@ import 'package:planner/core/util/date.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'package:collection/collection.dart';
+import 'package:workmanager/workmanager.dart';
 
 class DataRepository extends ChangeNotifier {
   late final SharedPreferences prefs;
@@ -27,6 +28,8 @@ class DataRepository extends ChangeNotifier {
   bool mapCourses = true;
 
   bool notifications = true;
+  bool firebase = true;
+  bool workManager = true;
 
   TimetableFilter classFilter = const TimetableFilter();
   List<TimetableFilter> filters = [];
@@ -90,6 +93,8 @@ class DataRepository extends ChangeNotifier {
     loadDarkTheme();
 
     notifications = prefs.getBool("notifications") ?? true;
+    firebase = prefs.getBool("firebase") ?? true;
+    workManager = prefs.getBool("workManager") ?? true;
 
     final classJson = prefs.getString("classFilter");
 
@@ -362,6 +367,33 @@ class DataRepository extends ChangeNotifier {
     notifications = value;
 
     await prefs.setBool("notifications", value);
+
+    notifyListeners();
+  }
+
+  Future<void> setFirebase(bool value) async {
+    firebase = value;
+
+    await prefs.setBool("firebase", value);
+
+    notifyListeners();
+  }
+
+  Future<void> setWorkManager(bool value) async {
+    workManager = value;
+
+    if (value) {
+      await Workmanager().registerPeriodicTask(
+        'timetable-check',
+        'timetableCheck',
+        frequency: const Duration(minutes: 15),
+        existingWorkPolicy: ExistingPeriodicWorkPolicy.replace,
+      );
+    } else {
+      await Workmanager().cancelByUniqueName('timetable-check');
+    }
+
+    await prefs.setBool("workManager", value);
 
     notifyListeners();
   }

@@ -288,10 +288,33 @@ class NotificationsSettingsPage extends StatelessWidget {
       builder: (context, data, _) {
         return SettingsPageScaffold(
           title: context.l10n.notifications,
-          child: SettingsSwitchCard(
-            title: context.l10n.notifications,
-            value: data.notifications,
-            onChanged: data.setNotifications,
+          child: Column(
+            children: [
+              SettingsSwitchCard(
+                title: context.l10n.notifications,
+                value: data.notifications,
+                onChanged: data.setNotifications,
+              ),
+              Card(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SwitchListTile(
+                      title: Text(context.l10n.firebase),
+                      subtitle: Text(context.l10n.firebaseDesc),
+                      value: data.firebase,
+                      onChanged: data.setFirebase,
+                    ),
+                    SwitchListTile(
+                      title: Text(context.l10n.workManager),
+                      subtitle: Text(context.l10n.workManagerDesc),
+                      value: data.workManager,
+                      onChanged: data.setWorkManager,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         );
       },
