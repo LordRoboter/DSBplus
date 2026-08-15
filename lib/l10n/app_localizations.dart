@@ -498,6 +498,30 @@ abstract class AppLocalizations {
   /// **'Notifications'**
   String get notifications;
 
+  /// No description provided for @firebase.
+  ///
+  /// In en, this message translates to:
+  /// **'Firebase Notifications'**
+  String get firebase;
+
+  /// No description provided for @firebaseDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive notifications when our server detects new plans'**
+  String get firebaseDesc;
+
+  /// No description provided for @workManager.
+  ///
+  /// In en, this message translates to:
+  /// **'Periodical Checks'**
+  String get workManager;
+
+  /// No description provided for @workManagerDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Local periodical checks to detect new plans'**
+  String get workManagerDesc;
+
   /// No description provided for @appearance.
   ///
   /// In en, this message translates to:
