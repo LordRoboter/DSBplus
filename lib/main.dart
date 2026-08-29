@@ -1,10 +1,16 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:collection/collection.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:planner/background_tasks.dart';
 import 'package:planner/certificates.dart';
+import 'package:planner/core/model/timetable.dart';
+import 'package:planner/core/settings/settings_provider.dart';
 import 'package:planner/l10n/l10extension.dart';
+import 'package:planner/providers/shared_preferences_provider.dart';
+import 'package:planner/providers/timetable_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 import 'l10n/app_localizations.dart';
 
@@ -12,11 +18,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:planner/screens/home_screen.dart';
 import 'package:planner/screens/plan_screen.dart';
-import 'package:planner/services/data_repository.dart';
+import 'package:planner/repo/data_repository.dart';
 import 'package:planner/services/notification_service.dart';
 import 'package:planner/theme.dart';
 
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'screens/settings_screen.dart';
@@ -42,69 +48,77 @@ Future<void> main() async {
   final locale = PlatformDispatcher.instance.locale.toString();
   await initializeDateFormatting(locale);
 
-  final dataRepository = DataRepository();
-  await dataRepository.init();
-
   await NotificationService.init();
 
+  final prefs = await SharedPreferences.getInstance();
+
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(value: dataRepository),
-        ChangeNotifierProvider(
-          create: (_) => PlanRepository(dataRepository)..init(),
-        ),
-      ],
-      child: const MyApp(),
+    ProviderScope(
+      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+      child: MyApp(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final data = context.watch<DataRepository>();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingsProvider);
 
-    return MaterialApp(
-      title: 'Vertretungsplan',
-      debugShowCheckedModeBanner: false,
+    return settings.when(
+      loading: () => const MaterialApp(
+        home: Scaffold(body: Center(child: CircularProgressIndicator())),
+      ),
+      error: (error, stack) => MaterialApp(
+        home: Scaffold(
+          body: Center(child: Text('Failed to load settings: $error')),
+        ),
+      ),
+      data: (data) {
+        return MaterialApp(
+          title: 'Vertretungsplan',
+          debugShowCheckedModeBanner: false,
 
-      theme: lightTheme,
-      darkTheme: switch (data.darkTheme) {
-        DarkTheme.dark => darkTheme,
-        DarkTheme.amoled => amoledTheme,
+          theme: lightTheme,
+          darkTheme: switch (data.darkTheme) {
+            DarkTheme.dark => darkTheme,
+            DarkTheme.amoled => amoledTheme,
+          },
+
+          themeMode: switch (data.theme) {
+            AppThemes.system => ThemeMode.system,
+            AppThemes.light => ThemeMode.light,
+            AppThemes.dark => ThemeMode.dark,
+          },
+
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+
+          supportedLocales: const [Locale('en'), Locale('de')],
+
+          locale: data.locale,
+
+          home: const NavigatorScreen(),
+        );
       },
-
-      themeMode: switch (data.theme) {
-        AppThemes.system => ThemeMode.system,
-        AppThemes.light => ThemeMode.light,
-        AppThemes.dark => ThemeMode.dark,
-      },
-
-      localizationsDelegates: [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: [Locale('en'), Locale('de')],
-      locale: data.locale,
-
-      home: const NavigatorScreen(),
     );
   }
 }
 
-class NavigatorScreen extends StatefulWidget {
+class NavigatorScreen extends ConsumerStatefulWidget {
   const NavigatorScreen({super.key});
 
   @override
-  State<NavigatorScreen> createState() => _NavigatorScreenState();
+  ConsumerState<NavigatorScreen> createState() => _NavigatorScreenState();
 }
 
-class _NavigatorScreenState extends State<NavigatorScreen> {
+class _NavigatorScreenState extends ConsumerState<NavigatorScreen> {
   int index = 0;
 
   final pages = const [HomeScreen(), PlanScreen()];
@@ -122,22 +136,42 @@ class _NavigatorScreenState extends State<NavigatorScreen> {
   void initState() {
     super.initState();
 
-    final plan = context.read<PlanRepository>();
-    final data = context.read<DataRepository>();
+    ref.read(timetableProvider);
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       if (message.data["type"] != "timetable_updated") return;
 
       await NotificationService.showUpdateNotification();
-      await plan.loadData();
+      if (!mounted) return;
+      await ref.read(timetableProvider.notifier).refresh();
     });
 
-    _sub = data.updates.listen((_) {
+    ref.listenManual<AsyncValue<List<Timetable>>>(timetableProvider, (
+      previous,
+      next,
+    ) {
+      final oldTimetables = previous?.value;
+      final newTimetables = next.value;
+
+      if (oldTimetables == null || newTimetables == null) {
+        return;
+      }
+
+      const equality = DeepCollectionEquality();
+
+      if (equality.equals(
+        oldTimetables.map((e) => e.toComparableJson()).toList(),
+        newTimetables.map((e) => e.toComparableJson()).toList(),
+      )) {
+        return;
+      }
+
       if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(context.l10n.newEntries),
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
         ),
       );

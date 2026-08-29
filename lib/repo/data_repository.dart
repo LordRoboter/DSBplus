@@ -1,4 +1,4 @@
-import 'dart:convert';
+/*import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:planner/core/model/daydate.dart';
@@ -14,28 +14,6 @@ import 'package:workmanager/workmanager.dart';
 
 class DataRepository extends ChangeNotifier {
   late final SharedPreferences prefs;
-
-  Locale? locale;
-
-  bool simplify = true;
-  bool clean = true;
-
-  bool disposeTut = true;
-  bool cleanClassNames = true;
-  bool remapTypes = true;
-  bool cleanupCourses = true;
-  bool disposeCourseNumbers = true;
-  bool mapCourses = true;
-
-  bool notifications = true;
-  bool firebase = true;
-  bool workManager = true;
-
-  TimetableFilter classFilter = const TimetableFilter();
-  List<TimetableFilter> filters = [];
-
-  String lastUpdated = "";
-  DayDate? selectedDayDate;
 
   List<Timetable> cachedEntries = [];
 
@@ -59,74 +37,7 @@ class DataRepository extends ChangeNotifier {
   }
 
   Future<void> load() async {
-    await loadSettings();
     await loadCache();
-  }
-
-  Locale? _parseLocale(String? value) {
-    if (value == null || value.isEmpty) {
-      return null;
-    }
-
-    final parts = value.split('-');
-
-    return Locale.fromSubtags(
-      languageCode: parts[0],
-      countryCode: parts.length > 1 ? parts[1] : null,
-    );
-  }
-
-  Future<void> loadSettings() async {
-    locale = _parseLocale(prefs.getString("locale"));
-
-    clean = prefs.getBool("clean") ?? true;
-    simplify = prefs.getBool("simplify") ?? true;
-
-    disposeTut = prefs.getBool("disposeTut") ?? true;
-    cleanClassNames = prefs.getBool("cleanClassNames") ?? true;
-    remapTypes = prefs.getBool("remapTypes") ?? true;
-    cleanupCourses = prefs.getBool("cleanupCourses") ?? true;
-    disposeCourseNumbers = prefs.getBool("disposeCourseNumbers") ?? true;
-    mapCourses = prefs.getBool("mapCourses") ?? true;
-
-    loadTheme();
-    loadDarkTheme();
-
-    notifications = prefs.getBool("notifications") ?? true;
-    firebase = prefs.getBool("firebase") ?? true;
-    workManager = prefs.getBool("workManager") ?? true;
-
-    final classJson = prefs.getString("classFilter");
-
-    if (classJson != null) {
-      classFilter = TimetableFilter.fromJson(jsonDecode(classJson));
-    } else {
-      classFilter = const TimetableFilter();
-    }
-
-    final filtersJson = prefs.getString("filters");
-
-    if (filtersJson != null) {
-      final decoded = jsonDecode(filtersJson) as List;
-
-      filters =
-          decoded
-              .map(
-                (e) => TimetableFilter.fromJson(Map<String, dynamic>.from(e)),
-              )
-              .toList()
-            ..sort();
-    } else {
-      filters = [];
-    }
-
-    final selected = prefs.getString("selectedDayDate");
-
-    if (selected != null) {
-      selectedDayDate = DayDate.fromJson(jsonDecode(selected));
-    }
-
-    notifyListeners();
   }
 
   Future<List<Timetable>> sync() async {
@@ -430,3 +341,4 @@ class DataRepository extends ChangeNotifier {
     }
   }
 }
+*/
