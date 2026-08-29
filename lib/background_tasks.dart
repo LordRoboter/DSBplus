@@ -7,15 +7,17 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:planner/certificates.dart';
+import 'package:planner/core/database/database.dart';
 import 'package:planner/core/model/daydate.dart';
+import 'package:planner/core/settings/background_settings.dart';
 import 'package:planner/core/util/date.dart';
 import 'package:planner/core/util/sorter.dart';
+import 'package:planner/core/util/timetable.dart';
 import 'package:planner/core/util/translations.dart';
 import 'package:planner/firebase_options.dart';
 import 'package:planner/l10n/app_localizations.dart';
-import 'package:planner/services/data_repository.dart';
+import 'package:planner/repo/timetable_repository.dart';
 import 'package:planner/services/notification_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 
 @pragma('vm:entry-point')
@@ -24,22 +26,25 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
   if (message.data["type"] != "timetable_updated") return;
 
-  final settings = await SharedPreferences.getInstance();
+  final settings = BackgroundSettingsRepository();
+  await settings.init();
 
-  final backgroundNotifications = settings.getBool("notifications") ?? true;
-  final firebaseNotifications = settings.getBool("firebase") ?? true;
+  final backgroundNotifications = settings.notifications;
+  final firebaseNotifications = settings.firebase;
 
   if (!backgroundNotifications || !firebaseNotifications) {
     return;
   }
 
-  final data = DataRepository();
-  await data.init();
-
   HttpOverrides.global = MyHttpOverrides();
   await NotificationService.init();
 
-  await performTimetableCheck(data);
+  final db = AppDatabase();
+  try {
+    await performTimetableCheck(TimetableRepository(db), settings);
+  } finally {
+    await db.close();
+  }
 }
 
 @pragma('vm:entry-point')
@@ -52,10 +57,15 @@ void callbackDispatcher() {
 
       await NotificationService.init();
 
-      final data = DataRepository();
-      await data.init();
+      final settings = BackgroundSettingsRepository();
+      await settings.init();
+      final db = AppDatabase();
 
-      await performTimetableCheck(data);
+      try {
+        await performTimetableCheck(TimetableRepository(db), settings);
+      } finally {
+        await db.close();
+      }
 
       return true;
     } catch (e, stack) {
@@ -68,9 +78,12 @@ void callbackDispatcher() {
 }
 
 @pragma('vm:entry-point')
-Future<void> performTimetableCheck(DataRepository data) async {
-  final oldData = await data.sync();
-  final newData = data.cachedEntries;
+Future<void> performTimetableCheck(
+  TimetableRepository repository,
+  BackgroundSettingsRepository settings,
+) async {
+  final oldData = await repository.loadAll();
+  final newData = await repository.sync(oldData);
 
   final groupedOld = {
     for (final timetable in oldData)
@@ -86,11 +99,11 @@ Future<void> performTimetableCheck(DataRepository data) async {
   final l10n = await AppLocalizations.delegate.load(Locale(localeCode));
   await initializeDateFormatting(localeCode);
 
-  for (final dayDate in data.availableDayDates) {
+  for (final dayDate in availableDayDates(newData)) {
     final diff = diffByClass(
       groupedOld[dayDate],
       groupedNew[dayDate],
-      data.classFilter.classes,
+      settings.classFilter.classes,
     );
 
     if (!diff.hasChanges) continue;
@@ -142,7 +155,7 @@ Future<void> performTimetableCheck(DataRepository data) async {
 
     await NotificationService.makeUpdateNotification(
       DateTime.now().millisecondsSinceEpoch ~/ 1000 +
-          data.availableDayDates.indexOf(dayDate),
+          availableDayDates(newData).indexOf(dayDate),
       title,
       details,
     );

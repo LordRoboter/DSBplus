@@ -71,3 +71,7 @@ DayDate formatDayDate(Timetable timetable) {
 
   return DayDate(day, date);
 }
+
+List<DayDate> computeAvailableDayDates(List<Timetable> timetables) {
+  return timetables.map((e) => formatDayDate(e)).toSet().toList();
+}

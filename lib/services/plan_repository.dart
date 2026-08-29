@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:planner/core/model/daydate.dart';
 import 'package:planner/core/model/timetable.dart';
 import 'package:planner/core/util/date.dart';
 
-import 'data_repository.dart';
+import '../repo/data_repository.dart';
 
 class PlanRepository extends ChangeNotifier {
   final DataRepository data;
@@ -44,3 +44,4 @@ class PlanRepository extends ChangeNotifier {
     }
   }
 }
+*/
