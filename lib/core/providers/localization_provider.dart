@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:planner/core/settings/settings_provider.dart';
+import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/l10n/app_localizations.dart';
 
 final localizationProvider = Provider<AsyncValue<AppLocalizations>>((ref) {

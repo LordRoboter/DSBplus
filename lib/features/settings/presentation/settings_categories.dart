@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:planner/core/model/filter.dart';
-import 'package:planner/core/settings/settings_provider.dart';
+import 'package:planner/features/timetables/model/filter.dart';
+import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/l10n/l10extension.dart';
 import 'package:planner/theme.dart';
-import 'package:planner/widgets/dialogues.dart';
-import 'package:planner/widgets/settings.dart';
+import 'package:planner/features/settings/presentation/widgets/dialogues.dart';
+import 'package:planner/features/settings/presentation/widgets/settings.dart';
 
 const nativeLanguageNames = {'de': 'Deutsch', 'en': 'English'};
 

@@ -3,9 +3,9 @@ import 'dart:ui';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 //import 'package:planner/core/model/daydate.dart';
-import 'package:planner/core/model/filter.dart';
-import 'package:planner/core/settings/settings_state.dart';
-import 'package:planner/providers/shared_preferences_provider.dart';
+import 'package:planner/features/timetables/model/filter.dart';
+import 'package:planner/features/settings/model/settings_state.dart';
+import 'package:planner/core/providers/shared_preferences_provider.dart';
 import 'package:planner/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

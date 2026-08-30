@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:planner/core/model/daydate.dart';
-import 'package:planner/core/model/timetable.dart';
+import 'package:planner/features/timetables/model/daydate.dart';
+import 'package:planner/features/timetables/model/timetable.dart';
 import 'package:planner/core/util/translations.dart';
 
 int getRelativeDay(DateTime date) {
