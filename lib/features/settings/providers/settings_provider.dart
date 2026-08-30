@@ -17,20 +17,21 @@ class SettingsNotifier extends AsyncNotifier<SettingsState> {
     prefs = ref.read(sharedPreferencesProvider);
 
     return SettingsState(
+      startupComplete: prefs.getBool('startupComplete') ?? false,
       locale: _loadLocale(),
       //selectedDayDate: _loadSelectedDayDate(),
-      clean: prefs.getBool('clean') ?? false,
-      simplify: prefs.getBool('simplify') ?? false,
-      disposeTut: prefs.getBool('disposeTut') ?? false,
-      cleanClassNames: prefs.getBool('cleanClassNames') ?? false,
-      remapTypes: prefs.getBool('remapTypes') ?? false,
-      cleanupCourses: prefs.getBool('cleanupCourses') ?? false,
-      disposeCourseNumbers: prefs.getBool('disposeCourseNumbers') ?? false,
-      mapCourses: prefs.getBool('mapCourses') ?? false,
-      notifications: prefs.getBool('notifications') ?? false,
-      firebase: prefs.getBool('firebase') ?? false,
+      clean: prefs.getBool('clean') ?? true,
+      simplify: prefs.getBool('simplify') ?? true,
+      disposeTut: prefs.getBool('disposeTut') ?? true,
+      cleanClassNames: prefs.getBool('cleanClassNames') ?? true,
+      remapTypes: prefs.getBool('remapTypes') ?? true,
+      cleanupCourses: prefs.getBool('cleanupCourses') ?? true,
+      disposeCourseNumbers: prefs.getBool('disposeCourseNumbers') ?? true,
+      mapCourses: prefs.getBool('mapCourses') ?? true,
+      notifications: prefs.getBool('notifications') ?? true,
+      firebase: prefs.getBool('firebase') ?? true,
       classFilter: _loadClassFilter(),
-      workManager: prefs.getBool('workManager') ?? false,
+      workManager: prefs.getBool('workManager') ?? true,
       filters: _loadFilters(),
       theme: _loadTheme(),
       darkTheme: _loadDarkTheme(),
@@ -98,6 +99,11 @@ class SettingsNotifier extends AsyncNotifier<SettingsState> {
   }
 
   // STORING VALUES
+
+  Future<void> setStartupComplete(bool value) async {
+    _updateState((state) => state.copyWith(startupComplete: value));
+    await prefs.setBool('startupComplete', value);
+  }
 
   Future<void> setLocale(Locale? value) async {
     _updateState((state) => state.copyWith(locale: value));
