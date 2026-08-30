@@ -1,10 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:planner/features/auth/auth_repository.dart';
 import 'package:planner/features/timetables/model/timetable.dart';
 import 'package:planner/core/database/providers/database_provider.dart';
 import 'package:planner/features/timetables/data/timetable_repository.dart';
 
 final timetableRepositoryProvider = Provider<TimetableRepository>((ref) {
-  return TimetableRepository(ref.watch(databaseProvider));
+  return TimetableRepository(
+    ref.watch(databaseProvider),
+    ref.watch(authRepositoryProvider),
+  );
 });
 
 class TimetableNotifier extends AsyncNotifier<List<Timetable>> {
