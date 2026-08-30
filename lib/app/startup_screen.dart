@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:planner/features/auth/auth_repository.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
+import 'package:planner/l10n/l10extension.dart';
 
 class StartupPage extends ConsumerStatefulWidget {
   const StartupPage({super.key});
@@ -75,16 +77,27 @@ class _StartupPageState extends ConsumerState<StartupPage> {
                   // App icon
                   Align(
                     child: Container(
-                      width: 88,
-                      height: 88,
+                      width: 104,
+                      height: 104,
                       decoration: BoxDecoration(
-                        color: colorScheme.primaryContainer,
                         shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            blurRadius: 20,
+                            spreadRadius: 2,
+                            offset: const Offset(0, 8),
+                            color: Colors.black.withValues(alpha: 0.12),
+                          ),
+                        ],
                       ),
-                      child: Icon(
-                        Icons.calendar_month_rounded,
-                        size: 46,
-                        color: colorScheme.onPrimaryContainer,
+                      child: ClipOval(
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Image.asset('assets/bg.png', fit: BoxFit.cover),
+                            Image.asset('assets/fg.png', fit: BoxFit.contain),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -92,7 +105,7 @@ class _StartupPageState extends ConsumerState<StartupPage> {
                   const SizedBox(height: 32),
 
                   Text(
-                    'Welcome to Planner',
+                    context.l10n.welcome,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
@@ -102,7 +115,7 @@ class _StartupPageState extends ConsumerState<StartupPage> {
                   const SizedBox(height: 12),
 
                   Text(
-                    'Enter your DSB credentials to get started and sync your timetable.',
+                    context.l10n.welcomeDesc,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       color: colorScheme.onSurfaceVariant,
@@ -116,9 +129,9 @@ class _StartupPageState extends ConsumerState<StartupPage> {
                     focusNode: usernameFocusNode,
                     textInputAction: TextInputAction.next,
                     autofillHints: const [AutofillHints.username],
-                    decoration: const InputDecoration(
-                      labelText: 'Username',
-                      hintText: 'Enter your username',
+                    decoration: InputDecoration(
+                      labelText: context.l10n.username,
+                      hintText: context.l10n.usernameHint,
                       prefixIcon: Icon(Icons.person_outline_rounded),
                       border: OutlineInputBorder(),
                     ),
@@ -136,13 +149,13 @@ class _StartupPageState extends ConsumerState<StartupPage> {
                     textInputAction: TextInputAction.done,
                     autofillHints: const [AutofillHints.password],
                     decoration: InputDecoration(
-                      labelText: 'Password',
-                      hintText: 'Enter your password',
+                      labelText: context.l10n.password,
+                      hintText: context.l10n.passwordHint,
                       prefixIcon: const Icon(Icons.lock_outline_rounded),
                       suffixIcon: IconButton(
                         tooltip: _showPassword
-                            ? 'Hide password'
-                            : 'Show password',
+                            ? context.l10n.hidePassword
+                            : context.l10n.showPassword,
                         icon: Icon(
                           _showPassword
                               ? Icons.visibility_off_rounded
@@ -161,7 +174,7 @@ class _StartupPageState extends ConsumerState<StartupPage> {
 
                   const SizedBox(height: 24),
 
-                  Container(
+                  /*Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: colorScheme.surfaceContainerHighest,
@@ -188,8 +201,7 @@ class _StartupPageState extends ConsumerState<StartupPage> {
                     ),
                   ),
 
-                  const SizedBox(height: 28),
-
+                  const SizedBox(height: 28),*/
                   FilledButton(
                     onPressed: _saving ? null : _continue,
                     style: FilledButton.styleFrom(
@@ -201,8 +213,8 @@ class _StartupPageState extends ConsumerState<StartupPage> {
                             height: 22,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : const Text(
-                            'Get Started',
+                        : Text(
+                            context.l10n.getStarted,
                             style: TextStyle(fontWeight: FontWeight.w600),
                           ),
                   ),

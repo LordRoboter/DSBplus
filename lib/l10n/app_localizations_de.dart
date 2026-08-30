@@ -9,6 +9,16 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get welcome => 'Wilkommen zu Planner';
+
+  @override
+  String get welcomeDesc =>
+      'Gib deine DSB Benutzerdaten ein, um auf deine Vertretungspläne zugreifen zu können.';
+
+  @override
+  String get getStarted => 'Loslegen';
+
+  @override
   String get home => 'Home';
 
   @override
@@ -168,6 +178,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get password => 'Passwort';
+
+  @override
+  String get passwordHint => 'Gib dein Passwort ein';
 
   @override
   String get save => 'Speichern';

@@ -1,5 +1,8 @@
 {
   "@@locale": "en",
+  "welcome": "Welcome to Planner",
+  "welcomeDesc": "Enter your DSB credentials to get started and access your substitution plans.",
+  "getStarted": "Get Started",
   "home": "Home",
   "plan": "Plan",
   "substPlan": "Substitution Plan",
@@ -49,6 +52,7 @@
   "username": "Username",
   "usernameHint": "e.g. 187801",
   "password": "Password",
+  "passwordHint": "Enter your password",
   "save": "Save",
   "notificationsExp": "Notifications for new entries",
   "enhanceEntries": "Enhance Entries",
