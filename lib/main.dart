@@ -5,28 +5,26 @@ import 'package:collection/collection.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:planner/background_tasks.dart';
 import 'package:planner/certificates.dart';
-import 'package:planner/core/model/timetable.dart';
-import 'package:planner/core/settings/settings_provider.dart';
+import 'package:planner/features/timetables/model/timetable.dart';
+import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/l10n/l10extension.dart';
-import 'package:planner/providers/shared_preferences_provider.dart';
-import 'package:planner/providers/timetable_provider.dart';
+import 'package:planner/core/providers/shared_preferences_provider.dart';
+import 'package:planner/features/timetables/providers/timetable_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 import 'l10n/app_localizations.dart';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:planner/screens/home_screen.dart';
-import 'package:planner/screens/plan_screen.dart';
-import 'package:planner/repo/data_repository.dart';
-import 'package:planner/services/notification_service.dart';
+import 'package:planner/features/timetables/presentation/home_screen.dart';
+import 'package:planner/features/timetables/presentation/plan_screen.dart';
+import 'package:planner/features/notifications/notification_service.dart';
 import 'package:planner/theme.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-import 'screens/settings_screen.dart';
-import 'services/plan_repository.dart';
+import 'features/settings/presentation/settings_screen.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';

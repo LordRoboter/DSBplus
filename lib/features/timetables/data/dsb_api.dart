@@ -4,7 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:html/dom.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart';
-import 'package:planner/core/model/timetable.dart';
+import 'package:planner/features/timetables/model/timetable.dart';
 import 'package:planner/core/util/lessons.dart';
 import 'package:uuid/uuid.dart';
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:planner/screens/settings_categories.dart';
+import 'package:planner/features/settings/presentation/settings_categories.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});

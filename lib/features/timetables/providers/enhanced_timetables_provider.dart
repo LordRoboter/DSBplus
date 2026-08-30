@@ -1,11 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:planner/core/model/daydate.dart';
-import 'package:planner/core/model/timetable.dart';
-import 'package:planner/core/settings/settings_provider.dart';
+import 'package:planner/features/timetables/model/daydate.dart';
+import 'package:planner/features/timetables/model/timetable.dart';
+import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/core/util/date.dart';
 import 'package:planner/core/util/sorter.dart';
-import 'package:planner/providers/localization_provider.dart';
-import 'package:planner/providers/timetable_provider.dart';
+import 'package:planner/core/providers/localization_provider.dart';
+import 'package:planner/features/timetables/providers/timetable_provider.dart';
 
 final enhancedTimetablesProvider = Provider<AsyncValue<List<Timetable>>>((ref) {
   final timetables = ref.watch(timetableProvider);

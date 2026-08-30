@@ -8,16 +8,16 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:planner/certificates.dart';
 import 'package:planner/core/database/database.dart';
-import 'package:planner/core/model/daydate.dart';
-import 'package:planner/core/settings/background_settings.dart';
+import 'package:planner/features/timetables/model/daydate.dart';
+import 'package:planner/features/settings/providers/background_settings.dart';
 import 'package:planner/core/util/date.dart';
 import 'package:planner/core/util/sorter.dart';
 import 'package:planner/core/util/timetable.dart';
 import 'package:planner/core/util/translations.dart';
 import 'package:planner/firebase_options.dart';
 import 'package:planner/l10n/app_localizations.dart';
-import 'package:planner/repo/timetable_repository.dart';
-import 'package:planner/services/notification_service.dart';
+import 'package:planner/features/timetables/data/timetable_repository.dart';
+import 'package:planner/features/notifications/notification_service.dart';
 import 'package:workmanager/workmanager.dart';
 
 @pragma('vm:entry-point')

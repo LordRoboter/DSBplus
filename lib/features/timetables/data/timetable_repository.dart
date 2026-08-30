@@ -1,5 +1,5 @@
 import 'package:drift/drift.dart';
-import 'package:planner/core/model/timetable.dart';
+import 'package:planner/features/timetables/model/timetable.dart';
 import 'package:planner/core/database/database.dart'
     show
         AppDatabase,
@@ -7,7 +7,7 @@ import 'package:planner/core/database/database.dart'
         ClassEntriesCompanion,
         TimetableEntriesCompanion;
 import 'package:planner/core/database/database.dart' as model;
-import 'package:planner/services/dsb_api.dart';
+import 'package:planner/features/timetables/data/dsb_api.dart';
 import 'package:collection/collection.dart';
 
 class TimetableRepository {

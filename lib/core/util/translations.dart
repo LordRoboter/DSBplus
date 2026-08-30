@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:planner/core/model/timetable.dart';
+import 'package:planner/features/timetables/model/timetable.dart';
 import 'package:planner/l10n/app_localizations.dart';
 import 'package:planner/l10n/l10extension.dart';
 

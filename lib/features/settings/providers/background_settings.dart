@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:planner/core/model/filter.dart';
+import 'package:planner/features/timetables/model/filter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class BackgroundSettingsRepository {
