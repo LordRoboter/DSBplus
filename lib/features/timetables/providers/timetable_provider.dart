@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:planner/features/auth/auth_repository.dart';
 import 'package:planner/features/timetables/model/timetable.dart';
@@ -15,9 +16,14 @@ class TimetableNotifier extends AsyncNotifier<List<Timetable>> {
   late final TimetableRepository repository;
 
   @override
-  Future<List<Timetable>> build() {
+  Future<List<Timetable>> build() async {
     repository = ref.read(timetableRepositoryProvider);
-    return repository.loadAll();
+
+    final timetables = await repository.loadAll();
+
+    refresh();
+
+    return timetables;
   }
 
   Future<void> refresh() async {
