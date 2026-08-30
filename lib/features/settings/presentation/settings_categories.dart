@@ -1,40 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:planner/core/model/filter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:planner/features/timetables/model/filter.dart';
+import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/l10n/l10extension.dart';
-import 'package:planner/widgets/dialogues.dart';
-import 'package:planner/widgets/settings.dart';
-import 'package:planner/services/data_repository.dart';
 import 'package:planner/theme.dart';
-import 'package:provider/provider.dart';
+import 'package:planner/features/settings/presentation/widgets/dialogues.dart';
+import 'package:planner/features/settings/presentation/widgets/settings.dart';
 
 const nativeLanguageNames = {'de': 'Deutsch', 'en': 'English'};
 
-class FiltersSettingsPage extends StatefulWidget {
+class FiltersSettingsPage extends ConsumerStatefulWidget {
   const FiltersSettingsPage({super.key});
 
   @override
-  State<FiltersSettingsPage> createState() => _FiltersSettingsPageState();
+  ConsumerState<FiltersSettingsPage> createState() =>
+      _FiltersSettingsPageState();
 }
 
-class _FiltersSettingsPageState extends State<FiltersSettingsPage> {
+class _FiltersSettingsPageState extends ConsumerState<FiltersSettingsPage> {
   final classController = TextEditingController();
   final classFocusNode = FocusNode();
-  late DataRepository data;
-
-  final labels = {
-    "class": "Klasse",
-    "lesson": "Stunde",
-    "subject": "Fach",
-    "teacher": "Lehrer",
-    "day": "Tag",
-    "date": "Datum",
-  };
-
-  @override
-  void initState() {
-    super.initState();
-    data = context.read<DataRepository>();
-  }
 
   @override
   void dispose() {
@@ -43,29 +28,44 @@ class _FiltersSettingsPageState extends State<FiltersSettingsPage> {
     super.dispose();
   }
 
-  void _addClass() {
-    if (classController.text.isNotEmpty) {
-      final updatedClasses = {
-        ...data.classFilter.classes,
-        classController.text,
-      };
-      data.setClassFilter(data.classFilter.copyWith(classes: updatedClasses));
-      classController.clear();
-      setState(() {});
+  Future<void> _addClass() async {
+    final className = classController.text.trim();
+
+    if (className.isEmpty) {
+      return;
     }
+
+    final settings = ref.read(settingsProvider).requireValue;
+    final notifier = ref.read(settingsProvider.notifier);
+
+    final updatedClasses = {...settings.classFilter.classes, className};
+
+    await notifier.setClassFilter(
+      settings.classFilter.copyWith(classes: updatedClasses),
+    );
+
+    classController.clear();
   }
 
-  void _removeClass(String className) {
-    final updatedClasses = {...data.classFilter.classes};
-    updatedClasses.remove(className);
-    data.setClassFilter(data.classFilter.copyWith(classes: updatedClasses));
-    setState(() {});
+  Future<void> _removeClass(String className) async {
+    final settings = ref.read(settingsProvider).requireValue;
+    final notifier = ref.read(settingsProvider.notifier);
+
+    final updatedClasses = {...settings.classFilter.classes}..remove(className);
+
+    await notifier.setClassFilter(
+      settings.classFilter.copyWith(classes: updatedClasses),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<DataRepository>(
-      builder: (context, data, _) {
+    final settings = ref.watch(settingsProvider);
+
+    return settings.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => Center(child: Text('Error: $error')),
+      data: (settings) {
         return SettingsPageScaffold(
           title: context.l10n.filter,
           child: Column(
@@ -75,7 +75,6 @@ class _FiltersSettingsPageState extends State<FiltersSettingsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Input field
                     TextField(
                       controller: classController,
                       focusNode: classFocusNode,
@@ -84,7 +83,7 @@ class _FiltersSettingsPageState extends State<FiltersSettingsPage> {
                         hintText: context.l10n.classFilterHint,
                         border: const OutlineInputBorder(),
                         prefixIcon: const Icon(Icons.class_),
-                        suffixIcon: classController.text.isNotEmpty
+                        suffixIcon: classController.text.trim().isNotEmpty
                             ? IconButton(
                                 icon: const Icon(Icons.add),
                                 onPressed: _addClass,
@@ -92,24 +91,22 @@ class _FiltersSettingsPageState extends State<FiltersSettingsPage> {
                             : null,
                       ),
                       onSubmitted: (_) => _addClass(),
-                      onChanged: (value) {
-                        setState(() {}); // Refresh to show/hide add button
+                      onChanged: (_) {
+                        setState(() {});
                       },
                     ),
-                    if (data.classFilter.classes.isNotEmpty) ...[
+                    if (settings.classFilter.classes.isNotEmpty) ...[
                       const SizedBox(height: 12),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
-                        children: [
-                          ...data.classFilter.classes.map((className) {
-                            return Chip(
-                              label: Text(className),
-                              onDeleted: () => _removeClass(className),
-                              deleteIcon: const Icon(Icons.close),
-                            );
-                          }),
-                        ],
+                        children: settings.classFilter.classes.map((className) {
+                          return Chip(
+                            label: Text(className),
+                            onDeleted: () => _removeClass(className),
+                            deleteIcon: const Icon(Icons.close),
+                          );
+                        }).toList(),
                       ),
                     ],
                   ],
@@ -135,7 +132,7 @@ class _FiltersSettingsPageState extends State<FiltersSettingsPage> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    ...data.filters.map(
+                    ...settings.filters.map(
                       (filter) => SettingsFilterTile(
                         filter: filter,
                         onEdit: () async {
@@ -147,10 +144,14 @@ class _FiltersSettingsPageState extends State<FiltersSettingsPage> {
                               );
 
                           if (updatedFilter != null) {
-                            data.updateFilter(filter, updatedFilter);
+                            await ref
+                                .read(settingsProvider.notifier)
+                                .updateFilter(filter, updatedFilter);
                           }
                         },
-                        onDelete: () => data.removeFilter(filter),
+                        onDelete: () => ref
+                            .read(settingsProvider.notifier)
+                            .removeFilter(filter),
                       ),
                     ),
                     FilledButton.icon(
@@ -161,7 +162,9 @@ class _FiltersSettingsPageState extends State<FiltersSettingsPage> {
                         );
 
                         if (filter != null) {
-                          data.addFilter(filter);
+                          await ref
+                              .read(settingsProvider.notifier)
+                              .addFilter(filter);
                         }
                       },
                       icon: const Icon(Icons.add),
@@ -178,13 +181,19 @@ class _FiltersSettingsPageState extends State<FiltersSettingsPage> {
   }
 }
 
-class CleanupSettingsPage extends StatelessWidget {
+class CleanupSettingsPage extends ConsumerWidget {
   const CleanupSettingsPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Consumer<DataRepository>(
-      builder: (context, data, _) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingsProvider);
+
+    return settings.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => Center(child: Text('Error: $error')),
+      data: (settings) {
+        final notifier = ref.read(settingsProvider.notifier);
+
         return SettingsPageScaffold(
           title: context.l10n.cleanup,
           child: Column(
@@ -193,8 +202,8 @@ class CleanupSettingsPage extends StatelessWidget {
               SettingsSwitchCard(
                 title: context.l10n.simplifyEntries,
                 subtitle: context.l10n.simplifyEntriesSub,
-                value: data.simplify,
-                onChanged: data.setSimplify,
+                value: settings.simplify,
+                onChanged: notifier.setSimplify,
               ),
               const SizedBox(height: 16),
               Card(
@@ -204,64 +213,67 @@ class CleanupSettingsPage extends StatelessWidget {
                     SwitchListTile(
                       title: Text(context.l10n.cleanupEntries),
                       subtitle: Text(context.l10n.cleanupEntriesSub),
-                      value: data.clean,
-                      onChanged: data.setClean,
+                      value: settings.clean,
+                      onChanged: notifier.setClean,
                     ),
                     const Divider(height: 1),
-
                     AnimatedOpacity(
                       duration: const Duration(milliseconds: 150),
-                      opacity: data.clean ? 1 : 0.5,
+                      opacity: settings.clean ? 1 : 0.5,
                       child: IgnorePointer(
-                        ignoring: !data.clean,
+                        ignoring: !settings.clean,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: EdgeInsets.fromLTRB(16, 12, 16, 4),
+                              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
                               child: Text(context.l10n.cleanupOptions),
                             ),
                             SwitchListTile(
                               title: Text(context.l10n.simplifyClassNames),
-                              value: data.cleanClassNames,
-                              onChanged: data.clean
-                                  ? data.setCleanClassNames
+                              value: settings.cleanClassNames,
+                              onChanged: settings.clean
+                                  ? notifier.setCleanClassNames
                                   : null,
                             ),
                             SwitchListTile(
                               title: Text(context.l10n.simplifyLessonStatus),
-                              value: data.remapTypes,
-                              onChanged: data.clean ? data.setRemapTypes : null,
+                              value: settings.remapTypes,
+                              onChanged: settings.clean
+                                  ? notifier.setRemapTypes
+                                  : null,
                             ),
                             SwitchListTile(
                               title: Text(context.l10n.simplifyCourses),
-                              value: data.cleanupCourses,
-                              onChanged: data.clean
-                                  ? data.setCleanupCourses
+                              value: settings.cleanupCourses,
+                              onChanged: settings.clean
+                                  ? notifier.setCleanupCourses
                                   : null,
                             ),
                             SwitchListTile(
                               title: Text(context.l10n.mergeTutorCourses),
-                              value: data.disposeTut,
-                              onChanged: data.clean ? data.setDisposeTut : null,
+                              value: settings.disposeTut,
+                              onChanged: settings.clean
+                                  ? notifier.setDisposeTut
+                                  : null,
                             ),
                             SwitchListTile(
                               title: Text(context.l10n.renameSubjects),
-                              value: data.mapCourses,
+                              value: settings.mapCourses,
                               onChanged:
                                   Localizations.localeOf(
                                             context,
                                           ).languageCode ==
                                           'de' &&
-                                      data.clean
-                                  ? data.setMapCourses
+                                      settings.clean
+                                  ? notifier.setMapCourses
                                   : null,
                             ),
                             SwitchListTile(
                               title: Text(context.l10n.removeCourseNumbers),
-                              value: data.disposeCourseNumbers,
-                              onChanged: data.clean
-                                  ? data.setDisposeCourseNumbers
+                              value: settings.disposeCourseNumbers,
+                              onChanged: settings.clean
+                                  ? notifier.setDisposeCourseNumbers
                                   : null,
                             ),
                           ],
@@ -279,19 +291,48 @@ class CleanupSettingsPage extends StatelessWidget {
   }
 }
 
-class NotificationsSettingsPage extends StatelessWidget {
+class NotificationsSettingsPage extends ConsumerWidget {
   const NotificationsSettingsPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Consumer<DataRepository>(
-      builder: (context, data, _) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingsProvider);
+
+    return settings.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => Center(child: Text('Error: $error')),
+      data: (settings) {
+        final notifier = ref.read(settingsProvider.notifier);
+
         return SettingsPageScaffold(
           title: context.l10n.notifications,
-          child: SettingsSwitchCard(
-            title: context.l10n.notifications,
-            value: data.notifications,
-            onChanged: data.setNotifications,
+          child: Column(
+            children: [
+              SettingsSwitchCard(
+                title: context.l10n.notifications,
+                value: settings.notifications,
+                onChanged: notifier.setNotifications,
+              ),
+              Card(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SwitchListTile(
+                      title: Text(context.l10n.firebase),
+                      subtitle: Text(context.l10n.firebaseDesc),
+                      value: settings.firebase,
+                      onChanged: notifier.setFirebase,
+                    ),
+                    SwitchListTile(
+                      title: Text(context.l10n.workManager),
+                      subtitle: Text(context.l10n.workManagerDesc),
+                      value: settings.workManager,
+                      onChanged: notifier.setWorkManager,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         );
       },
@@ -299,13 +340,19 @@ class NotificationsSettingsPage extends StatelessWidget {
   }
 }
 
-class AppearanceSettingsPage extends StatelessWidget {
+class AppearanceSettingsPage extends ConsumerWidget {
   const AppearanceSettingsPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Consumer<DataRepository>(
-      builder: (context, data, _) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingsProvider);
+
+    return settings.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => Center(child: Text('Error: $error')),
+      data: (settings) {
+        final notifier = ref.read(settingsProvider.notifier);
+
         return SettingsPageScaffold(
           title: context.l10n.appearance,
           child: Column(
@@ -319,7 +366,6 @@ class AppearanceSettingsPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // App Theme
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: Text(context.l10n.appTheme),
@@ -342,10 +388,10 @@ class AppearanceSettingsPage extends StatelessWidget {
                           label: Text(context.l10n.dark),
                         ),
                       ],
-                      selected: {data.theme},
-                      onSelectionChanged: (Set<AppThemes> newSelection) {
+                      selected: {settings.theme},
+                      onSelectionChanged: (newSelection) {
                         if (newSelection.isNotEmpty) {
-                          data.setTheme(newSelection.first);
+                          notifier.setTheme(newSelection.first);
                         }
                       },
                       style: SegmentedButton.styleFrom(
@@ -367,7 +413,6 @@ class AppearanceSettingsPage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    // Dark Theme
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: Text(context.l10n.darkTheme),
@@ -385,10 +430,10 @@ class AppearanceSettingsPage extends StatelessWidget {
                           label: Text(context.l10n.amoled),
                         ),
                       ],
-                      selected: {data.darkTheme},
-                      onSelectionChanged: (Set<DarkTheme> newSelection) {
+                      selected: {settings.darkTheme},
+                      onSelectionChanged: (newSelection) {
                         if (newSelection.isNotEmpty) {
-                          data.setDarkTheme(newSelection.first);
+                          notifier.setDarkTheme(newSelection.first);
                         }
                       },
                       style: SegmentedButton.styleFrom(
@@ -420,28 +465,33 @@ class AppearanceSettingsPage extends StatelessWidget {
   }
 }
 
-class LanguageSettingsPage extends StatelessWidget {
+class LanguageSettingsPage extends ConsumerWidget {
   const LanguageSettingsPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final systemLocale = WidgetsBinding.instance.platformDispatcher.locale;
-    return Consumer<DataRepository>(
-      builder: (context, data, _) {
+    final settings = ref.watch(settingsProvider);
+
+    return settings.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => Center(child: Text('Error: $error')),
+      data: (settings) {
         return SettingsPageScaffold(
           title: context.l10n.language,
           child: SettingsSectionCard(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: RadioGroup<Locale?>(
-              groupValue: data.locale,
-              onChanged: data.setLocale,
+              groupValue: settings.locale,
+              onChanged: ref.read(settingsProvider.notifier).setLocale,
               child: Column(
                 children: [
                   RadioListTile<Locale?>(
                     title: Text(
-                      '${context.l10n.systemDefault} (${nativeLanguageNames[systemLocale.languageCode] ?? 'English'})',
+                      '${context.l10n.systemDefault} '
+                      '(${nativeLanguageNames[systemLocale.languageCode] ?? 'English'})',
                     ),
-                    value: null,
+                    value: null as Locale?,
                   ),
                   RadioListTile<Locale?>(
                     title: Text(

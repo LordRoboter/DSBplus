@@ -12,7 +12,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get home => 'Home';
 
   @override
-  String get plan => 'Plan';
+  String get plan => 'Vertretungsplan';
 
   @override
   String get substPlan => 'Vertretungsplan';
@@ -216,6 +216,19 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get notifications => 'Benachrichtigungen';
+
+  @override
+  String get firebase => 'Firebase Benachrichtigungen';
+
+  @override
+  String get firebaseDesc => 'Benachrichtigungen über unseren Server erhalten';
+
+  @override
+  String get workManager => 'Periodische Überprüfungen';
+
+  @override
+  String get workManagerDesc =>
+      'In festen Zeitabständen nach neuen Plänen suchen';
 
   @override
   String get appearance => 'Aussehen';

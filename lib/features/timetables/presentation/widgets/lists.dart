@@ -1,24 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:planner/core/model/filter.dart';
-import 'package:planner/core/model/timetable.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:planner/features/timetables/model/filter.dart';
+import 'package:planner/features/timetables/model/timetable.dart';
+import 'package:planner/features/settings/model/settings_state.dart';
 import 'package:planner/core/util/translations.dart';
-import 'package:planner/services/data_repository.dart';
-import 'package:provider/provider.dart';
-import '../l10n/l10extension.dart';
+import '../../../../l10n/l10extension.dart';
 import 'texts.dart';
-import '../res/maps.dart';
-import '../core/util/sorter.dart';
+import '../../../../core/res/maps.dart';
+import '../../../../core/util/sorter.dart';
 
 class EntryListNoScroll extends StatelessWidget {
   final Timetable timetable;
+  final SettingsState settings;
 
-  const EntryListNoScroll({super.key, required this.timetable});
+  const EntryListNoScroll({
+    super.key,
+    required this.timetable,
+    required this.settings,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: timetable.entries
-          .map((entry) => EntryCard(entry: entry, marked: false))
+          .map(
+            (entry) =>
+                EntryCard(entry: entry, settings: settings, marked: false),
+          )
           .toList(),
     );
   }
@@ -26,12 +34,14 @@ class EntryListNoScroll extends StatelessWidget {
 
 class EntryList extends StatelessWidget {
   final Timetable timetable;
+  final SettingsState settings;
   final List<TimetableFilter> filters;
   final TimetableFilter classFilter;
 
   const EntryList({
     super.key,
     required this.timetable,
+    required this.settings,
     required this.filters,
     required this.classFilter,
   });
@@ -44,6 +54,7 @@ class EntryList extends StatelessWidget {
 
         return EntryCard(
           timetable: timetable,
+          settings: settings,
           entry: classEntry,
           marked: groupMarked,
           filters: filters,
@@ -54,8 +65,9 @@ class EntryList extends StatelessWidget {
   }
 }
 
-class EntryCard extends StatelessWidget {
+class EntryCard extends ConsumerWidget {
   final Timetable? timetable;
+  final SettingsState settings;
   final ClassEntry entry;
   final bool marked;
   final List<TimetableFilter>? filters;
@@ -64,6 +76,7 @@ class EntryCard extends StatelessWidget {
   const EntryCard({
     super.key,
     this.timetable,
+    required this.settings,
     required this.entry,
     required this.marked,
     this.filters,
@@ -88,8 +101,7 @@ class EntryCard extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final data = context.watch<DataRepository>();
+  Widget build(BuildContext context, WidgetRef ref) {
     final isGerman = Localizations.localeOf(context).languageCode == 'de';
     return Card(
       margin: const EdgeInsets.all(8),
@@ -176,7 +188,7 @@ class EntryCard extends StatelessWidget {
                             localizedStatus(
                               context,
                               lesson.type,
-                              original: !data.remapTypes && isGerman,
+                              original: !settings.remapTypes && isGerman,
                             ),
                             style: TextStyle(color: Colors.black),
                           ),

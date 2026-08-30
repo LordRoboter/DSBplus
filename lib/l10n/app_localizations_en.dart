@@ -218,6 +218,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifications => 'Notifications';
 
   @override
+  String get firebase => 'Firebase Notifications';
+
+  @override
+  String get firebaseDesc =>
+      'Receive notifications when our server detects new plans';
+
+  @override
+  String get workManager => 'Periodical Checks';
+
+  @override
+  String get workManagerDesc => 'Local periodical checks to detect new plans';
+
+  @override
   String get appearance => 'Appearance';
 
   @override

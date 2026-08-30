@@ -1,0 +1,242 @@
+import 'dart:convert';
+import 'dart:ui';
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+//import 'package:planner/core/model/daydate.dart';
+import 'package:planner/features/timetables/model/filter.dart';
+import 'package:planner/features/settings/model/settings_state.dart';
+import 'package:planner/core/providers/shared_preferences_provider.dart';
+import 'package:planner/theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class SettingsNotifier extends AsyncNotifier<SettingsState> {
+  late SharedPreferences prefs;
+
+  @override
+  Future<SettingsState> build() async {
+    prefs = ref.read(sharedPreferencesProvider);
+
+    return SettingsState(
+      locale: _loadLocale(),
+      //selectedDayDate: _loadSelectedDayDate(),
+      clean: prefs.getBool('clean') ?? false,
+      simplify: prefs.getBool('simplify') ?? false,
+      disposeTut: prefs.getBool('disposeTut') ?? false,
+      cleanClassNames: prefs.getBool('cleanClassNames') ?? false,
+      remapTypes: prefs.getBool('remapTypes') ?? false,
+      cleanupCourses: prefs.getBool('cleanupCourses') ?? false,
+      disposeCourseNumbers: prefs.getBool('disposeCourseNumbers') ?? false,
+      mapCourses: prefs.getBool('mapCourses') ?? false,
+      notifications: prefs.getBool('notifications') ?? false,
+      firebase: prefs.getBool('firebase') ?? false,
+      classFilter: _loadClassFilter(),
+      workManager: prefs.getBool('workManager') ?? false,
+      filters: _loadFilters(),
+      theme: _loadTheme(),
+      darkTheme: _loadDarkTheme(),
+    );
+  }
+
+  // LOADING VALUES
+
+  Locale? _loadLocale() {
+    final value = prefs.getString('locale');
+
+    if (value == null) {
+      return null;
+    }
+
+    return Locale.fromSubtags(languageCode: value.split('-').first);
+  }
+
+  TimetableFilter _loadClassFilter() {
+    final classJson = prefs.getString("classFilter");
+
+    if (classJson != null) {
+      return TimetableFilter.fromJson(jsonDecode(classJson));
+    } else {
+      return const TimetableFilter();
+    }
+  }
+
+  /*DayDate? _loadSelectedDayDate() {
+    final value = prefs.getString('selectedDayDate');
+
+    if (value == null) {
+      return null;
+    }
+
+    return DayDate.fromJson(jsonDecode(value));
+  }*/
+
+  List<TimetableFilter> _loadFilters() {
+    final value = prefs.getString('filters');
+
+    if (value == null) {
+      return [];
+    }
+
+    final decoded = jsonDecode(value) as List;
+
+    return decoded.map((e) => TimetableFilter.fromJson(e)).toList();
+  }
+
+  AppThemes _loadTheme() {
+    final index = prefs.getInt('theme');
+
+    return (index != null && index >= 0 && index < AppThemes.values.length)
+        ? AppThemes.values[index]
+        : AppThemes.system;
+  }
+
+  DarkTheme _loadDarkTheme() {
+    final index = prefs.getInt('darkTheme');
+
+    return (index != null && index >= 0 && index < DarkTheme.values.length)
+        ? DarkTheme.values[index]
+        : DarkTheme.dark;
+  }
+
+  // STORING VALUES
+
+  Future<void> setLocale(Locale? value) async {
+    _updateState((state) => state.copyWith(locale: value));
+    if (value == null) {
+      await prefs.remove('locale');
+    } else {
+      await prefs.setString('locale', value.toLanguageTag());
+    }
+  }
+
+  Future<void> setClean(bool value) async {
+    _updateState((state) => state.copyWith(clean: value));
+    await prefs.setBool('clean', value);
+  }
+
+  Future<void> setSimplify(bool value) async {
+    _updateState((state) => state.copyWith(simplify: value));
+    await prefs.setBool('simplify', value);
+  }
+
+  Future<void> setDisposeTut(bool value) async {
+    _updateState((state) => state.copyWith(disposeTut: value));
+    await prefs.setBool('disposeTut', value);
+  }
+
+  Future<void> setCleanClassNames(bool value) async {
+    _updateState((state) => state.copyWith(cleanClassNames: value));
+    await prefs.setBool('cleanClassNames', value);
+  }
+
+  Future<void> setRemapTypes(bool value) async {
+    _updateState((state) => state.copyWith(remapTypes: value));
+    await prefs.setBool('remapTypes', value);
+  }
+
+  Future<void> setCleanupCourses(bool value) async {
+    _updateState((state) => state.copyWith(cleanupCourses: value));
+    await prefs.setBool('cleanupCourses', value);
+  }
+
+  Future<void> setDisposeCourseNumbers(bool value) async {
+    _updateState((state) => state.copyWith(disposeCourseNumbers: value));
+    await prefs.setBool('disposeCourseNumbers', value);
+  }
+
+  Future<void> setMapCourses(bool value) async {
+    _updateState((state) => state.copyWith(mapCourses: value));
+    await prefs.setBool('mapCourses', value);
+  }
+
+  Future<void> setClassFilter(TimetableFilter value) async {
+    _updateState((state) => state.copyWith(classFilter: value));
+    await prefs.setString('classFilter', jsonEncode(value.toJson()));
+  }
+
+  Future<void> addFilter(TimetableFilter filter) async {
+    _updateState(
+      (state) => state.copyWith(filters: [...state.filters, filter]),
+    );
+    await _saveFilters();
+  }
+
+  Future<void> removeFilter(TimetableFilter filter) async {
+    _updateState(
+      (state) => state.copyWith(
+        filters: state.filters.where((existing) => existing != filter).toList(),
+      ),
+    );
+    await _saveFilters();
+  }
+
+  Future<void> updateFilter(
+    TimetableFilter oldFilter,
+    TimetableFilter newFilter,
+  ) async {
+    final current = state.requireValue;
+    final index = current.filters.indexOf(oldFilter);
+    if (index == -1) {
+      return;
+    }
+    final filters = [...current.filters];
+    filters[index] = newFilter;
+    _updateState((_) => current.copyWith(filters: filters));
+    await _saveFilters();
+  }
+
+  Future<void> clearFilters() async {
+    _updateState((state) => state.copyWith(filters: []));
+    await prefs.remove('filters');
+  }
+
+  Future<void> _saveFilters() async {
+    final filters = state.requireValue.filters;
+    await prefs.setString(
+      'filters',
+      jsonEncode(filters.map((filter) => filter.toJson()).toList()),
+    );
+  }
+
+  Future<void> setNotifications(bool value) async {
+    _updateState((state) => state.copyWith(notifications: value));
+    await prefs.setBool('notifications', value);
+  }
+
+  Future<void> setFirebase(bool value) async {
+    _updateState((state) => state.copyWith(firebase: value));
+    await prefs.setBool('firebase', value);
+  }
+
+  Future<void> setWorkManager(bool value) async {
+    _updateState((state) => state.copyWith(workManager: value));
+    /*if (value) {
+      await Workmanager().registerPeriodicTask(
+        'timetable-check',
+        'timetableCheck',
+        frequency: const Duration(minutes: 15),
+        existingWorkPolicy: ExistingPeriodicWorkPolicy.replace,
+      );
+    } else {
+      await Workmanager().cancelByUniqueName('timetable-check');
+    }*/
+    await prefs.setBool('workManager', value);
+  }
+
+  Future<void> setTheme(AppThemes value) async {
+    _updateState((state) => state.copyWith(theme: value));
+    await prefs.setInt('theme', value.index);
+  }
+
+  Future<void> setDarkTheme(DarkTheme value) async {
+    _updateState((state) => state.copyWith(darkTheme: value));
+    await prefs.setInt('darkTheme', value.index);
+  }
+
+  void _updateState(SettingsState Function(SettingsState state) update) {
+    state = AsyncData(update(state.requireValue));
+  }
+}
+
+final settingsProvider = AsyncNotifierProvider<SettingsNotifier, SettingsState>(
+  SettingsNotifier.new,
+);

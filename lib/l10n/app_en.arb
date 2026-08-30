@@ -89,6 +89,10 @@
   "removeCourseNumbers": "Remove course numbers",
 
   "notifications": "Notifications",
+  "firebase": "Firebase Notifications",
+  "firebaseDesc": "Receive notifications when our server detects new plans",
+  "workManager": "Periodical Checks",
+  "workManagerDesc": "Local periodical checks to detect new plans",
 
   "appearance": "Appearance",
   "appTheme": "App theme",
