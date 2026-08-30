@@ -47,8 +47,10 @@ class SettingsState {
     this.darkTheme = DarkTheme.dark,
   });
 
+  static const _unset = Object();
+
   SettingsState copyWith({
-    Locale? locale,
+    Object? locale = _unset,
     //DayDate? selectedDayDate,
     bool? clean,
     bool? simplify,
@@ -67,7 +69,7 @@ class SettingsState {
     DarkTheme? darkTheme,
   }) {
     return SettingsState(
-      locale: locale ?? this.locale,
+      locale: locale == _unset ? this.locale : locale as Locale?,
       //selectedDayDate: selectedDayDate ?? this.selectedDayDate,
       clean: clean ?? this.clean,
       simplify: simplify ?? this.simplify,
