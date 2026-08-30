@@ -146,6 +146,33 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settings => 'Einstellungen';
 
   @override
+  String get credentials => 'Benutzerdaten';
+
+  @override
+  String get credentialsExp => 'Benutzerdaten für DSB';
+
+  @override
+  String get showPassword => 'Passwort anzeigen';
+
+  @override
+  String get hidePassword => 'Passwort verstecken';
+
+  @override
+  String get credentialsSaved => 'Benutzerdaten gespeichert';
+
+  @override
+  String get username => 'Benutzername';
+
+  @override
+  String get usernameHint => 'z.B. 187801';
+
+  @override
+  String get password => 'Passwort';
+
+  @override
+  String get save => 'Speichern';
+
+  @override
   String get notificationsExp => 'Benachrichtigungen bei neuen Einträgen';
 
   @override
