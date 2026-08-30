@@ -1,36 +1,27 @@
 {
   "@@locale": "en",
-  
   "home": "Home",
   "plan": "Plan",
-
   "substPlan": "Substitution Plan",
-
   "noRelevantEntries": "No relevant Entries •︵•",
   "noEntries": "No Entries ( – ⤙ – )",
   "newEntries": "New Entries!",
   "outdatedEntry": "This entry is probably outdated",
-
   "entryInfo": "{lessonOrdinal} lesson: {type} {subject} {teacher}",
   "entryInfoDeleted": "{lessonOrdinal} lesson: {type} {subject} {teacher} - Deleted",
-  
   "lsn": "lesson",
   "lesson": "lesson",
   "classs": "Class",
   "subject": "Subject",
-  
   "addFilter": "Add Filter",
   "add": "Add",
   "cancel": "Cancel",
-  
-  "today" : "Today",
-  "tomorrow" : "Tomorrow",
-  "yesterday" : "Yesterday",
-
+  "today": "Today",
+  "tomorrow": "Tomorrow",
+  "yesterday": "Yesterday",
   "newEntriess": "New Entries",
   "timetableChanged": "Timetable changed",
   "deletedEntries": "Deleted Entries",
-  
   "monday": "Monday",
   "tuesday": "Tuesday",
   "wednesday": "Wednesday",
@@ -38,48 +29,43 @@
   "friday": "Friday",
   "saturday": "Saturday",
   "sunday": "Sunday",
-
   "unknown": "Unknown",
-
   "search": "Search...",
   "date": "Date: ",
   "updated": "Updated: ",
-
   "dateP": "Date",
   "updatedP": "Updated",
   "day": "Day",
-
   "additionalInformation": "Additional Information",
   "planDetails": "Plan Details",
-
   "fetchedAt": "First Fetch",
   "lastFetchedAt": "Most recent Fetch",
-
-
-
   "settings": "Settings",
-
+  "credentials": "Credentials",
+  "credentialsExp": "Credentials for using DSB",
+  "showPassword": "Show password",
+  "hidePassword": "Hide password",
+  "credentialsSaved": "Credentials saved",
+  "username": "Username",
+  "usernameHint": "e.g. 187801",
+  "password": "Password",
+  "save": "Save",
   "notificationsExp": "Notifications for new entries",
   "enhanceEntries": "Enhance Entries",
   "filters": "Filters",
   "filtersExp": "Filter by classes and lessons",
   "language": "Language",
   "languageExp": "The display language of the app",
-
-
   "filter": "Filter",
   "classFilter": "Class Filter",
   "classFilterHint": "e.g. 10a",
   "advancedFilters": "Advanced Filters",
   "help": "Help",
-
   "cleanup": "Cleanup",
   "simplifyEntries": "Simplify Entries",
   "simplifyEntriesSub": "Merge duplicate entries",
   "cleanupEntries": "Cleanup Entries",
   "cleanupEntriesSub": "Make entries easier to read",
-
-  
   "cleanupOptions": "Cleanup options",
   "simplifyClassNames": "Simplify class names",
   "simplifyLessonStatus": "Simplify lesson status",
@@ -87,13 +73,11 @@
   "mergeTutorCourses": "Merge tutor courses",
   "renameSubjects": "Rename subjects",
   "removeCourseNumbers": "Remove course numbers",
-
   "notifications": "Notifications",
   "firebase": "Firebase Notifications",
   "firebaseDesc": "Receive notifications when our server detects new plans",
   "workManager": "Periodical Checks",
   "workManagerDesc": "Local periodical checks to detect new plans",
-
   "appearance": "Appearance",
   "appTheme": "App theme",
   "system": "System",
@@ -102,12 +86,9 @@
   "darkTheme": "Dark theme",
   "standard": "Default",
   "amoled": "AMOLED",
-
   "systemDefault": "System Default",
   "german": "German",
   "english": "English",
-
-
   "substitution": "Substitution",
   "cancelled": "Cancelled",
   "classChanged": "Class changed",
@@ -117,8 +98,7 @@
   "despiteAbsence": "Despite absence",
   "substituteLesson": "Substitute lesson",
   "supervision": "Supervision",
-
-    "subjectGerman": "German",
+  "subjectGerman": "German",
   "subjectDrama": "Drama",
   "subjectFrench": "French",
   "subjectSpanish": "Spanish",
