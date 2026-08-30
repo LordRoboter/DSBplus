@@ -5,6 +5,7 @@ import 'package:planner/features/timetables/model/filter.dart';
 import 'package:planner/theme.dart';
 
 class SettingsState {
+  final bool startupComplete;
   final Locale? locale;
   //final DayDate? selectedDayDate;
 
@@ -28,19 +29,20 @@ class SettingsState {
   final DarkTheme darkTheme;
 
   const SettingsState({
+    this.startupComplete = false,
     this.locale,
     //this.selectedDayDate,
-    this.clean = false,
-    this.simplify = false,
-    this.disposeTut = false,
-    this.cleanClassNames = false,
-    this.remapTypes = false,
-    this.cleanupCourses = false,
-    this.disposeCourseNumbers = false,
-    this.mapCourses = false,
-    this.notifications = false,
-    this.firebase = false,
-    this.workManager = false,
+    this.clean = true,
+    this.simplify = true,
+    this.disposeTut = true,
+    this.cleanClassNames = true,
+    this.remapTypes = true,
+    this.cleanupCourses = true,
+    this.disposeCourseNumbers = true,
+    this.mapCourses = true,
+    this.notifications = true,
+    this.firebase = true,
+    this.workManager = true,
     this.filters = const [],
     this.classFilter = const TimetableFilter(),
     this.theme = AppThemes.system,
@@ -50,6 +52,7 @@ class SettingsState {
   static const _unset = Object();
 
   SettingsState copyWith({
+    bool? startupComplete,
     Object? locale = _unset,
     //DayDate? selectedDayDate,
     bool? clean,
@@ -69,6 +72,7 @@ class SettingsState {
     DarkTheme? darkTheme,
   }) {
     return SettingsState(
+      startupComplete: startupComplete ?? this.startupComplete,
       locale: locale == _unset ? this.locale : locale as Locale?,
       //selectedDayDate: selectedDayDate ?? this.selectedDayDate,
       clean: clean ?? this.clean,
