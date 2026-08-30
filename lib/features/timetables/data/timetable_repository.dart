@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:planner/features/auth/auth_repository.dart';
 import 'package:planner/features/timetables/model/timetable.dart';
 import 'package:planner/core/database/database.dart'
     show
@@ -12,8 +13,9 @@ import 'package:collection/collection.dart';
 
 class TimetableRepository {
   final AppDatabase db;
+  final AuthRepository auth;
 
-  TimetableRepository(this.db);
+  TimetableRepository(this.db, this.auth);
 
   Future<int> save(Timetable timetable) async {
     return db.transaction(() async {
@@ -227,9 +229,16 @@ class TimetableRepository {
   }
 
   Future<List<Timetable>> fetch() async {
+    final username = await auth.getUsername();
+    final password = await auth.getPassword();
+
+    if (username == null || password == null) {
+      throw StateError('DSB credentials are not configured');
+    }
+
     final api = DSBApi(
-      "REMOVED",
-      "REMOVED",
+      username,
+      password,
       tableMapper: ['type', 'lesson', 'teacher', 'subject', 'room', 'text'],
     );
 

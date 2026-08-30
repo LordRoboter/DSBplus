@@ -4,10 +4,12 @@ import 'dart:ui';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:planner/certificates.dart';
 import 'package:planner/core/database/database.dart';
+import 'package:planner/features/auth/auth_repository.dart';
 import 'package:planner/features/timetables/model/daydate.dart';
 import 'package:planner/features/settings/providers/background_settings.dart';
 import 'package:planner/core/util/date.dart';
@@ -40,8 +42,11 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await NotificationService.init();
 
   final db = AppDatabase();
+
+  final secureStorage = FlutterSecureStorage();
+  final auth = AuthRepository(storage: secureStorage);
   try {
-    await performTimetableCheck(TimetableRepository(db), settings);
+    await performTimetableCheck(TimetableRepository(db, auth), settings);
   } finally {
     await db.close();
   }
@@ -61,8 +66,11 @@ void callbackDispatcher() {
       await settings.init();
       final db = AppDatabase();
 
+      final secureStorage = FlutterSecureStorage();
+      final auth = AuthRepository(storage: secureStorage);
+
       try {
-        await performTimetableCheck(TimetableRepository(db), settings);
+        await performTimetableCheck(TimetableRepository(db, auth), settings);
       } finally {
         await db.close();
       }
