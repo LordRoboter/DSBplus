@@ -10,8 +10,8 @@ class BackgroundSettingsRepository {
     prefs = await SharedPreferences.getInstance();
   }
 
-  bool get notifications => prefs.getBool('notifications') ?? false;
-  bool get firebase => prefs.getBool('firebase') ?? false;
+  bool get notifications => prefs.getBool('notifications') ?? true;
+  bool get firebase => prefs.getBool('firebase') ?? true;
 
   TimetableFilter get classFilter {
     final value = prefs.getString('classFilter');

@@ -98,6 +98,24 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
+  /// No description provided for @welcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Planner'**
+  String get welcome;
+
+  /// No description provided for @welcomeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your DSB credentials to get started and access your substitution plans.'**
+  String get welcomeDesc;
+
+  /// No description provided for @getStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Started'**
+  String get getStarted;
+
   /// No description provided for @home.
   ///
   /// In en, this message translates to:
@@ -353,6 +371,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Settings'**
   String get settings;
+
+  /// No description provided for @credentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Credentials'**
+  String get credentials;
+
+  /// No description provided for @credentialsExp.
+  ///
+  /// In en, this message translates to:
+  /// **'Credentials for using DSB'**
+  String get credentialsExp;
+
+  /// No description provided for @showPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Show password'**
+  String get showPassword;
+
+  /// No description provided for @hidePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide password'**
+  String get hidePassword;
+
+  /// No description provided for @credentialsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Credentials saved'**
+  String get credentialsSaved;
+
+  /// No description provided for @username.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get username;
+
+  /// No description provided for @usernameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 187801'**
+  String get usernameHint;
+
+  /// No description provided for @password.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get password;
+
+  /// No description provided for @passwordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get passwordHint;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
 
   /// No description provided for @notificationsExp.
   ///

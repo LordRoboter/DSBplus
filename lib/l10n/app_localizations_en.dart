@@ -9,6 +9,16 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get welcome => 'Welcome to Planner';
+
+  @override
+  String get welcomeDesc =>
+      'Enter your DSB credentials to get started and access your substitution plans.';
+
+  @override
+  String get getStarted => 'Get Started';
+
+  @override
   String get home => 'Home';
 
   @override
@@ -144,6 +154,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings => 'Settings';
+
+  @override
+  String get credentials => 'Credentials';
+
+  @override
+  String get credentialsExp => 'Credentials for using DSB';
+
+  @override
+  String get showPassword => 'Show password';
+
+  @override
+  String get hidePassword => 'Hide password';
+
+  @override
+  String get credentialsSaved => 'Credentials saved';
+
+  @override
+  String get username => 'Username';
+
+  @override
+  String get usernameHint => 'e.g. 187801';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get passwordHint => 'Enter your password';
+
+  @override
+  String get save => 'Save';
 
   @override
   String get notificationsExp => 'Notifications for new entries';

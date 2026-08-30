@@ -9,6 +9,16 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get welcome => 'Wilkommen zu Planner';
+
+  @override
+  String get welcomeDesc =>
+      'Gib deine DSB Benutzerdaten ein, um auf deine Vertretungspläne zugreifen zu können.';
+
+  @override
+  String get getStarted => 'Loslegen';
+
+  @override
   String get home => 'Home';
 
   @override
@@ -144,6 +154,36 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settings => 'Einstellungen';
+
+  @override
+  String get credentials => 'Benutzerdaten';
+
+  @override
+  String get credentialsExp => 'Benutzerdaten für DSB';
+
+  @override
+  String get showPassword => 'Passwort anzeigen';
+
+  @override
+  String get hidePassword => 'Passwort verstecken';
+
+  @override
+  String get credentialsSaved => 'Benutzerdaten gespeichert';
+
+  @override
+  String get username => 'Benutzername';
+
+  @override
+  String get usernameHint => 'z.B. 187801';
+
+  @override
+  String get password => 'Passwort';
+
+  @override
+  String get passwordHint => 'Gib dein Passwort ein';
+
+  @override
+  String get save => 'Speichern';
 
   @override
   String get notificationsExp => 'Benachrichtigungen bei neuen Einträgen';

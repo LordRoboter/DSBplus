@@ -53,6 +53,8 @@ dependencies:
   drift_flutter: ^0.3.1
   path_provider: ^2.1.6
   flutter_riverpod: ^2.6.1
+  flutter_secure_storage: ^11.0.0
+  flutter_svg: ^2.3.0
 
 dev_dependencies:
   flutter_test:
@@ -250,6 +252,9 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   generate: true
+  assets:
+    - assets/bg.png
+    - assets/fg.png
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
