@@ -8,17 +8,25 @@ final timetableRepositoryProvider = Provider<TimetableRepository>((ref) {
 });
 
 class TimetableNotifier extends AsyncNotifier<List<Timetable>> {
+  late final TimetableRepository repository;
+
   @override
   Future<List<Timetable>> build() {
-    return ref.read(timetableRepositoryProvider).loadAll();
+    repository = ref.read(timetableRepositoryProvider);
+    return repository.loadAll();
   }
 
   Future<void> refresh() async {
     final oldTimetables = state.value ?? [];
 
-    state = await AsyncValue.guard(
-      () => ref.read(timetableRepositoryProvider).sync(oldTimetables),
-    );
+    state = AsyncLoading<List<Timetable>>().copyWithPrevious(state);
+
+    try {
+      final newData = await repository.sync(oldTimetables);
+      state = AsyncData(newData);
+    } catch (e, stack) {
+      state = AsyncError<List<Timetable>>(e, stack).copyWithPrevious(state);
+    }
   }
 }
 
