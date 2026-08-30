@@ -98,6 +98,24 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
+  /// No description provided for @welcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Planner'**
+  String get welcome;
+
+  /// No description provided for @welcomeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your DSB credentials to get started and access your substitution plans.'**
+  String get welcomeDesc;
+
+  /// No description provided for @getStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Started'**
+  String get getStarted;
+
   /// No description provided for @home.
   ///
   /// In en, this message translates to:
@@ -401,6 +419,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Password'**
   String get password;
+
+  /// No description provided for @passwordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get passwordHint;
 
   /// No description provided for @save.
   ///

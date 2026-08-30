@@ -1,5 +1,8 @@
 {
   "@@locale": "de",
+  "welcome": "Wilkommen zu Planner",
+  "welcomeDesc": "Gib deine DSB Benutzerdaten ein, um auf deine Vertretungspläne zugreifen zu können.",
+  "getStarted": "Loslegen",
   "home": "Home",
   "plan": "Vertretungsplan",
   "substPlan": "Vertretungsplan",
@@ -49,6 +52,7 @@
   "username": "Benutzername",
   "usernameHint": "z.B. 187801",
   "password": "Passwort",
+  "passwordHint": "Gib dein Passwort ein",
   "save": "Speichern",
   "notificationsExp": "Benachrichtigungen bei neuen Einträgen",
   "enhanceEntries": "Einträge verbessern",
