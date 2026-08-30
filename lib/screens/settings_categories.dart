@@ -491,7 +491,7 @@ class LanguageSettingsPage extends ConsumerWidget {
                       '${context.l10n.systemDefault} '
                       '(${nativeLanguageNames[systemLocale.languageCode] ?? 'English'})',
                     ),
-                    value: null,
+                    value: null as Locale?,
                   ),
                   RadioListTile<Locale?>(
                     title: Text(
