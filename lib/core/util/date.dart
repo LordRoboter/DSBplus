@@ -28,7 +28,7 @@ String getDayName(DateTime? date, Weekday? day, BuildContext context) {
   final diff = getRelativeDay(date);
 
   if (-1 <= diff && diff <= 1) {
-    return "${localizedRelativeWeekday(diff, context)}";
+    return localizedRelativeWeekday(diff, context);
     // ${day != null ? ' (${localizedWeekday(context, day)})' : ''}
   }
 
@@ -44,6 +44,45 @@ String getDayName(DateTime? date, Weekday? day, BuildContext context) {
     return localizedWeekday(context, Weekday.values[targetDate.weekday - 1]);
   }
   return '${localizedWeekday(context, Weekday.values[targetDate.weekday - 1])} (${DateFormat.Md(Localizations.localeOf(context).toString()).format(date)})';
+}
+
+String getRelativeDayString(
+  DateTime date,
+  BuildContext context, {
+  String? timePattern,
+}) {
+  final now = DateTime.now();
+  final locale = Localizations.localeOf(context).toString();
+
+  final diff = getRelativeDay(date);
+
+  String dayString;
+
+  if (-1 <= diff && diff <= 1) {
+    dayString = localizedRelativeWeekday(diff, context);
+  } else if (_isSameWeek(date, now)) {
+    final weekday = DateFormat.EEEE(locale).format(date);
+    final day = DateFormat.yMd(locale).format(date);
+    dayString = '$weekday ($day)';
+  } else {
+    dayString = DateFormat.yMd(locale).format(date);
+  }
+
+  if (timePattern != null) {
+    dayString += ' ${DateFormat(timePattern, locale).format(date)}';
+  }
+
+  return dayString;
+}
+
+bool _isSameWeek(DateTime a, DateTime b) {
+  final aDate = DateTime(a.year, a.month, a.day);
+  final bDate = DateTime(b.year, b.month, b.day);
+
+  final aMonday = aDate.subtract(Duration(days: aDate.weekday - 1));
+  final bMonday = bDate.subtract(Duration(days: bDate.weekday - 1));
+
+  return aMonday == bMonday;
 }
 
 bool isOutdated(DateTime date) {

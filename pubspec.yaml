@@ -55,6 +55,7 @@ dependencies:
   flutter_riverpod: ^2.6.1
   flutter_secure_storage: ^11.0.0
   flutter_svg: ^2.3.0
+  restart_app: ^1.9.1
 
 dev_dependencies:
   flutter_test:

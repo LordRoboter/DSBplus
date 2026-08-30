@@ -314,4 +314,12 @@ class TimetableRepository {
 
     return newTimetables;
   }
+
+  Future<void> clear() async {
+    await db.transaction(() async {
+      await db.delete(db.timetableEntries).go();
+      await db.delete(db.classEntries).go();
+      await db.delete(db.timetables).go();
+    });
+  }
 }

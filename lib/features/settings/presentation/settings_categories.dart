@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:planner/features/auth/auth_repository.dart';
+import 'package:planner/features/settings/presentation/widgets/debug/debug_settings.dart';
 import 'package:planner/features/timetables/model/filter.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/l10n/l10extension.dart';
@@ -766,6 +768,18 @@ class SettingsCategoriesPage extends StatelessWidget {
               onTap: () => _open(context, const FiltersSettingsPage()),
             ),
           ]),
+          if (kDebugMode) ...[
+            const SizedBox(height: 16),
+            _stackedCategories([
+              SettingsCategoryTile(
+                title: 'Debug',
+                subtitle: 'Developer settings',
+                icon: Icons.bug_report_outlined,
+                position: SettingsCategoryTilePosition.single,
+                onTap: () => _open(context, const DebugSettingsPage()),
+              ),
+            ]),
+          ],
         ],
       ),
     );

@@ -241,6 +241,11 @@ class SettingsNotifier extends AsyncNotifier<SettingsState> {
   void _updateState(SettingsState Function(SettingsState state) update) {
     state = AsyncData(update(state.requireValue));
   }
+
+  Future<void> clear() async {
+    await prefs.clear();
+    state = AsyncData(SettingsState());
+  }
 }
 
 final settingsProvider = AsyncNotifierProvider<SettingsNotifier, SettingsState>(

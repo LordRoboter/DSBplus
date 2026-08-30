@@ -45,19 +45,21 @@ class HomeScreen extends ConsumerWidget {
                 return ref.read(timetableProvider.notifier).refresh();
               },
               child: enhancedTimetables.isEmpty
-                  ? LayoutBuilder(
-                      builder: (context, constraints) {
-                        return SingleChildScrollView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          child: SizedBox(
-                            height: constraints.maxHeight,
-                            child: Center(
-                              child: Text(context.l10n.noRelevantEntries),
-                            ),
-                          ),
-                        );
-                      },
-                    )
+                  ? !timetables.isLoading
+                        ? LayoutBuilder(
+                            builder: (context, constraints) {
+                              return SingleChildScrollView(
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                child: SizedBox(
+                                  height: constraints.maxHeight,
+                                  child: Center(
+                                    child: Text(context.l10n.noRelevantEntries),
+                                  ),
+                                ),
+                              );
+                            },
+                          )
+                        : const Center(child: CircularProgressIndicator())
                   : ListView.separated(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       itemCount: enhancedTimetables.length,

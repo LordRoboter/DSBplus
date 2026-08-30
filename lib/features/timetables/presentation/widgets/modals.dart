@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:planner/core/util/date.dart';
 import 'package:planner/features/timetables/model/timetable.dart';
 import 'package:planner/core/util/translations.dart';
 import 'package:planner/l10n/l10extension.dart';
@@ -52,9 +53,11 @@ class PlanDetailsSheet extends StatelessWidget {
                   icon: Icons.update,
                   label: context.l10n.updatedP,
                   value: timetable.updated != null
-                      ? DateFormat.yMd(
-                          locale,
-                        ).add_Hm().format(timetable.updated!)
+                      ? getRelativeDayString(
+                          timetable.updated!,
+                          context,
+                          timePattern: "Hm",
+                        )
                       : context.l10n.unknown,
                 ),
 
@@ -62,9 +65,11 @@ class PlanDetailsSheet extends StatelessWidget {
                   icon: Icons.download,
                   label: context.l10n.fetchedAt,
                   value: timetable.firstFetched != null
-                      ? DateFormat.yMd(
-                          locale,
-                        ).add_Hms().format(timetable.firstFetched!)
+                      ? getRelativeDayString(
+                          timetable.firstFetched!,
+                          context,
+                          timePattern: "Hms",
+                        )
                       : context.l10n.unknown,
                 ),
 
@@ -72,9 +77,11 @@ class PlanDetailsSheet extends StatelessWidget {
                   icon: Icons.sync,
                   label: context.l10n.lastFetchedAt,
                   value: timetable.lastFetched != null
-                      ? DateFormat.yMd(
-                          locale,
-                        ).add_Hms().format(timetable.lastFetched!)
+                      ? getRelativeDayString(
+                          timetable.lastFetched!,
+                          context,
+                          timePattern: "Hms",
+                        )
                       : context.l10n.unknown,
                 ),
 
