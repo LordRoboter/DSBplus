@@ -12,7 +12,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get home => 'Home';
 
   @override
-  String get plan => 'Plan';
+  String get plan => 'Vertretungsplan';
 
   @override
   String get substPlan => 'Vertretungsplan';

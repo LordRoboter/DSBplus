@@ -196,15 +196,16 @@ class _NavigatorScreenState extends ConsumerState<NavigatorScreen> {
         ],
       ),
       body: pages[index],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: index,
-        onTap: (i) => setState(() => index = i),
-        items: [
-          BottomNavigationBarItem(
+      bottomNavigationBar: NavigationBar(
+        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+        selectedIndex: index,
+        onDestinationSelected: (i) => setState(() => index = i),
+        destinations: <Widget>[
+          NavigationDestination(
             icon: Icon(Icons.home),
             label: context.l10n.home,
           ),
-          BottomNavigationBarItem(
+          NavigationDestination(
             icon: Icon(Icons.calendar_view_month),
             label: context.l10n.plan,
           ),

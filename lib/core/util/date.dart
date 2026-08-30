@@ -43,7 +43,7 @@ String getDayName(DateTime? date, Weekday? day, BuildContext context) {
       !targetDate.isAfter(endOfThisWeek)) {
     return localizedWeekday(context, Weekday.values[targetDate.weekday - 1]);
   }
-  return '${localizedWeekday(context, Weekday.values[targetDate.weekday - 1])} ${targetDate.day}/${targetDate.month}';
+  return '${localizedWeekday(context, Weekday.values[targetDate.weekday - 1])} (${DateFormat.Md(Localizations.localeOf(context).toString()).format(date)});
 }
 
 bool isOutdated(DateTime date) {
