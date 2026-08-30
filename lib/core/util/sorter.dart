@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:planner/core/model/daydate.dart';
-import 'package:planner/core/model/filter.dart';
-import 'package:planner/core/model/timetable.dart';
+import 'package:planner/features/timetables/model/daydate.dart';
+import 'package:planner/features/timetables/model/filter.dart';
+import 'package:planner/features/timetables/model/timetable.dart';
 import 'package:planner/core/util/translations.dart';
+import 'package:planner/l10n/app_localizations.dart';
 
 Map<DayDate, Timetable> groupEntriesByDayDate(List<Timetable> timetables) {
   final grouped = <DayDate, Timetable>{};
@@ -41,7 +42,7 @@ bool isDigit(String c) {
 }
 
 Timetable cleanupTimetable(
-  BuildContext context,
+  AppLocalizations localization,
   Timetable timetable, {
   bool disposeTut = true,
   bool cleanClassNames = true,
@@ -90,7 +91,7 @@ Timetable cleanupTimetable(
           subject = subject.substring(0, match.start);
         }
 
-        subject = localizedSubject(context, subject);
+        subject = localizedSubject(localization, subject);
       }
 
       return TimetableEntry(
@@ -291,7 +292,7 @@ bool matchesClass(ClassEntry entry, TimetableFilter filter) {
 }
 
 Timetable enhanceTimetable(
-  BuildContext context,
+  AppLocalizations localization,
   Timetable timetable,
   bool clean,
   bool simplify, {
@@ -306,7 +307,7 @@ Timetable enhanceTimetable(
 
   if (clean) {
     res = cleanupTimetable(
-      context,
+      localization,
       res,
       disposeTut: disposeTut,
       cleanClassNames: cleanClassNames,

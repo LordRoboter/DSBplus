@@ -1,30 +1,30 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:collection/collection.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:intl/intl.dart';
-import 'package:planner/core/model/daydate.dart';
+import 'package:planner/background_tasks.dart';
+import 'package:planner/certificates.dart';
+import 'package:planner/features/timetables/model/timetable.dart';
+import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/l10n/l10extension.dart';
-import 'package:planner/core/util/translations.dart';
+import 'package:planner/core/providers/shared_preferences_provider.dart';
+import 'package:planner/features/timetables/providers/timetable_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:workmanager/workmanager.dart';
 import 'l10n/app_localizations.dart';
 
-import 'package:crypto/crypto.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:planner/screens/home_screen.dart';
-import 'package:planner/screens/plan_screen.dart';
-import 'package:planner/services/data_repository.dart';
-import 'package:planner/services/notification_service.dart';
+import 'package:planner/features/timetables/presentation/home_screen.dart';
+import 'package:planner/features/timetables/presentation/plan_screen.dart';
+import 'package:planner/features/notifications/notification_service.dart';
 import 'package:planner/theme.dart';
-import 'package:planner/core/util/date.dart';
-import 'package:planner/core/util/sorter.dart';
 
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import 'screens/settings_screen.dart';
-import 'services/plan_repository.dart';
+import 'features/settings/presentation/settings_screen.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -41,72 +41,82 @@ Future<void> main() async {
 
   await FirebaseMessaging.instance.subscribeToTopic("vertretungsplan");
 
+  await Workmanager().initialize(callbackDispatcher);
+
   final locale = PlatformDispatcher.instance.locale.toString();
   await initializeDateFormatting(locale);
 
-  final dataRepository = DataRepository();
-  await dataRepository.init();
-
   await NotificationService.init();
 
+  final prefs = await SharedPreferences.getInstance();
+
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(value: dataRepository),
-        ChangeNotifierProvider(
-          create: (_) => PlanRepository(dataRepository)..init(),
-        ),
-      ],
-      child: const MyApp(),
+    ProviderScope(
+      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+      child: MyApp(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final data = context.watch<DataRepository>();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingsProvider);
 
-    return MaterialApp(
-      title: 'Vertretungsplan',
-      debugShowCheckedModeBanner: false,
+    return settings.when(
+      loading: () => const MaterialApp(
+        home: Scaffold(body: Center(child: CircularProgressIndicator())),
+      ),
+      error: (error, stack) => MaterialApp(
+        home: Scaffold(
+          body: Center(child: Text('Failed to load settings: $error')),
+        ),
+      ),
+      data: (data) {
+        return MaterialApp(
+          title: 'Vertretungsplan',
+          debugShowCheckedModeBanner: false,
 
-      theme: lightTheme,
-      darkTheme: switch (data.darkTheme) {
-        DarkTheme.dark => darkTheme,
-        DarkTheme.amoled => amoledTheme,
+          theme: lightTheme,
+          darkTheme: switch (data.darkTheme) {
+            DarkTheme.dark => darkTheme,
+            DarkTheme.amoled => amoledTheme,
+          },
+
+          themeMode: switch (data.theme) {
+            AppThemes.system => ThemeMode.system,
+            AppThemes.light => ThemeMode.light,
+            AppThemes.dark => ThemeMode.dark,
+          },
+
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+
+          supportedLocales: const [Locale('en'), Locale('de')],
+
+          locale: data.locale,
+
+          home: const NavigatorScreen(),
+        );
       },
-
-      themeMode: switch (data.theme) {
-        AppThemes.system => ThemeMode.system,
-        AppThemes.light => ThemeMode.light,
-        AppThemes.dark => ThemeMode.dark,
-      },
-
-      localizationsDelegates: [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: [Locale('en'), Locale('de')],
-      locale: data.locale,
-
-      home: const NavigatorScreen(),
     );
   }
 }
 
-class NavigatorScreen extends StatefulWidget {
+class NavigatorScreen extends ConsumerStatefulWidget {
   const NavigatorScreen({super.key});
 
   @override
-  State<NavigatorScreen> createState() => _NavigatorScreenState();
+  ConsumerState<NavigatorScreen> createState() => _NavigatorScreenState();
 }
 
-class _NavigatorScreenState extends State<NavigatorScreen> {
+class _NavigatorScreenState extends ConsumerState<NavigatorScreen> {
   int index = 0;
 
   final pages = const [HomeScreen(), PlanScreen()];
@@ -124,22 +134,42 @@ class _NavigatorScreenState extends State<NavigatorScreen> {
   void initState() {
     super.initState();
 
-    final plan = context.read<PlanRepository>();
-    final data = context.read<DataRepository>();
+    ref.read(timetableProvider);
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       if (message.data["type"] != "timetable_updated") return;
 
       await NotificationService.showUpdateNotification();
-      await plan.loadData();
+      if (!mounted) return;
+      await ref.read(timetableProvider.notifier).refresh();
     });
 
-    _sub = data.updates.listen((_) {
+    ref.listenManual<AsyncValue<List<Timetable>>>(timetableProvider, (
+      previous,
+      next,
+    ) {
+      final oldTimetables = previous?.value;
+      final newTimetables = next.value;
+
+      if (oldTimetables == null || newTimetables == null) {
+        return;
+      }
+
+      const equality = DeepCollectionEquality();
+
+      if (equality.equals(
+        oldTimetables.map((e) => e.toComparableJson()).toList(),
+        newTimetables.map((e) => e.toComparableJson()).toList(),
+      )) {
+        return;
+      }
+
       if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(context.l10n.newEntries),
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -164,15 +194,16 @@ class _NavigatorScreenState extends State<NavigatorScreen> {
         ],
       ),
       body: pages[index],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: index,
-        onTap: (i) => setState(() => index = i),
-        items: [
-          BottomNavigationBarItem(
+      bottomNavigationBar: NavigationBar(
+        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+        selectedIndex: index,
+        onDestinationSelected: (i) => setState(() => index = i),
+        destinations: <Widget>[
+          NavigationDestination(
             icon: Icon(Icons.home),
             label: context.l10n.home,
           ),
-          BottomNavigationBarItem(
+          NavigationDestination(
             icon: Icon(Icons.calendar_view_month),
             label: context.l10n.plan,
           ),
@@ -180,127 +211,4 @@ class _NavigatorScreenState extends State<NavigatorScreen> {
       ),
     );
   }
-}
-
-@pragma('vm:entry-point')
-Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  if (message.data["type"] != "timetable_updated") return;
-
-  final settings = await SharedPreferences.getInstance();
-
-  final backgroundNotifications = settings.getBool("notifications") ?? true;
-
-  if (!backgroundNotifications) {
-    return;
-  }
-
-  final data = DataRepository();
-  await data.init();
-
-  final oldData = await data.sync();
-  final newData = data.cachedEntries;
-
-  final groupedOld = {
-    for (final timetable in oldData)
-      DayDate(timetable.day, timetable.date): timetable,
-  };
-
-  final groupedNew = {
-    for (final timetable in newData)
-      DayDate(timetable.day, timetable.date): timetable,
-  };
-
-  final localeCode = PlatformDispatcher.instance.locale.languageCode;
-  final l10n = await AppLocalizations.delegate.load(Locale(localeCode));
-  await initializeDateFormatting(localeCode);
-
-  for (final dayDate in data.availableDayDates) {
-    final diff = diffByClass(
-      groupedOld[dayDate],
-      groupedNew[dayDate],
-      data.classFilter.classes,
-    );
-
-    if (!diff.hasChanges) continue;
-
-    final date = dayDate.date!;
-    final formattedDate = DateFormat.yMd(Locale(localeCode)).format(date);
-
-    final relativeDay = getRelativeDay(date);
-
-    final dayName = switch (relativeDay) {
-      0 => l10n.today,
-      1 => l10n.tomorrow,
-      -1 => l10n.yesterday,
-      _ => "${dayDate.day} ($formattedDate)",
-    };
-
-    final title = diff.added.isNotEmpty && diff.removed.isNotEmpty
-        ? "$dayName: ${l10n.timetableChanged}"
-        : diff.added.isNotEmpty
-        ? "$dayName: ${l10n.newEntries}"
-        : "$dayName: ${l10n.deletedEntries}";
-
-    final addedEntries = diff.added
-        .map(
-          (entry) => l10n.entryInfo(
-            ordinal(entry.entry.lesson, Locale(localeCode)),
-            entry.entry.type ?? "",
-            entry.entry.subject ?? "",
-            entry.entry.teacher ?? "",
-          ),
-        )
-        .join("\n");
-
-    final removedEntries = diff.removed
-        .map(
-          (entry) => l10n.entryInfoDeleted(
-            ordinal(entry.entry.lesson, Locale(localeCode)),
-            entry.entry.type ?? "",
-            entry.entry.subject ?? "",
-            entry.entry.teacher ?? "",
-          ),
-        )
-        .join("\n");
-
-    final details = [
-      if (diff.added.isNotEmpty) addedEntries,
-      if (diff.removed.isNotEmpty) removedEntries,
-    ].join("\n");
-
-    await NotificationService.makeUpdateNotification(
-      DateTime.now().millisecondsSinceEpoch ~/ 1000 +
-          data.availableDayDates.indexOf(dayDate),
-      title,
-      details,
-    );
-  }
-}
-
-//TODO: Fix this, find the issue with the certificate on some devices...
-class MyHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    final client = super.createHttpClient(context);
-
-    client
-        .badCertificateCallback = (X509Certificate cert, String host, int port) {
-      if (host == "dsbmobile.de") {
-        final fingerprint = certificateSha256(cert);
-
-        return fingerprint ==
-            "8C54C334B66BA4E426772AF4A3F9136C19A1AEC729FDB28C535C07A5A4EF22E0";
-      }
-
-      return false;
-    };
-
-    return client;
-  }
-}
-
-String certificateSha256(X509Certificate cert) {
-  return sha256.convert(cert.der).toString().toUpperCase();
 }

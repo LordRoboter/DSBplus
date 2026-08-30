@@ -2,7 +2,7 @@
   "@@locale": "de",
 
   "home": "Home",
-  "plan": "Plan",
+  "plan": "Vertretungsplan",
 
   "substPlan": "Vertretungsplan",
 
@@ -90,6 +90,11 @@
   "removeCourseNumbers": "Kursnummern entfernen",
 
   "notifications": "Benachrichtigungen",
+  "firebase": "Firebase Benachrichtigungen",
+  "firebaseDesc": "Benachrichtigungen über unseren Server erhalten",
+  "workManager": "Periodische Überprüfungen",
+  "workManagerDesc": "In festen Zeitabständen nach neuen Plänen suchen",
+
 
   "appearance": "Aussehen",
   "appTheme": "App-Thema",
