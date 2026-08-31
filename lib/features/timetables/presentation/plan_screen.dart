@@ -374,7 +374,7 @@ class _PlanScreenState extends ConsumerState<PlanScreen>
                                                         ),
                                                       ),
                                                     ),
-                                                    const SizedBox(width: 6),
+                                                    const SizedBox(width: 2),
                                                     Flexible(
                                                       child: Text.rich(
                                                         TextSpan(
@@ -394,11 +394,12 @@ class _PlanScreenState extends ConsumerState<PlanScreen>
                                                                   visibleTimetable
                                                                           ?.updated !=
                                                                       null
-                                                                  ? DateFormat.yMd(
-                                                                      locale,
-                                                                    ).add_Hm().format(
+                                                                  ? getRelativeDayString(
                                                                       visibleTimetable!
                                                                           .updated!,
+                                                                      context,
+                                                                      timePattern:
+                                                                          "Hm",
                                                                     )
                                                                   : '',
                                                             ),

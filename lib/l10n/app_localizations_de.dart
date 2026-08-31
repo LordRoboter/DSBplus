@@ -129,13 +129,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get date => 'Datum: ';
 
   @override
-  String get updated => 'Updated: ';
+  String get updated => 'Aktualisiert: ';
 
   @override
   String get dateP => 'Datum';
 
   @override
-  String get updatedP => 'Updated';
+  String get updatedP => 'Aktualisiert';
 
   @override
   String get day => 'Tag';
