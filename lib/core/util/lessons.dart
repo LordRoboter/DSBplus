@@ -66,35 +66,44 @@ TimetableStatusType? parseStatus(String? value) {
   final cleaned = value.trim().toLowerCase();
 
   switch (cleaned) {
+    // No class
     case "entfall":
     case "eigenverantwortliches arbeiten":
       return TimetableStatusType.cancelled;
 
+    // Different teacher
     case "vertretung":
       return TimetableStatusType.substitution;
 
+    // Different lesson (1/2 -> 5/6)
     case "unterricht geändert":
       return TimetableStatusType.classChanged;
 
+    // Relevant for teachers?
     case "sondereinsatz":
     case "sondereins.":
       return TimetableStatusType.specialAssignment;
 
+    // Different room
     case "raum-vertretung":
     case "raum-vtr.":
       return TimetableStatusType.roomSubstitution;
 
+    // Different room (special event)
     case "veranstaltung":
     case "veranst.":
       return TimetableStatusType.event;
 
+    // No teacher
     case "trotz absenz":
     case "trotzabsenz":
       return TimetableStatusType.despiteAbsence;
 
+    // Different subject?
     case "statt-vertretung":
       return TimetableStatusType.substituteLesson;
 
+    // Different teacher
     case "betreuung":
       return TimetableStatusType.supervision;
 

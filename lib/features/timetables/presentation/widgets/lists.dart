@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:planner/core/util/timetable.dart';
 import 'package:planner/features/timetables/model/filter.dart';
 import 'package:planner/features/timetables/model/timetable.dart';
 import 'package:planner/features/settings/model/settings_state.dart';
@@ -113,10 +114,7 @@ class EntryCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              entry.classNames.join(", "),
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+            classText(context, entry.classNames, settings.collapse),
 
             Divider(
               color: marked
@@ -167,7 +165,10 @@ class EntryCard extends ConsumerWidget {
                             ),
                           ),
 
-                          teacherText(lesson.teacher ?? ""),
+                          teacherText(
+                            lesson.teacher ?? "",
+                            isSpecialTeacher(lesson.type),
+                          ),
 
                           if ((lesson.text ?? "").isNotEmpty)
                             Text(
@@ -195,7 +196,11 @@ class EntryCard extends ConsumerWidget {
                           backgroundColor: typeColor(lesson.type),
                         ),
 
-                        roomText(context, lesson.room ?? ""),
+                        roomText(
+                          context,
+                          lesson.room ?? "",
+                          isSpecialRoom(lesson.type),
+                        ),
                       ],
                     ),
                   ],

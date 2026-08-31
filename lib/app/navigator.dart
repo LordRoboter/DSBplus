@@ -24,8 +24,6 @@ class _NavigatorScreenState extends ConsumerState<NavigatorScreen> {
 
   final pages = const [HomeScreen(), PlanScreen()];
 
-  late final StreamSubscription _sub;
-
   Future<void> openSettings() async {
     await Navigator.push(
       context,
@@ -81,7 +79,6 @@ class _NavigatorScreenState extends ConsumerState<NavigatorScreen> {
 
   @override
   void dispose() {
-    _sub.cancel();
     super.dispose();
   }
 

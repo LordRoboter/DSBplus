@@ -17,6 +17,7 @@ class SettingsState {
   final bool cleanupCourses;
   final bool disposeCourseNumbers;
   final bool mapCourses;
+  final bool collapse;
 
   final bool notifications;
   final bool firebase;
@@ -40,6 +41,7 @@ class SettingsState {
     this.cleanupCourses = true,
     this.disposeCourseNumbers = true,
     this.mapCourses = true,
+    this.collapse = false,
     this.notifications = true,
     this.firebase = true,
     this.workManager = true,
@@ -63,6 +65,7 @@ class SettingsState {
     bool? cleanupCourses,
     bool? disposeCourseNumbers,
     bool? mapCourses,
+    bool? collapse,
     bool? notifications,
     bool? firebase,
     bool? workManager,
@@ -83,6 +86,7 @@ class SettingsState {
       cleanupCourses: cleanupCourses ?? this.cleanupCourses,
       disposeCourseNumbers: disposeCourseNumbers ?? this.disposeCourseNumbers,
       mapCourses: mapCourses ?? this.mapCourses,
+      collapse: collapse ?? this.collapse,
       notifications: notifications ?? this.notifications,
       firebase: firebase ?? this.firebase,
       workManager: workManager ?? this.workManager,

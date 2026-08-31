@@ -540,6 +540,12 @@ abstract class AppLocalizations {
   /// **'Simplify class names'**
   String get simplifyClassNames;
 
+  /// No description provided for @collapseClassNames.
+  ///
+  /// In en, this message translates to:
+  /// **'Collapse class names'**
+  String get collapseClassNames;
+
   /// No description provided for @simplifyLessonStatus.
   ///
   /// In en, this message translates to:

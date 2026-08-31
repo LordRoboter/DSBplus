@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:planner/features/timetables/model/daydate.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/core/util/date.dart';
+import 'package:planner/features/timetables/presentation/widgets/flexible_row.dart';
 import 'package:planner/l10n/l10extension.dart';
 import 'package:planner/features/timetables/providers/enhanced_timetables_provider.dart';
 import 'package:planner/features/timetables/providers/timetable_provider.dart';
@@ -282,159 +283,140 @@ class _PlanScreenState extends ConsumerState<PlanScreen>
                                                     horizontal: 8,
                                                     vertical: 6,
                                                   ),
-                                              child: Row(
-                                                children: [
-                                                  Flexible(
-                                                    fit: FlexFit.loose,
-                                                    flex: 8,
-                                                    child: Row(
-                                                      children: [
-                                                        const Icon(
-                                                          Icons.calendar_today,
-                                                          size: 16,
-                                                        ),
-                                                        const SizedBox(
-                                                          width: 6,
-                                                        ),
-                                                        Flexible(
-                                                          child: Text.rich(
-                                                            TextSpan(
-                                                              children: [
-                                                                TextSpan(
-                                                                  text: context
-                                                                      .l10n
-                                                                      .date,
-                                                                  style: const TextStyle(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                  ),
-                                                                ),
-                                                                TextSpan(
-                                                                  text:
-                                                                      visibleTimetable
-                                                                              ?.date !=
-                                                                          null
-                                                                      ? DateFormat.yMd(
-                                                                          locale,
-                                                                        ).format(
-                                                                          visibleTimetable!
-                                                                              .date!,
-                                                                        )
-                                                                      : '',
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            style:
-                                                                Theme.of(
-                                                                      context,
-                                                                    )
-                                                                    .textTheme
-                                                                    .bodyMedium,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            maxLines: 1,
-                                                          ),
-                                                        ),
-                                                      ],
+                                              child: PriorityRow(
+                                                spacing: 8,
+                                                trailingSpacing: 4,
+
+                                                left: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.calendar_today,
+                                                      size: 16,
                                                     ),
-                                                  ),
-                                                  Flexible(
-                                                    flex: 11,
-                                                    fit: FlexFit.loose,
-                                                    child: Row(
-                                                      children: [
-                                                        SizedBox(
-                                                          height: 18,
-                                                          width: 18,
-                                                          child: IconButton(
-                                                            iconSize: 18,
-                                                            padding:
-                                                                EdgeInsets.zero,
-                                                            constraints:
-                                                                const BoxConstraints(
-                                                                  minWidth: 18,
-                                                                  minHeight: 18,
-                                                                ),
-                                                            visualDensity:
-                                                                VisualDensity
-                                                                    .compact,
-                                                            splashRadius: 18,
-                                                            onPressed:
-                                                                timetableState
-                                                                    .isLoading
-                                                                ? null
-                                                                : () async {
-                                                                    await ref
-                                                                        .read(
-                                                                          timetableProvider
-                                                                              .notifier,
-                                                                        )
-                                                                        .refresh();
-                                                                  },
-                                                            icon: RotationTransition(
-                                                              turns:
-                                                                  _rotationController,
-                                                              child: const Icon(
-                                                                Icons.refresh,
+                                                    const SizedBox(width: 6),
+                                                    Flexible(
+                                                      child: Text.rich(
+                                                        TextSpan(
+                                                          children: [
+                                                            TextSpan(
+                                                              text: context
+                                                                  .l10n
+                                                                  .date,
+                                                              style: const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
                                                               ),
                                                             ),
-                                                          ),
-                                                        ),
-                                                        const SizedBox(
-                                                          width: 6,
-                                                        ),
-                                                        Flexible(
-                                                          child: Text.rich(
                                                             TextSpan(
-                                                              children: [
-                                                                TextSpan(
-                                                                  text: context
-                                                                      .l10n
-                                                                      .updated,
-                                                                  style: const TextStyle(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                  ),
-                                                                ),
-                                                                TextSpan(
-                                                                  text:
-                                                                      visibleTimetable
-                                                                              ?.updated !=
-                                                                          null
-                                                                      ? DateFormat.yMd(
-                                                                          locale,
-                                                                        ).add_Hm().format(
-                                                                          visibleTimetable!
-                                                                              .updated!,
-                                                                        )
-                                                                      : '',
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            style:
-                                                                Theme.of(
-                                                                      context,
+                                                              text:
+                                                                  visibleTimetable
+                                                                          ?.date !=
+                                                                      null
+                                                                  ? DateFormat.yMd(
+                                                                      locale,
+                                                                    ).format(
+                                                                      visibleTimetable!
+                                                                          .date!,
                                                                     )
-                                                                    .textTheme
-                                                                    .bodyMedium,
-                                                            maxLines: 1,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
+                                                                  : '',
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+
+                                                right: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    SizedBox(
+                                                      height: 18,
+                                                      width: 18,
+                                                      child: IconButton(
+                                                        iconSize: 18,
+                                                        padding:
+                                                            EdgeInsets.zero,
+                                                        constraints:
+                                                            const BoxConstraints(
+                                                              minWidth: 18,
+                                                              minHeight: 18,
+                                                            ),
+                                                        visualDensity:
+                                                            VisualDensity
+                                                                .compact,
+                                                        splashRadius: 18,
+                                                        onPressed:
+                                                            timetableState
+                                                                .isLoading
+                                                            ? null
+                                                            : () async {
+                                                                await ref
+                                                                    .read(
+                                                                      timetableProvider
+                                                                          .notifier,
+                                                                    )
+                                                                    .refresh();
+                                                              },
+                                                        icon: RotationTransition(
+                                                          turns:
+                                                              _rotationController,
+                                                          child: const Icon(
+                                                            Icons.refresh,
                                                           ),
                                                         ),
-                                                      ],
+                                                      ),
                                                     ),
-                                                  ),
-                                                  const SizedBox(width: 4),
-                                                  const Icon(
-                                                    Icons.chevron_right,
-                                                    size: 18,
-                                                  ),
-                                                ],
+                                                    const SizedBox(width: 2),
+                                                    Flexible(
+                                                      child: Text.rich(
+                                                        TextSpan(
+                                                          children: [
+                                                            TextSpan(
+                                                              text: context
+                                                                  .l10n
+                                                                  .updated,
+                                                              style: const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                              ),
+                                                            ),
+                                                            TextSpan(
+                                                              text:
+                                                                  visibleTimetable
+                                                                          ?.updated !=
+                                                                      null
+                                                                  ? getRelativeDayString(
+                                                                      visibleTimetable!
+                                                                          .updated!,
+                                                                      context,
+                                                                      timePattern:
+                                                                          "Hm",
+                                                                    )
+                                                                  : '',
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+
+                                                trailing: const Icon(
+                                                  Icons.chevron_right,
+                                                  size: 18,
+                                                ),
                                               ),
                                             ),
                                           ),

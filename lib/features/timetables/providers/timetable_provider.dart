@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:planner/features/auth/auth_repository.dart';
 import 'package:planner/features/timetables/model/timetable.dart';
@@ -19,11 +19,16 @@ class TimetableNotifier extends AsyncNotifier<List<Timetable>> {
   Future<List<Timetable>> build() async {
     repository = ref.read(timetableRepositoryProvider);
 
-    final timetables = await repository.loadAll();
+    final cached = await repository.loadAll();
 
+    _syncAfterInitialLoad(cached);
+
+    return cached;
+  }
+
+  Future<void> _syncAfterInitialLoad(List<Timetable> cached) async {
+    await Future<void>.delayed(Duration.zero);
     refresh();
-
-    return timetables;
   }
 
   Future<void> refresh() async {
