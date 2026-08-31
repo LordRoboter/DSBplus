@@ -240,6 +240,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get simplifyClassNames => 'Klassennamen vereinfachen';
 
   @override
+  String get collapseClassNames => 'Klassennamen kollabieren';
+
+  @override
   String get simplifyLessonStatus => 'Unterrichtsstatus vereinfachen';
 
   @override

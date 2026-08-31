@@ -28,6 +28,7 @@ class SettingsNotifier extends AsyncNotifier<SettingsState> {
       cleanupCourses: prefs.getBool('cleanupCourses') ?? true,
       disposeCourseNumbers: prefs.getBool('disposeCourseNumbers') ?? true,
       mapCourses: prefs.getBool('mapCourses') ?? true,
+      collapse: prefs.getBool('collapse') ?? true,
       notifications: prefs.getBool('notifications') ?? true,
       firebase: prefs.getBool('firebase') ?? true,
       classFilter: _loadClassFilter(),
@@ -152,6 +153,11 @@ class SettingsNotifier extends AsyncNotifier<SettingsState> {
   Future<void> setMapCourses(bool value) async {
     _updateState((state) => state.copyWith(mapCourses: value));
     await prefs.setBool('mapCourses', value);
+  }
+
+  Future<void> setCollapse(bool value) async {
+    _updateState((state) => state.copyWith(collapse: value));
+    await prefs.setBool('collapse', value);
   }
 
   Future<void> setClassFilter(TimetableFilter value) async {

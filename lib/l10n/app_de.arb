@@ -72,6 +72,7 @@
   "cleanupEntriesSub": "Einträge besser lesbar machen",
   "cleanupOptions": "Bereinigungsoptionen",
   "simplifyClassNames": "Klassennamen vereinfachen",
+  "collapseClassNames": "Klassennamen kollabieren",
   "simplifyLessonStatus": "Unterrichtsstatus vereinfachen",
   "simplifyCourses": "Kurse vereinfachen",
   "mergeTutorCourses": "Tutorenkurse zusammenfassen",

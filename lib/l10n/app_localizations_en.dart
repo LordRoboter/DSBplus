@@ -240,6 +240,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get simplifyClassNames => 'Simplify class names';
 
   @override
+  String get collapseClassNames => 'Collapse class names';
+
+  @override
   String get simplifyLessonStatus => 'Simplify lesson status';
 
   @override
