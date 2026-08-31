@@ -33,13 +33,13 @@ class TimetableNotifier extends AsyncNotifier<List<Timetable>> {
   Future<void> refresh() async {
     final oldTimetables = state.value ?? [];
 
-    state = AsyncLoading<List<Timetable>>().copyWithPrevious(state);
+    state = const AsyncValue.loading();
 
     try {
       final newData = await repository.sync(oldTimetables);
-      state = AsyncData(newData);
+      state = AsyncValue.data(newData);
     } catch (e, stack) {
-      state = AsyncError<List<Timetable>>(e, stack).copyWithPrevious(state);
+      state = AsyncValue.error(e, stack);
     }
   }
 }
