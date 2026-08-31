@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:planner/features/auth/auth_repository.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/l10n/l10extension.dart';

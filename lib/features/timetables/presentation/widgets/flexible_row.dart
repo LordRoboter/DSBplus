@@ -10,7 +10,7 @@ class PriorityRow extends MultiChildRenderObjectWidget {
     Widget? trailing,
     this.spacing = 8,
     this.trailingSpacing = 4,
-  }) : super(children: [left, right, if (trailing != null) trailing]);
+  }) : super(children: [left, right, ?trailing]);
 
   final double spacing;
   final double trailingSpacing;

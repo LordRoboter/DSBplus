@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:planner/features/auth/auth_repository.dart';
 import 'package:planner/features/timetables/model/timetable.dart';
