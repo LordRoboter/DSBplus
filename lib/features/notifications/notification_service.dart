@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
@@ -9,7 +10,10 @@ class NotificationService {
 
     const settings = InitializationSettings(android: android);
 
-    await notifications.initialize(settings: settings);
+    if (defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.iOS) {
+      await notifications.initialize(settings: settings);
+    }
   }
 
   static Future<void> showUpdateNotification() async {

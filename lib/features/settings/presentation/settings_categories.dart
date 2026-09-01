@@ -1,7 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:planner/features/auth/auth_repository.dart';
 import 'package:planner/features/settings/presentation/pages/appearance_page.dart';
 import 'package:planner/features/settings/presentation/pages/auth_page.dart';
 import 'package:planner/features/settings/presentation/pages/cleanup_page.dart';
@@ -9,11 +7,7 @@ import 'package:planner/features/settings/presentation/pages/debug/debug_setting
 import 'package:planner/features/settings/presentation/pages/filter_page.dart';
 import 'package:planner/features/settings/presentation/pages/language_page.dart';
 import 'package:planner/features/settings/presentation/pages/notifications_page.dart';
-import 'package:planner/features/timetables/model/filter.dart';
-import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/l10n/l10extension.dart';
-import 'package:planner/theme.dart';
-import 'package:planner/features/settings/presentation/widgets/dialogues.dart';
 import 'package:planner/features/settings/presentation/widgets/settings.dart';
 
 class SettingsCategoriesPage extends StatelessWidget {
@@ -66,16 +60,23 @@ class SettingsCategoriesPage extends StatelessWidget {
               title: context.l10n.appearance,
               subtitle: context.l10n.darkTheme,
               icon: Icons.palette_outlined,
-              position: SettingsCategoryTilePosition.middle,
+              position:
+                  (defaultTargetPlatform == TargetPlatform.android ||
+                      defaultTargetPlatform == TargetPlatform.iOS)
+                  ? SettingsCategoryTilePosition.middle
+                  : SettingsCategoryTilePosition.bottom,
               onTap: () => _open(context, const AppearanceSettingsPage()),
             ),
-            SettingsCategoryTile(
-              title: context.l10n.notifications,
-              subtitle: context.l10n.notificationsExp,
-              icon: Icons.notifications_outlined,
-              position: SettingsCategoryTilePosition.bottom,
-              onTap: () => _open(context, const NotificationsSettingsPage()),
-            ),
+            if (defaultTargetPlatform == TargetPlatform.android ||
+                defaultTargetPlatform == TargetPlatform.iOS) ...[
+              SettingsCategoryTile(
+                title: context.l10n.notifications,
+                subtitle: context.l10n.notificationsExp,
+                icon: Icons.notifications_outlined,
+                position: SettingsCategoryTilePosition.bottom,
+                onTap: () => _open(context, const NotificationsSettingsPage()),
+              ),
+            ],
           ]),
           const SizedBox(height: 16),
           _stackedCategories([

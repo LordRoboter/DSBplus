@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:planner/features/timetables/model/daydate.dart';
 import 'package:planner/features/timetables/model/filter.dart';
 import 'package:planner/features/timetables/model/timetable.dart';
@@ -338,8 +337,8 @@ ClassDiff diffByClass(
   final oldMap = {for (final e in oldEntries) entryKey(e): e};
   final newMap = {for (final e in newEntries) entryKey(e): e};
 
-  final added = <_ClassedEntry>[];
-  final removed = <_ClassedEntry>[];
+  final added = <ClassedEntry>[];
+  final removed = <ClassedEntry>[];
 
   for (final key in oldMap.keys) {
     if (!newMap.containsKey(key)) {
@@ -363,7 +362,7 @@ ClassDiff diffByClass(
   return ClassDiff(added: added, removed: removed);
 }
 
-String entryKey(_ClassedEntry e) {
+String entryKey(ClassedEntry e) {
   return [
     e.day?.index ?? -1,
     e.entry.lesson?.lessons.toList()?..sort(),
@@ -371,14 +370,14 @@ String entryKey(_ClassedEntry e) {
   ].join("|");
 }
 
-bool isModified(_ClassedEntry oldE, _ClassedEntry newE) {
+bool isModified(ClassedEntry oldE, ClassedEntry newE) {
   return oldE.entry.subject != newE.entry.subject ||
       oldE.entry.teacher != newE.entry.teacher ||
       oldE.entry.room != newE.entry.room ||
       oldE.entry.type != newE.entry.type;
 }
 
-List<_ClassedEntry> _flattenEntries(Timetable? timetable, Set<String> classes) {
+List<ClassedEntry> _flattenEntries(Timetable? timetable, Set<String> classes) {
   if (timetable == null) return [];
 
   return timetable.entries
@@ -389,7 +388,7 @@ List<_ClassedEntry> _flattenEntries(Timetable? timetable, Set<String> classes) {
       )
       .expand(
         (classEntry) => classEntry.entries.map(
-          (entry) => _ClassedEntry(
+          (entry) => ClassedEntry(
             className: classEntry.className,
             entry: entry,
             day: timetable.day,
@@ -399,12 +398,12 @@ List<_ClassedEntry> _flattenEntries(Timetable? timetable, Set<String> classes) {
       .toList();
 }
 
-class _ClassedEntry {
+class ClassedEntry {
   final String className;
   final Weekday? day;
   final TimetableEntry entry;
 
-  _ClassedEntry({
+  ClassedEntry({
     required this.className,
     required this.entry,
     required this.day,
@@ -412,8 +411,8 @@ class _ClassedEntry {
 }
 
 class ClassDiff {
-  final List<_ClassedEntry> added;
-  final List<_ClassedEntry> removed;
+  final List<ClassedEntry> added;
+  final List<ClassedEntry> removed;
 
   bool get hasChanges => added.isNotEmpty || removed.isNotEmpty;
 

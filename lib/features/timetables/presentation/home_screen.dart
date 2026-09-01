@@ -31,6 +31,7 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final timetables = ref.watch(filteredEnhancedTimetablesProvider);
     final settings = ref.watch(settingsProvider);
+    final isRefreshing = ref.watch(timetableRefreshingProvider);
 
     return settings.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -45,7 +46,7 @@ class HomeScreen extends ConsumerWidget {
                 return ref.read(timetableProvider.notifier).refresh();
               },
               child: enhancedTimetables.isEmpty
-                  ? !timetables.isLoading
+                  ? !isRefreshing
                         ? LayoutBuilder(
                             builder: (context, constraints) {
                               return SingleChildScrollView(

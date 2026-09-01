@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:planner/app/root.dart';
 import 'package:planner/background_tasks.dart';
@@ -28,13 +29,17 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = MyHttpOverrides();
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-  await FirebaseMessaging.instance.requestPermission();
+  if (defaultTargetPlatform == TargetPlatform.android ||
+      defaultTargetPlatform == TargetPlatform.iOS) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+    await FirebaseMessaging.instance.requestPermission();
+    await FirebaseMessaging.instance.subscribeToTopic("vertretungsplan");
 
-  await FirebaseMessaging.instance.subscribeToTopic("vertretungsplan");
-
-  await Workmanager().initialize(callbackDispatcher);
+    await Workmanager().initialize(callbackDispatcher);
+  }
 
   final locale = PlatformDispatcher.instance.locale.toString();
   await initializeDateFormatting(locale);

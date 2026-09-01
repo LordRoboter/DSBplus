@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:planner/features/auth/auth_repository.dart';
 import 'package:planner/features/timetables/model/timetable.dart';
@@ -34,13 +33,15 @@ class TimetableNotifier extends AsyncNotifier<List<Timetable>> {
   Future<void> refresh() async {
     final oldTimetables = state.value ?? [];
 
-    state = AsyncLoading<List<Timetable>>().copyWithPrevious(state);
+    ref.read(timetableRefreshingProvider.notifier).setRefreshing(true);
 
     try {
       final newData = await repository.sync(oldTimetables);
-      state = AsyncData(newData);
+      state = AsyncValue.data(newData);
     } catch (e, stack) {
-      state = AsyncError<List<Timetable>>(e, stack).copyWithPrevious(state);
+      state = AsyncValue.error(e, stack);
+    } finally {
+      ref.read(timetableRefreshingProvider.notifier).setRefreshing(false);
     }
   }
 }
@@ -48,4 +49,18 @@ class TimetableNotifier extends AsyncNotifier<List<Timetable>> {
 final timetableProvider =
     AsyncNotifierProvider<TimetableNotifier, List<Timetable>>(
       TimetableNotifier.new,
+    );
+
+class TimetableRefreshingNotifier extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void setRefreshing(bool value) {
+    state = value;
+  }
+}
+
+final timetableRefreshingProvider =
+    NotifierProvider<TimetableRefreshingNotifier, bool>(
+      TimetableRefreshingNotifier.new,
     );
