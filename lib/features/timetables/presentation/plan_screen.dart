@@ -48,8 +48,8 @@ class _PlanScreenState extends ConsumerState<PlanScreen>
   Widget build(BuildContext context) {
     final timetables = ref.watch(enhancedTimetablesProvider);
     final settings = ref.watch(settingsProvider);
-    final timetableState = ref.watch(timetableProvider);
     final dayDates = ref.watch(availableDayDatesProvider);
+    final isRefreshing = ref.watch(timetableRefreshingProvider);
 
     final locale = Localizations.localeOf(context).toString();
 
@@ -80,7 +80,7 @@ class _PlanScreenState extends ConsumerState<PlanScreen>
               error: (error, stackTrace) =>
                   Center(child: Text('Error: $error')),
               data: (enhancedTimetables) {
-                if (timetableState.isLoading) {
+                if (isRefreshing) {
                   if (!_rotationController.isAnimating) {
                     _rotationController.repeat();
                   }
@@ -119,7 +119,7 @@ class _PlanScreenState extends ConsumerState<PlanScreen>
 
                 return (filteredTimetable == null ||
                             filteredTimetable.entries.isEmpty) &&
-                        timetableState.isLoading
+                        isRefreshing
                     ? const Center(child: CircularProgressIndicator())
                     : Column(
                         children: [
@@ -353,9 +353,7 @@ class _PlanScreenState extends ConsumerState<PlanScreen>
                                                             VisualDensity
                                                                 .compact,
                                                         splashRadius: 18,
-                                                        onPressed:
-                                                            timetableState
-                                                                .isLoading
+                                                        onPressed: isRefreshing
                                                             ? null
                                                             : () async {
                                                                 await ref

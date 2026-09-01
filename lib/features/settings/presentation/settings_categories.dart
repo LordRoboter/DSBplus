@@ -60,16 +60,23 @@ class SettingsCategoriesPage extends StatelessWidget {
               title: context.l10n.appearance,
               subtitle: context.l10n.darkTheme,
               icon: Icons.palette_outlined,
-              position: SettingsCategoryTilePosition.middle,
+              position:
+                  (defaultTargetPlatform == TargetPlatform.android ||
+                      defaultTargetPlatform == TargetPlatform.iOS)
+                  ? SettingsCategoryTilePosition.middle
+                  : SettingsCategoryTilePosition.bottom,
               onTap: () => _open(context, const AppearanceSettingsPage()),
             ),
-            SettingsCategoryTile(
-              title: context.l10n.notifications,
-              subtitle: context.l10n.notificationsExp,
-              icon: Icons.notifications_outlined,
-              position: SettingsCategoryTilePosition.bottom,
-              onTap: () => _open(context, const NotificationsSettingsPage()),
-            ),
+            if (defaultTargetPlatform == TargetPlatform.android ||
+                defaultTargetPlatform == TargetPlatform.iOS) ...[
+              SettingsCategoryTile(
+                title: context.l10n.notifications,
+                subtitle: context.l10n.notificationsExp,
+                icon: Icons.notifications_outlined,
+                position: SettingsCategoryTilePosition.bottom,
+                onTap: () => _open(context, const NotificationsSettingsPage()),
+              ),
+            ],
           ]),
           const SizedBox(height: 16),
           _stackedCategories([

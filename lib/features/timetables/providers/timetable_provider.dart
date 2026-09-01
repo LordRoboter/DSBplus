@@ -33,13 +33,15 @@ class TimetableNotifier extends AsyncNotifier<List<Timetable>> {
   Future<void> refresh() async {
     final oldTimetables = state.value ?? [];
 
-    state = const AsyncValue.loading();
+    ref.read(timetableRefreshingProvider.notifier).setRefreshing(true);
 
     try {
       final newData = await repository.sync(oldTimetables);
       state = AsyncValue.data(newData);
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
+    } finally {
+      ref.read(timetableRefreshingProvider.notifier).setRefreshing(false);
     }
   }
 }
@@ -47,4 +49,18 @@ class TimetableNotifier extends AsyncNotifier<List<Timetable>> {
 final timetableProvider =
     AsyncNotifierProvider<TimetableNotifier, List<Timetable>>(
       TimetableNotifier.new,
+    );
+
+class TimetableRefreshingNotifier extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void setRefreshing(bool value) {
+    state = value;
+  }
+}
+
+final timetableRefreshingProvider =
+    NotifierProvider<TimetableRefreshingNotifier, bool>(
+      TimetableRefreshingNotifier.new,
     );
