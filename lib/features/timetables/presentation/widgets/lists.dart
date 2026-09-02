@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:planner/core/util/timetable.dart';
 import 'package:planner/features/timetables/model/filter.dart';

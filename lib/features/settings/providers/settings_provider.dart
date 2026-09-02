@@ -36,6 +36,7 @@ class SettingsNotifier extends AsyncNotifier<SettingsState> {
       filters: _loadFilters(),
       theme: _loadTheme(),
       darkTheme: _loadDarkTheme(),
+      themeColor: _loadThemeColor(),
     );
   }
 
@@ -93,13 +94,16 @@ class SettingsNotifier extends AsyncNotifier<SettingsState> {
 
   DarkTheme _loadDarkTheme() {
     final index = prefs.getInt('darkTheme');
-
     return (index != null && index >= 0 && index < DarkTheme.values.length)
         ? DarkTheme.values[index]
         : DarkTheme.dark;
   }
 
-  // STORING VALUES
+  Color? _loadThemeColor() {
+    final value = prefs.getInt('themeColor');
+
+    return value != null ? Color(value) : null;
+  }
 
   Future<void> setStartupComplete(bool value) async {
     _updateState((state) => state.copyWith(startupComplete: value));
@@ -242,6 +246,16 @@ class SettingsNotifier extends AsyncNotifier<SettingsState> {
   Future<void> setDarkTheme(DarkTheme value) async {
     _updateState((state) => state.copyWith(darkTheme: value));
     await prefs.setInt('darkTheme', value.index);
+  }
+
+  Future<void> setThemeColor(Color? value) async {
+    _updateState((state) => state.copyWith(themeColor: value));
+
+    if (value == null) {
+      await prefs.remove('themeColor');
+    } else {
+      await prefs.setInt('themeColor', value.toARGB32());
+    }
   }
 
   void _updateState(SettingsState Function(SettingsState state) update) {
