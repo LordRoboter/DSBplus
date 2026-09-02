@@ -618,6 +618,12 @@ abstract class AppLocalizations {
   /// **'App theme'**
   String get appTheme;
 
+  /// No description provided for @themeColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme Color'**
+  String get themeColor;
+
   /// No description provided for @system.
   ///
   /// In en, this message translates to:

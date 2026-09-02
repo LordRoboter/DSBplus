@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:planner/app/root.dart';
 import 'package:planner/background_tasks.dart';
 import 'package:planner/certificates.dart';
@@ -13,7 +13,7 @@ import 'package:workmanager/workmanager.dart';
 import 'l10n/app_localizations.dart';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:planner/features/notifications/notification_service.dart';
 import 'package:planner/theme.dart';
 
@@ -73,34 +73,58 @@ class MyApp extends ConsumerWidget {
         ),
       ),
       data: (data) {
-        return MaterialApp(
-          title: 'Vertretungsplan',
-          debugShowCheckedModeBanner: false,
+        return DynamicColorBuilder(
+          builder: (lightDynamic, darkDynamic) {
+            final lightScheme = data.themeColor != null
+                ? ColorScheme.fromSeed(
+                    seedColor: data.themeColor!,
+                    brightness: Brightness.light,
+                  )
+                : lightDynamic ??
+                      ColorScheme.fromSeed(
+                        seedColor: Colors.blue,
+                        brightness: Brightness.light,
+                      );
 
-          theme: lightTheme,
-          darkTheme: switch (data.darkTheme) {
-            DarkTheme.dark => darkTheme,
-            DarkTheme.amoled => amoledTheme,
+            final darkScheme = data.themeColor != null
+                ? ColorScheme.fromSeed(
+                    seedColor: data.themeColor!,
+                    brightness: Brightness.dark,
+                  )
+                : darkDynamic ??
+                      ColorScheme.fromSeed(
+                        seedColor: Colors.blue,
+                        brightness: Brightness.dark,
+                      );
+
+            return MaterialApp(
+              title: 'Vertretungsplan',
+              debugShowCheckedModeBanner: false,
+
+              theme: createLightTheme(colorScheme: lightScheme),
+
+              darkTheme: data.darkTheme == DarkTheme.amoled
+                  ? createAmoledTheme(colorScheme: darkScheme)
+                  : createDarkTheme(colorScheme: darkScheme),
+
+              themeMode: switch (data.theme) {
+                AppThemes.system => ThemeMode.system,
+                AppThemes.light => ThemeMode.light,
+                AppThemes.dark => ThemeMode.dark,
+              },
+
+              localizationsDelegates: [
+                ...GlobalMaterialLocalizations.delegates,
+                AppLocalizations.delegate,
+              ],
+
+              supportedLocales: const [Locale('en'), Locale('de')],
+
+              locale: data.locale,
+
+              home: const AppRoot(),
+            );
           },
-
-          themeMode: switch (data.theme) {
-            AppThemes.system => ThemeMode.system,
-            AppThemes.light => ThemeMode.light,
-            AppThemes.dark => ThemeMode.dark,
-          },
-
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-
-          supportedLocales: const [Locale('en'), Locale('de')],
-
-          locale: data.locale,
-
-          home: const AppRoot(),
         );
       },
     );

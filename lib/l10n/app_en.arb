@@ -85,6 +85,7 @@
   "workManagerDesc": "Local periodical checks to detect new plans",
   "appearance": "Appearance",
   "appTheme": "App theme",
+  "themeColor": "Theme Color",
   "system": "System",
   "light": "Light",
   "dark": "Dark",

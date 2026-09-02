@@ -85,6 +85,7 @@
   "workManagerDesc": "In festen Zeitabständen nach neuen Plänen suchen",
   "appearance": "Aussehen",
   "appTheme": "App-Thema",
+  "themeColor": "Themenfarbe",
   "system": "System",
   "light": "Hell",
   "dark": "Dunkel",
