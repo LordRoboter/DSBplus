@@ -20,7 +20,8 @@ class Timetables extends Table {
 class ClassEntries extends Table {
   IntColumn get id => integer().autoIncrement()();
 
-  IntColumn get timetableId => integer().references(Timetables, #id)();
+  IntColumn get timetableId =>
+      integer().references(Timetables, #id, onDelete: KeyAction.cascade)();
 
   // JSON encoded List<String>
   TextColumn get classNames => text().map(const StringListConverter())();
@@ -29,7 +30,8 @@ class ClassEntries extends Table {
 class TimetableEntries extends Table {
   IntColumn get id => integer().autoIncrement()();
 
-  IntColumn get classEntryId => integer().references(ClassEntries, #id)();
+  IntColumn get classEntryId =>
+      integer().references(ClassEntries, #id, onDelete: KeyAction.cascade)();
 
   // JSON encoded LessonRange
   TextColumn get lesson =>
