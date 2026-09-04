@@ -30,39 +30,27 @@ class TimetableRepository {
   }
 
   Future<void> _deleteTimetable(int id) async {
-    final classEntries = await (db.select(
-      db.classEntries,
-    )..where((c) => c.timetableId.equals(id))).get();
-
-    for (final classEntry in classEntries) {
-      await (db.delete(
-        db.timetableEntries,
-      )..where((e) => e.classEntryId.equals(classEntry.id))).go();
-    }
-
-    await (db.delete(
-      db.classEntries,
-    )..where((c) => c.timetableId.equals(id))).go();
-
     await (db.delete(db.timetables)..where((t) => t.id.equals(id))).go();
   }
 
-  Future<List<int>> saveAll(List<Timetable> timetables) async {
-    return db.transaction(() async {
-      final ids = <int>[];
+  Future<List<int>> _saveAll(List<Timetable> timetables) async {
+    final ids = <int>[];
 
-      for (final timetable in timetables) {
-        final existing = await _findExisting(timetable);
+    for (final timetable in timetables) {
+      final existing = await _findExisting(timetable);
 
-        if (existing != null) {
-          await _deleteTimetable(existing.id);
-        }
-
-        ids.add(await _insert(timetable));
+      if (existing != null) {
+        await _deleteTimetable(existing.id);
       }
 
-      return ids;
-    });
+      ids.add(await _insert(timetable));
+    }
+
+    return ids;
+  }
+
+  Future<List<int>> saveAll(List<Timetable> timetables) {
+    return db.transaction(() => _saveAll(timetables));
   }
 
   Future<model.Timetable?> _findExisting(Timetable timetable) async {
@@ -310,7 +298,23 @@ class TimetableRepository {
       return newTimetable;
     }).toList();
 
-    saveAll(newTimetables);
+    final newKeys = newTimetables
+        .map((t) => _timetableKey(date: t.date, day: t.day))
+        .toSet();
+
+    await db.transaction(() async {
+      final existingRows = await db.select(db.timetables).get();
+
+      for (final existing in existingRows) {
+        final key = _timetableKey(date: existing.date, day: existing.day);
+
+        if (!newKeys.contains(key)) {
+          await _deleteTimetable(existing.id);
+        }
+      }
+
+      await _saveAll(newTimetables);
+    });
 
     return newTimetables;
   }
@@ -321,5 +325,9 @@ class TimetableRepository {
       await db.delete(db.classEntries).go();
       await db.delete(db.timetables).go();
     });
+  }
+
+  String _timetableKey({required DateTime? date, required dynamic day}) {
+    return '${date?.year}-${date?.month}-${date?.day}-$day';
   }
 }

@@ -312,8 +312,66 @@ class DSBApi {
       return result.values.toList();
     }
 
+    List<TimetableEntry> mergeLessons(List<TimetableEntry> entries) {
+      if (entries.isEmpty) {
+        return [];
+      }
+
+      final sorted = [...entries];
+
+      sorted.sort((a, b) {
+        final aLesson = a.lesson?.lessons.isEmpty == true
+            ? null
+            : a.lesson?.lessons.reduce((x, y) => x < y ? x : y);
+
+        final bLesson = b.lesson?.lessons.isEmpty == true
+            ? null
+            : b.lesson?.lessons.reduce((x, y) => x < y ? x : y);
+
+        if (aLesson == null && bLesson == null) return 0;
+        if (aLesson == null) return 1;
+        if (bLesson == null) return -1;
+
+        return aLesson.compareTo(bLesson);
+      });
+
+      final result = <TimetableEntry>[];
+
+      for (final current in sorted) {
+        if (result.isEmpty) {
+          result.add(current);
+          continue;
+        }
+
+        final previous = result.last;
+
+        final sameProperties =
+            previous.teacher == current.teacher &&
+            previous.subject == current.subject &&
+            previous.type == current.type;
+
+        final connected = _areConnected(previous.lesson, current.lesson);
+
+        if (sameProperties && connected) {
+          final mergedLessons = {
+            ...?previous.lesson?.lessons,
+            ...?current.lesson?.lessons,
+          };
+
+          result[result.length - 1] = previous.copyWith(
+            lesson: LessonRange(mergedLessons),
+            room: previous.room ?? current.room,
+            text: previous.text ?? current.text,
+          );
+        } else {
+          result.add(current);
+        }
+      }
+
+      return result;
+    }
+
     List<ClassEntry> combineCommonLessons(List<ClassEntry> classEntries) {
-      // First: invert class -> lessons into lesson -> classes
       final Map<String, _LessonGroup> lessons = {};
 
       for (final classEntry in classEntries) {
@@ -336,7 +394,6 @@ class DSBApi {
         }
       }
 
-      // Second: group identical class sets back together
       final Map<String, ClassEntry> result = {};
 
       for (final group in lessons.values) {
@@ -359,12 +416,40 @@ class DSBApi {
       return result.values.toList();
     }
 
-    return mergeByDate(timetables).map((timetable) {
-      final mergedClasses = mergeClasses(timetable.entries);
-      final simplified = combineCommonLessons(mergedClasses);
+    // ============================================================
+    // MERGING PIPELINE
+    // ============================================================
 
-      return timetable.copyWith(entries: simplified);
+    return mergeByDate(timetables).map((timetable) {
+      // 1. Merge ClassEntry objects containing the same classes.
+      final mergedClasses = mergeClasses(timetable.entries);
+
+      // 2. Merge connected lessons within each class.
+      final mergedLessons = mergedClasses.map((classEntry) {
+        return classEntry.copyWith(entries: mergeLessons(classEntry.entries));
+      }).toList();
+
+      // 3. Combine lessons shared by multiple classes.
+      final combined = combineCommonLessons(mergedLessons);
+
+      return timetable.copyWith(entries: combined);
     }).toList();
+  }
+
+  bool _areConnected(LessonRange? first, LessonRange? second) {
+    if (first == null || second == null) {
+      return false;
+    }
+
+    if (first.lessons.isEmpty || second.lessons.isEmpty) {
+      return false;
+    }
+
+    final firstEnd = first.lessons.reduce((a, b) => a > b ? a : b);
+
+    final secondStart = second.lessons.reduce((a, b) => a < b ? a : b);
+
+    return secondStart == firstEnd + 1;
   }
 }
 
