@@ -274,6 +274,21 @@ class AppLocalizationsDe extends AppLocalizations {
       'In festen Zeitabständen nach neuen Plänen suchen';
 
   @override
+  String get backgroundCheckSchedule => 'Hintergrund Zeitplan';
+
+  @override
+  String get startTime => 'Anfangszeit';
+
+  @override
+  String get endTime => 'Endzeit';
+
+  @override
+  String get days => 'Wochentage';
+
+  @override
+  String get interval => 'Intervall';
+
+  @override
   String get appearance => 'Aussehen';
 
   @override

@@ -2,6 +2,10 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:planner/core/model/weekday.dart';
+import 'package:planner/features/notifications/background_tasks.dart';
+import 'package:planner/features/notifications/model/interval.dart';
 //import 'package:planner/core/model/daydate.dart';
 import 'package:planner/features/timetables/model/filter.dart';
 import 'package:planner/features/settings/model/settings_state.dart';
@@ -33,6 +37,7 @@ class SettingsNotifier extends AsyncNotifier<SettingsState> {
       firebase: prefs.getBool('firebase') ?? true,
       classFilter: _loadClassFilter(),
       workManager: prefs.getBool('workManager') ?? true,
+      backgroundSchedule: _loadBackgroundSchedule(),
       filters: _loadFilters(),
       theme: _loadTheme(),
       darkTheme: _loadDarkTheme(),
@@ -103,6 +108,22 @@ class SettingsNotifier extends AsyncNotifier<SettingsState> {
     final value = prefs.getInt('themeColor');
 
     return value != null ? Color(value) : null;
+  }
+
+  BackgroundCheckSchedule _loadBackgroundSchedule() {
+    final value = prefs.getString('backgroundSchedule');
+
+    if (value == null) {
+      return const BackgroundCheckSchedule();
+    }
+
+    try {
+      final json = jsonDecode(value) as Map<String, dynamic>;
+
+      return BackgroundCheckSchedule.fromJson(json);
+    } catch (_) {
+      return const BackgroundCheckSchedule();
+    }
   }
 
   Future<void> setStartupComplete(bool value) async {
@@ -225,17 +246,22 @@ class SettingsNotifier extends AsyncNotifier<SettingsState> {
 
   Future<void> setWorkManager(bool value) async {
     _updateState((state) => state.copyWith(workManager: value));
-    /*if (value) {
-      await Workmanager().registerPeriodicTask(
-        'timetable-check',
-        'timetableCheck',
-        frequency: const Duration(minutes: 15),
-        existingWorkPolicy: ExistingPeriodicWorkPolicy.replace,
-      );
-    } else {
-      await Workmanager().cancelByUniqueName('timetable-check');
-    }*/
+
     await prefs.setBool('workManager', value);
+
+    if (value) {
+      await ref.read(backgroundTaskManagerProvider).register();
+    } else {
+      await ref.read(backgroundTaskManagerProvider).cancel();
+    }
+  }
+
+  Future<void> setBackgroundSchedule(BackgroundCheckSchedule value) async {
+    _updateState((state) => state.copyWith(backgroundSchedule: value));
+
+    await prefs.setString('backgroundSchedule', jsonEncode(value.toJson()));
+
+    await ref.read(backgroundTaskManagerProvider).register();
   }
 
   Future<void> setTheme(AppThemes value) async {

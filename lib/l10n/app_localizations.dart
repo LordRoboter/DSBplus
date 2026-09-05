@@ -606,6 +606,36 @@ abstract class AppLocalizations {
   /// **'Local periodical checks to detect new plans'**
   String get workManagerDesc;
 
+  /// No description provided for @backgroundCheckSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Background check schedule'**
+  String get backgroundCheckSchedule;
+
+  /// No description provided for @startTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Start time'**
+  String get startTime;
+
+  /// No description provided for @endTime.
+  ///
+  /// In en, this message translates to:
+  /// **'End time'**
+  String get endTime;
+
+  /// No description provided for @days.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekdays'**
+  String get days;
+
+  /// No description provided for @interval.
+  ///
+  /// In en, this message translates to:
+  /// **'Interval'**
+  String get interval;
+
   /// No description provided for @appearance.
   ///
   /// In en, this message translates to:

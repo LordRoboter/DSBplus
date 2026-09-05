@@ -1,3 +1,4 @@
+import 'package:planner/core/model/weekday.dart';
 import 'package:planner/features/timetables/model/daydate.dart';
 import 'package:planner/features/timetables/model/filter.dart';
 import 'package:planner/features/timetables/model/timetable.dart';

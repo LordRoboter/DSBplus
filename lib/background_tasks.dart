@@ -85,7 +85,6 @@ void callbackDispatcher() {
   });
 }
 
-@pragma('vm:entry-point')
 Future<void> performTimetableCheck(
   TimetableRepository repository,
   BackgroundSettingsRepository settings,

@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:planner/core/model/weekday.dart';
 import 'package:planner/features/timetables/model/timetable.dart';
 import 'package:planner/l10n/app_localizations.dart';
 import 'package:planner/l10n/l10extension.dart';
@@ -142,4 +143,24 @@ String localizedRelativeWeekday(int diff, BuildContext context) {
     1 => context.l10n.tomorrow,
     _ => "",
   };
+}
+
+String localizedHours(BuildContext context, int hours) {
+  final locale = Localizations.localeOf(context);
+
+  if (locale.languageCode == 'de') {
+    return hours == 1 ? '1 Stunde' : '$hours Stunden';
+  }
+
+  return hours == 1 ? '1 hour' : '$hours hours';
+}
+
+String localizedMinutes(BuildContext context, int minutes) {
+  final locale = Localizations.localeOf(context);
+
+  if (locale.languageCode == 'de') {
+    return minutes == 1 ? '1 Minute' : '$minutes Minuten';
+  }
+
+  return minutes == 1 ? '1 minute' : '$minutes minutes';
 }
