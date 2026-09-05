@@ -75,37 +75,24 @@ class MyApp extends ConsumerWidget {
       data: (data) {
         return DynamicColorBuilder(
           builder: (lightDynamic, darkDynamic) {
-            final lightScheme = data.themeColor != null
-                ? ColorScheme.fromSeed(
-                    seedColor: data.themeColor!,
-                    brightness: Brightness.light,
-                  )
-                : lightDynamic ??
-                      ColorScheme.fromSeed(
-                        seedColor: Colors.blue,
-                        brightness: Brightness.light,
-                      );
-
-            final darkScheme = data.themeColor != null
-                ? ColorScheme.fromSeed(
-                    seedColor: data.themeColor!,
-                    brightness: Brightness.dark,
-                  )
-                : darkDynamic ??
-                      ColorScheme.fromSeed(
-                        seedColor: Colors.blue,
-                        brightness: Brightness.dark,
-                      );
-
             return MaterialApp(
               title: 'Vertretungsplan',
               debugShowCheckedModeBanner: false,
 
-              theme: createLightTheme(colorScheme: lightScheme),
+              theme: createLightTheme(
+                themeColor: data.themeColor,
+                dynamicLight: lightDynamic,
+              ),
 
               darkTheme: data.darkTheme == DarkTheme.amoled
-                  ? createAmoledTheme(colorScheme: darkScheme)
-                  : createDarkTheme(colorScheme: darkScheme),
+                  ? createAmoledTheme(
+                      themeColor: data.themeColor,
+                      dynamicDark: darkDynamic,
+                    )
+                  : createDarkTheme(
+                      themeColor: data.themeColor,
+                      dynamicDark: darkDynamic,
+                    ),
 
               themeMode: switch (data.theme) {
                 AppThemes.system => ThemeMode.system,

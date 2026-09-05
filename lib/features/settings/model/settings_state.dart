@@ -28,7 +28,7 @@ class SettingsState {
 
   final AppThemes theme;
   final DarkTheme darkTheme;
-  final Color? themeColor;
+  final ThemeColor themeColor;
 
   const SettingsState({
     this.startupComplete = false,
@@ -50,7 +50,7 @@ class SettingsState {
     this.classFilter = const TimetableFilter(),
     this.theme = AppThemes.system,
     this.darkTheme = DarkTheme.dark,
-    this.themeColor,
+    this.themeColor = const StandardColor(),
   });
 
   static const _unset = Object();
@@ -75,7 +75,7 @@ class SettingsState {
     TimetableFilter? classFilter,
     AppThemes? theme,
     DarkTheme? darkTheme,
-    Object? themeColor = _unset,
+    ThemeColor? themeColor,
   }) {
     return SettingsState(
       startupComplete: startupComplete ?? this.startupComplete,
@@ -97,7 +97,7 @@ class SettingsState {
       classFilter: classFilter ?? this.classFilter,
       theme: theme ?? this.theme,
       darkTheme: darkTheme ?? this.darkTheme,
-      themeColor: themeColor == _unset ? this.themeColor : themeColor as Color?,
+      themeColor: themeColor ?? this.themeColor,
     );
   }
 }
