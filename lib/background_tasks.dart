@@ -57,7 +57,12 @@ Future<bool> runTimetableBackgroundCheck() async {
     final secureStorage = FlutterSecureStorage();
     final auth = AuthRepository(storage: secureStorage);
 
-    final localeCode = settings.locale != null
+    final localeName = Platform.localeName;
+    print(localeName);
+    final locale = localeName.split("_")[0];
+    final localeCode = locale != ""
+        ? locale
+        : settings.locale != null
         ? settings.locale.toString()
         : 'en';
     await initializeDateFormatting(localeCode);
