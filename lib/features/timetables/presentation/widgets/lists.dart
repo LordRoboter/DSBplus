@@ -187,7 +187,7 @@ class EntryCard extends ConsumerWidget {
                         Chip(
                           label: Text(
                             localizedStatus(
-                              context,
+                              context.l10n,
                               lesson.type,
                               original: !settings.remapTypes && isGerman,
                             ),

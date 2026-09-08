@@ -1,9 +1,16 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:planner/background_tasks.dart';
+import 'package:planner/core/database/database.dart';
+import 'package:planner/features/auth/auth_repository.dart';
 import 'package:planner/features/settings/presentation/widgets/settings.dart';
+import 'package:planner/features/settings/providers/background_settings.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
+import 'package:planner/features/timetables/data/timetable_repository.dart';
 import 'package:planner/features/timetables/providers/timetable_provider.dart';
 import 'package:restart_app/restart_app.dart';
+import 'package:workmanager/workmanager.dart';
 
 class DebugSettingsPage extends ConsumerWidget {
   const DebugSettingsPage({super.key});
@@ -87,6 +94,37 @@ class DebugSettingsPage extends ConsumerWidget {
                   ref.invalidate(timetableProvider);
                 },
               ),
+            ),
+
+            const Divider(),
+
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.sync),
+              title: const Text('Trigger background check'),
+              subtitle: const Text('Check the work chain'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () async {
+                runTimetableBackgroundCheck();
+              },
+            ),
+
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.sync),
+              title: const Text('Trigger workmanager check'),
+              subtitle: const Text('Check the background service'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () async {
+                Workmanager().registerOneOffTask(
+                  "timetable-test",
+                  "Timetable Test",
+                  constraints: Constraints(networkType: NetworkType.connected),
+                  initialDelay: Duration.zero,
+                  //outOfQuotaPolicy:
+                  //    OutOfQuotaPolicy.runAsNonExpeditedWorkRequest,
+                );
+              },
             ),
           ],
         ),
