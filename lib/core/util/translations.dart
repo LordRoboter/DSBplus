@@ -71,36 +71,36 @@ String localizedWeekday(BuildContext context, Weekday? day) {
 }
 
 String localizedStatus(
-  BuildContext context,
+  AppLocalizations l10n,
   TimetableStatusType? status, {
   bool original = false,
 }) {
   return switch (status) {
     TimetableStatusType.substitution =>
-      original ? "Vertretung" : context.l10n.substitution,
+      original ? "Vertretung" : l10n.substitution,
 
     TimetableStatusType.cancelled =>
-      original ? "Eigenverantwortliches Arbeiten" : context.l10n.cancelled,
+      original ? "Eigenverantwortliches Arbeiten" : l10n.cancelled,
 
     TimetableStatusType.classChanged =>
-      original ? "Unterricht geändert" : context.l10n.classChanged,
+      original ? "Unterricht geändert" : l10n.classChanged,
 
     TimetableStatusType.specialAssignment =>
-      original ? "Sondereins." : context.l10n.specialAssignment,
+      original ? "Sondereins." : l10n.specialAssignment,
 
     TimetableStatusType.roomSubstitution =>
-      original ? "Raum-Vtr." : context.l10n.roomSubstitution,
+      original ? "Raum-Vtr." : l10n.roomSubstitution,
 
-    TimetableStatusType.event => original ? "Veranst." : context.l10n.event,
+    TimetableStatusType.event => original ? "Veranst." : l10n.event,
 
     TimetableStatusType.despiteAbsence =>
-      original ? "TrotzAbsenz" : context.l10n.despiteAbsence,
+      original ? "TrotzAbsenz" : l10n.despiteAbsence,
 
     TimetableStatusType.substituteLesson =>
-      original ? "Statt-Vertretung" : context.l10n.substituteLesson,
+      original ? "Statt-Vertretung" : l10n.substituteLesson,
 
     TimetableStatusType.supervision =>
-      original ? "Betreuung" : context.l10n.supervision,
+      original ? "Betreuung" : l10n.supervision,
 
     null => "",
   };
