@@ -352,6 +352,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get supervision => 'Betreuung';
 
   @override
+  String get rescheduling => 'Verlegung';
+
+  @override
   String get subjectGerman => 'Deutsch';
 
   @override

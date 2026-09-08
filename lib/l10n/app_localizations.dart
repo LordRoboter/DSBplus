@@ -762,6 +762,12 @@ abstract class AppLocalizations {
   /// **'Supervision'**
   String get supervision;
 
+  /// No description provided for @rescheduling.
+  ///
+  /// In en, this message translates to:
+  /// **'Rescheduling'**
+  String get rescheduling;
+
   /// No description provided for @subjectGerman.
   ///
   /// In en, this message translates to:

@@ -108,6 +108,9 @@ TimetableStatusType? parseStatus(String? value) {
     case "betreuung":
       return TimetableStatusType.supervision;
 
+    case "verlegung":
+      return TimetableStatusType.rescheduling;
+
     default:
       return null;
   }

@@ -91,7 +91,11 @@ Timetable cleanupTimetable(
           subject = subject.substring(0, match.start);
         }
 
-        subject = localizedSubject(localization, subject);
+        final subjects = subject.split('?');
+
+        subject = subjects
+            .map((s) => localizedSubject(localization, s))
+            .join('?');
       }
 
       return TimetableEntry(
@@ -328,72 +332,72 @@ Timetable enhanceTimetable(
 }
 
 List<ClassedEntry> enhanceClassedEntries(
-AppLocalizations localization,
-List<ClassedEntry> entries,
-bool clean,
-bool simplify, {
-bool disposeTut = true,
-bool cleanClassNames = true,
-bool remapTypes = true,
-bool cleanupCourses = true,
-bool disposeCourseNumbers = true,
-bool mapCourses = true,
+  AppLocalizations localization,
+  List<ClassedEntry> entries,
+  bool clean,
+  bool simplify, {
+  bool disposeTut = true,
+  bool cleanClassNames = true,
+  bool remapTypes = true,
+  bool cleanupCourses = true,
+  bool disposeCourseNumbers = true,
+  bool mapCourses = true,
 }) {
-if (!clean && simplify) {
-return entries;
-}
-
-return entries.map((classedEntry) {
-var entry = classedEntry.entry;
-
-
-if (clean) {
-  var subject = entry.subject ?? "";
-
-  if (cleanupCourses) {
-    subject = subject
-        .replaceFirst(RegExp(r'[EQ]\d'), '')
-        .replaceFirst(RegExp(r'^\d+'), '')
-        .replaceFirst(RegExp(r'\d+\D$'), '');
+  if (!clean && simplify) {
+    return entries;
   }
 
-  if (disposeCourseNumbers) {
-    subject = subject.replaceFirst(RegExp(r'\d+$'), '');
-  }
+  return entries.map((classedEntry) {
+    var entry = classedEntry.entry;
 
-  String suffix = "";
+    if (clean) {
+      var subject = entry.subject ?? "";
 
-  if (mapCourses) {
-    final match = RegExp(r'(_.*|\d+)$').firstMatch(subject);
+      if (cleanupCourses) {
+        subject = subject
+            .replaceFirst(RegExp(r'[EQ]\d'), '')
+            .replaceFirst(RegExp(r'^\d+'), '')
+            .replaceFirst(RegExp(r'\d+\D$'), '');
+      }
 
-    if (match != null) {
-      suffix = match.group(0)!;
-      subject = subject.substring(0, match.start);
+      if (disposeCourseNumbers) {
+        subject = subject.replaceFirst(RegExp(r'\d+$'), '');
+      }
+
+      String suffix = "";
+
+      if (mapCourses) {
+        final match = RegExp(r'(_.*|\d+)$').firstMatch(subject);
+
+        if (match != null) {
+          suffix = match.group(0)!;
+          subject = subject.substring(0, match.start);
+        }
+
+        final subjects = subject.split('?');
+
+        subject = subjects
+            .map((s) => localizedSubject(localization, s))
+            .join('?');
+      }
+
+      entry = TimetableEntry(
+        lesson: entry.lesson,
+        teacher: entry.teacher,
+        room: entry.room,
+        text: entry.text,
+        subject: subject + suffix,
+        type: entry.type,
+      );
     }
 
-    subject = localizedSubject(localization, subject);
-  }
-
-  entry = TimetableEntry(
-    lesson: entry.lesson,
-    teacher: entry.teacher,
-    room: entry.room,
-    text: entry.text,
-    subject: subject + suffix,
-    type: entry.type,
-  );
+    return ClassedEntry(
+      className: classedEntry.className,
+      day: classedEntry.day,
+      entry: entry,
+    );
+  }).toList();
 }
-
-return ClassedEntry(
-  className: classedEntry.className,
-  day: classedEntry.day,
-  entry: entry,
-);
-
-
-}).toList();
-}
-
 
 ClassDiff diffByClass(
   Timetable? oldTimetable,

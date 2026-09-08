@@ -153,16 +153,42 @@ class EntryCard extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            "${ordinal(lesson.lesson, Localizations.localeOf(context))} ${context.l10n.lsn}"
-                            "${lesson.subject != "---" ? " • ${lesson.subject}" : ""}",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              decoration: isSpecial
-                                  ? TextDecoration.lineThrough
-                                  : null,
-                              fontStyle: isSpecial ? FontStyle.italic : null,
-                            ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                "${ordinal(lesson.lesson, Localizations.localeOf(context))} ${context.l10n.lsn}",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  decoration: isSpecial
+                                      ? TextDecoration.lineThrough
+                                      : null,
+                                  fontStyle: isSpecial
+                                      ? FontStyle.italic
+                                      : null,
+                                ),
+                              ),
+
+                              if (lesson.subject != null &&
+                                  lesson.subject != "---") ...[
+                                Container(
+                                  width: 5,
+                                  height: 5,
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                                Flexible(
+                                  child: lessonText(lesson.subject!, isSpecial),
+                                ),
+                              ],
+                            ],
                           ),
 
                           teacherText(
