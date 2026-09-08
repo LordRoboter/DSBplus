@@ -30,6 +30,9 @@ Color typeColor(TimetableStatusType? type) {
     case TimetableStatusType.supervision:
       return Colors.orangeAccent.shade100;
 
+    case TimetableStatusType.rescheduling:
+      return Colors.indigo.shade200;
+
     default:
       return Colors.grey.shade200;
   }

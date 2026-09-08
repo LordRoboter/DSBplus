@@ -102,6 +102,9 @@ String localizedStatus(
     TimetableStatusType.supervision =>
       original ? "Betreuung" : l10n.supervision,
 
+    TimetableStatusType.rescheduling =>
+      original ? "Verlegung" : l10n.rescheduling,
+
     null => "",
   };
 }
