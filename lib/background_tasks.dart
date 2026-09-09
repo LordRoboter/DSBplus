@@ -10,6 +10,8 @@ import 'package:intl/intl.dart';
 import 'package:planner/certificates.dart';
 import 'package:planner/core/database/database.dart';
 import 'package:planner/features/auth/auth_repository.dart';
+import 'package:planner/features/notifications/background_tasks.dart';
+import 'package:planner/features/notifications/model/interval.dart';
 import 'package:planner/features/timetables/model/daydate.dart';
 import 'package:planner/features/settings/providers/background_settings.dart';
 import 'package:planner/core/util/date.dart';
@@ -28,68 +30,95 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
   if (message.data["type"] != "timetable_updated") return;
 
-  final settings = BackgroundSettingsRepository();
-  await settings.init();
-
-  final backgroundNotifications = settings.notifications;
-  final firebaseNotifications = settings.firebase;
-
-  if (!backgroundNotifications || !firebaseNotifications) {
-    return;
-  }
-
-  HttpOverrides.global = MyHttpOverrides();
-  await NotificationService.init();
-
-  final db = AppDatabase();
-
-  final secureStorage = FlutterSecureStorage();
-  final auth = AuthRepository(storage: secureStorage);
-  try {
-    await performTimetableCheck(TimetableRepository(db, auth), settings);
-  } finally {
-    await db.close();
-  }
+  await runTimetableBackgroundCheck();
 }
 
+//TODO: Default Locale
 @pragma('vm:entry-point')
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
-    try {
-      WidgetsFlutterBinding.ensureInitialized();
-
-      HttpOverrides.global = MyHttpOverrides();
-
-      await NotificationService.init();
-
-      final settings = BackgroundSettingsRepository();
-      await settings.init();
-      final db = AppDatabase();
-
-      final secureStorage = FlutterSecureStorage();
-      final auth = AuthRepository(storage: secureStorage);
-
-      try {
-        await performTimetableCheck(TimetableRepository(db, auth), settings);
-      } finally {
-        await db.close();
-      }
-
-      return true;
-    } catch (e, stack) {
-      debugPrint('WorkManager error: $e');
-      debugPrint('$stack');
-
-      return false;
-    }
+    return runTimetableBackgroundCheck();
   });
 }
 
-@pragma('vm:entry-point')
+Future<bool> runTimetableBackgroundCheck() async {
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
+
+    HttpOverrides.global = MyHttpOverrides();
+
+    await NotificationService.init();
+
+    final settings = BackgroundSettingsRepository();
+    await settings.init();
+
+    final db = AppDatabase();
+
+    final secureStorage = FlutterSecureStorage();
+    final auth = AuthRepository(storage: secureStorage);
+
+    final localeName = Platform.localeName;
+    print(localeName);
+    final locale = localeName.split("_")[0];
+    final localeCode = locale != ""
+        ? locale
+        : settings.locale != null
+        ? settings.locale.toString()
+        : 'en';
+    await initializeDateFormatting(localeCode);
+
+    try {
+      await performTimetableCheck(
+        TimetableRepository(db, auth),
+        settings,
+        localeCode,
+      );
+    } finally {
+      await db.close();
+    }
+
+    await scheduleNextBackgroundCheck(settings.backgroundSchedule);
+
+    return true;
+  } catch (e, stack) {
+    debugPrint('WorkManager error: $e');
+    debugPrint('$stack');
+
+    return false;
+  }
+}
+
+const backgroundTaskName = 'timetable-check';
+
+Future<void> scheduleNextBackgroundCheck(
+  BackgroundCheckSchedule schedule,
+) async {
+  final now = DateTime.now();
+
+  final next = nextBackgroundCheckTime(now, schedule);
+
+  if (next == null) {
+    await Workmanager().cancelByUniqueName(backgroundTaskName);
+    return;
+  }
+
+  final delay = next.difference(now);
+
+  await Workmanager().registerOneOffTask(
+    backgroundTaskName,
+    backgroundTaskName,
+    initialDelay: delay.isNegative ? Duration.zero : delay,
+    existingWorkPolicy: ExistingWorkPolicy.replace,
+    constraints: Constraints(networkType: NetworkType.connected),
+  );
+}
+
 Future<void> performTimetableCheck(
   TimetableRepository repository,
   BackgroundSettingsRepository settings,
+  String localeCode,
 ) async {
+  debugPrint("Executed");
   final oldData = await repository.loadAll();
   final newData = await repository.sync(oldData);
 
@@ -103,7 +132,6 @@ Future<void> performTimetableCheck(
       DayDate(timetable.day, timetable.date): timetable,
   };
 
-  final localeCode = PlatformDispatcher.instance.locale.languageCode;
   final l10n = await AppLocalizations.delegate.load(Locale(localeCode));
   await initializeDateFormatting(localeCode);
 
@@ -117,7 +145,7 @@ Future<void> performTimetableCheck(
     if (!diff.hasChanges) continue;
 
     final date = dayDate.date!;
-    final formattedDate = DateFormat.yMd(Locale(localeCode)).format(date);
+    final formattedDate = DateFormat.yMd(localeCode).format(date);
 
     final relativeDay = getRelativeDay(date);
 
@@ -134,23 +162,49 @@ Future<void> performTimetableCheck(
         ? "$dayName: ${l10n.newEntries}"
         : "$dayName: ${l10n.deletedEntries}";
 
-    final addedEntries = diff.added
+    final enhancedAdded = enhanceClassedEntries(
+      l10n,
+      diff.added,
+      settings.clean,
+      settings.simplify,
+      disposeTut: settings.disposeTut,
+      cleanClassNames: settings.cleanClassNames,
+      remapTypes: settings.remapTypes,
+      cleanupCourses: settings.cleanupCourses,
+      disposeCourseNumbers: settings.disposeCourseNumbers,
+      mapCourses: settings.mapCourses,
+    );
+
+    final enhancedRemoved = enhanceClassedEntries(
+      l10n,
+      diff.removed,
+      settings.clean,
+      settings.simplify,
+      disposeTut: settings.disposeTut,
+      cleanClassNames: settings.cleanClassNames,
+      remapTypes: settings.remapTypes,
+      cleanupCourses: settings.cleanupCourses,
+      disposeCourseNumbers: settings.disposeCourseNumbers,
+      mapCourses: settings.mapCourses,
+    );
+
+    final addedEntries = enhancedAdded
         .map(
           (entry) => l10n.entryInfo(
             ordinal(entry.entry.lesson, Locale(localeCode)),
-            entry.entry.type ?? "",
-            entry.entry.subject ?? "",
+            localizedStatus(l10n, entry.entry.type),
+            localizedSubject(l10n, entry.entry.subject),
             entry.entry.teacher ?? "",
           ),
         )
         .join("\n");
 
-    final removedEntries = diff.removed
+    final removedEntries = enhancedRemoved
         .map(
           (entry) => l10n.entryInfoDeleted(
             ordinal(entry.entry.lesson, Locale(localeCode)),
-            entry.entry.type ?? "",
-            entry.entry.subject ?? "",
+            localizedStatus(l10n, entry.entry.type),
+            localizedSubject(l10n, entry.entry.subject),
             entry.entry.teacher ?? "",
           ),
         )

@@ -1,3 +1,5 @@
+import 'package:planner/core/model/weekday.dart';
+
 import 'timetable.dart';
 
 class DayDate {

@@ -57,6 +57,33 @@ Widget teacherText(String teacher, bool special) {
   );
 }
 
+Widget lessonText(String lesson, bool special) {
+  if (!lesson.contains("?") & !special) {
+    return Text(lesson, style: TextStyle(fontWeight: FontWeight.bold));
+  }
+
+  final parts = lesson.split("?");
+
+  return Text.rich(
+    TextSpan(
+      children: [
+        TextSpan(
+          text: parts[0],
+          style: const TextStyle(
+            decoration: TextDecoration.lineThrough,
+            fontStyle: FontStyle.italic,
+            color: Colors.grey,
+          ),
+        ),
+        if (parts.length > 1) ...[
+          const TextSpan(text: " "),
+          TextSpan(text: parts[1]),
+        ],
+      ],
+    ),
+  );
+}
+
 Widget classText(BuildContext context, List<String> classNames, bool collapse) {
   final classes = [...classNames];
 

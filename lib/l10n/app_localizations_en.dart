@@ -274,6 +274,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get workManagerDesc => 'Local periodical checks to detect new plans';
 
   @override
+  String get backgroundCheckSchedule => 'Background check schedule';
+
+  @override
+  String get startTime => 'Start time';
+
+  @override
+  String get endTime => 'End time';
+
+  @override
+  String get days => 'Weekdays';
+
+  @override
+  String get interval => 'Interval';
+
+  @override
   String get appearance => 'Appearance';
 
   @override
@@ -347,6 +362,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supervision => 'Supervision';
+
+  @override
+  String get rescheduling => 'Rescheduling';
 
   @override
   String get subjectGerman => 'German';

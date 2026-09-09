@@ -1,3 +1,4 @@
+import 'package:planner/core/model/weekday.dart';
 import 'package:planner/features/timetables/model/timetable.dart';
 
 LessonRange? parseLesson(String? value) {
@@ -106,6 +107,9 @@ TimetableStatusType? parseStatus(String? value) {
     // Different teacher
     case "betreuung":
       return TimetableStatusType.supervision;
+
+    case "verlegung":
+      return TimetableStatusType.rescheduling;
 
     default:
       return null;

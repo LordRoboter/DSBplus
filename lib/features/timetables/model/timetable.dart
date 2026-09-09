@@ -1,5 +1,4 @@
-//DO NOT CHANGE THIS UNLESS YOU WANT TO RISK BREAKING STORAGE OF WEEKDAYS
-enum Weekday { monday, tuesday, wednesday, thursday, friday, saturday, sunday }
+import 'package:planner/core/model/weekday.dart';
 
 class LessonRange {
   final Set<int> lessons;
@@ -59,6 +58,7 @@ enum TimetableStatusType {
   substituteLesson,
   supervision,
   specialAssignment,
+  rescheduling,
 }
 
 class Timetable {

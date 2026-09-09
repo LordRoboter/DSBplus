@@ -1,3 +1,4 @@
+import 'package:planner/core/model/weekday.dart';
 import 'package:planner/features/timetables/model/daydate.dart';
 import 'package:planner/features/timetables/model/filter.dart';
 import 'package:planner/features/timetables/model/timetable.dart';
@@ -90,7 +91,11 @@ Timetable cleanupTimetable(
           subject = subject.substring(0, match.start);
         }
 
-        subject = localizedSubject(localization, subject);
+        final subjects = subject.split('?');
+
+        subject = subjects
+            .map((s) => localizedSubject(localization, s))
+            .join('?');
       }
 
       return TimetableEntry(
@@ -324,6 +329,74 @@ Timetable enhanceTimetable(
   //groupedByDay[entry.key] = groupEntries(res);
 
   return res;
+}
+
+List<ClassedEntry> enhanceClassedEntries(
+  AppLocalizations localization,
+  List<ClassedEntry> entries,
+  bool clean,
+  bool simplify, {
+  bool disposeTut = true,
+  bool cleanClassNames = true,
+  bool remapTypes = true,
+  bool cleanupCourses = true,
+  bool disposeCourseNumbers = true,
+  bool mapCourses = true,
+}) {
+  if (!clean && simplify) {
+    return entries;
+  }
+
+  return entries.map((classedEntry) {
+    var entry = classedEntry.entry;
+
+    if (clean) {
+      var subject = entry.subject ?? "";
+
+      if (cleanupCourses) {
+        subject = subject
+            .replaceFirst(RegExp(r'[EQ]\d'), '')
+            .replaceFirst(RegExp(r'^\d+'), '')
+            .replaceFirst(RegExp(r'\d+\D$'), '');
+      }
+
+      if (disposeCourseNumbers) {
+        subject = subject.replaceFirst(RegExp(r'\d+$'), '');
+      }
+
+      String suffix = "";
+
+      if (mapCourses) {
+        final match = RegExp(r'(_.*|\d+)$').firstMatch(subject);
+
+        if (match != null) {
+          suffix = match.group(0)!;
+          subject = subject.substring(0, match.start);
+        }
+
+        final subjects = subject.split('?');
+
+        subject = subjects
+            .map((s) => localizedSubject(localization, s))
+            .join('?');
+      }
+
+      entry = TimetableEntry(
+        lesson: entry.lesson,
+        teacher: entry.teacher,
+        room: entry.room,
+        text: entry.text,
+        subject: subject + suffix,
+        type: entry.type,
+      );
+    }
+
+    return ClassedEntry(
+      className: classedEntry.className,
+      day: classedEntry.day,
+      entry: entry,
+    );
+  }).toList();
 }
 
 ClassDiff diffByClass(

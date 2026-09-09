@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 //import 'package:planner/core/model/daydate.dart';
+import 'package:planner/features/notifications/model/interval.dart';
 import 'package:planner/features/timetables/model/filter.dart';
 import 'package:planner/theme.dart';
 
@@ -22,6 +23,7 @@ class SettingsState {
   final bool notifications;
   final bool firebase;
   final bool workManager;
+  final BackgroundCheckSchedule backgroundSchedule;
 
   final List<TimetableFilter> filters;
   final TimetableFilter classFilter;
@@ -46,6 +48,7 @@ class SettingsState {
     this.notifications = true,
     this.firebase = true,
     this.workManager = true,
+    this.backgroundSchedule = const BackgroundCheckSchedule(),
     this.filters = const [],
     this.classFilter = const TimetableFilter(),
     this.theme = AppThemes.system,
@@ -71,6 +74,7 @@ class SettingsState {
     bool? notifications,
     bool? firebase,
     bool? workManager,
+    BackgroundCheckSchedule? backgroundSchedule,
     List<TimetableFilter>? filters,
     TimetableFilter? classFilter,
     AppThemes? theme,
@@ -93,6 +97,7 @@ class SettingsState {
       notifications: notifications ?? this.notifications,
       firebase: firebase ?? this.firebase,
       workManager: workManager ?? this.workManager,
+      backgroundSchedule: backgroundSchedule ?? this.backgroundSchedule,
       filters: filters ?? this.filters,
       classFilter: classFilter ?? this.classFilter,
       theme: theme ?? this.theme,
