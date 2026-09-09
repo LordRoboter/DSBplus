@@ -319,6 +319,18 @@ class AppLocalizationsDe extends AppLocalizations {
   String get systemDefault => 'Systemstandard';
 
   @override
+  String get dynamicc => 'Dynamisch';
+
+  @override
+  String get defaultt => 'Standard';
+
+  @override
+  String get select => 'Auswählen';
+
+  @override
+  String get customColor => 'Individuelle Farbe';
+
+  @override
   String get german => 'Deutsch';
 
   @override
