@@ -28,7 +28,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:322230562387:android:142cda6f4d4d50d88460a6",
         "android_client_info": {
-          "package_name": "com.plos.vertretungsplan"
+          "package_name": "com.plos.planner"
         }
       },
       "oauth_client": [],
