@@ -304,6 +304,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get systemDefault => 'System Default';
 
   @override
+  String get dynamicc => 'Dynamic';
+
+  @override
+  String get defaultt => 'Default';
+
+  @override
+  String get select => 'Select';
+
+  @override
+  String get customColor => 'Custom Color';
+
+  @override
   String get german => 'German';
 
   @override

@@ -666,6 +666,30 @@ abstract class AppLocalizations {
   /// **'System Default'**
   String get systemDefault;
 
+  /// No description provided for @dynamicc.
+  ///
+  /// In en, this message translates to:
+  /// **'Dynamic'**
+  String get dynamicc;
+
+  /// No description provided for @defaultt.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get defaultt;
+
+  /// No description provided for @select.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get select;
+
+  /// No description provided for @customColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Color'**
+  String get customColor;
+
   /// No description provided for @german.
   ///
   /// In en, this message translates to:

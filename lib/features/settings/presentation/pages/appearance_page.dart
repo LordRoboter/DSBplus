@@ -118,61 +118,87 @@ class AppearanceSettingsPage extends ConsumerWidget {
 
                     const SizedBox(height: 24),
 
-                    // Theme color
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: Text(context.l10n.themeColor),
                     ),
-
-                    Wrap(
-                      spacing: 12,
-                      runSpacing: 12,
-                      children: [
-                        _ThemeColorButton(
-                          color: Colors.deepPurple,
-                          selected: settings.themeColor is StandardColor,
-                          onTap: () {
-                            notifier.setThemeColor(const StandardColor());
-                          },
-                        ),
-                        _ThemeColorButton(
-                          color: Theme.of(context).colorScheme.primary,
-                          icon: Icons.auto_awesome,
-                          selected: settings.themeColor is DynamicColor,
-                          onTap: () {
-                            notifier.setThemeColor(const DynamicColor());
-                          },
-                        ),
-                        ...themeColors.map(
-                          (color) => _ThemeColorButton(
-                            color: color,
+                    SizedBox(
+                      width: double.infinity,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: _ThemeColorSplitButton(
+                              title: context.l10n.defaultt,
+                              icon: Icons.palette_outlined,
+                              selected: settings.themeColor is StandardColor,
+                              onTap: () {
+                                notifier.setThemeColor(const StandardColor());
+                              },
+                              isLeft: true,
+                            ),
+                          ),
+                          Expanded(
+                            child: _ThemeColorSplitButton(
+                              title: context.l10n.dynamicc,
+                              icon: Icons.auto_awesome,
+                              selected: settings.themeColor is DynamicColor,
+                              onTap: () {
+                                notifier.setThemeColor(const DynamicColor());
+                              },
+                              isLeft: false,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 5,
+                            mainAxisSpacing: 12,
+                            crossAxisSpacing: 12,
+                            childAspectRatio: 1,
+                          ),
+                      itemCount: themeColors.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index < themeColors.length) {
+                          final color = themeColors[index];
+                          return Center(
+                            child: _ThemeColorButton(
+                              color: color,
+                              selected:
+                                  settings.themeColor is CustomColor &&
+                                  (settings.themeColor as CustomColor).color
+                                          .toARGB32() ==
+                                      color.toARGB32(),
+                              onTap: () {
+                                notifier.setThemeColor(CustomColor(color));
+                              },
+                            ),
+                          );
+                        }
+                        return Center(
+                          child: _CustomColorButton(
+                            color: settings.themeColor is CustomColor
+                                ? (settings.themeColor as CustomColor).color
+                                : null,
                             selected:
                                 settings.themeColor is CustomColor &&
-                                (settings.themeColor as CustomColor).color
-                                        .toARGB32() ==
-                                    color.toARGB32(),
-                            onTap: () {
+                                !themeColors.any(
+                                  (color) =>
+                                      color.toARGB32() ==
+                                      (settings.themeColor as CustomColor).color
+                                          .toARGB32(),
+                                ),
+                            onColorSelected: (color) {
                               notifier.setThemeColor(CustomColor(color));
                             },
                           ),
-                        ),
-                        _CustomColorButton(
-                          color: settings.themeColor is CustomColor
-                              ? (settings.themeColor as CustomColor).color
-                              : null,
-                          selected:
-                              settings.themeColor is CustomColor &&
-                              !themeColors.any(
-                                (color) =>
-                                    color.toARGB32() ==
-                                    (settings.themeColor as CustomColor).color
-                                        .toARGB32(),
-                              ),
-                          onColorSelected: (color) {
-                            notifier.setThemeColor(CustomColor(color));
-                          },
-                        ),
-                      ],
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -181,6 +207,72 @@ class AppearanceSettingsPage extends ConsumerWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _ThemeColorSplitButton extends StatelessWidget {
+  const _ThemeColorSplitButton({
+    required this.title,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+    required this.isLeft,
+  });
+
+  final String title;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+  final bool isLeft;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    final radius = BorderRadius.horizontal(
+      left: isLeft ? const Radius.circular(12) : Radius.zero,
+      right: !isLeft ? const Radius.circular(12) : Radius.zero,
+    );
+
+    final border = BorderSide(
+      color: selected ? colorScheme.primary : colorScheme.outlineVariant,
+      width: selected ? 2 : 1,
+    );
+
+    return Material(
+      color: selected
+          ? colorScheme.primaryContainer
+          : colorScheme.surfaceContainerLow,
+      shape: RoundedRectangleBorder(borderRadius: radius, side: border),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                selected ? Icons.check : icon,
+                size: 20,
+                color: selected
+                    ? colorScheme.primary
+                    : colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: selected ? colorScheme.primary : colorScheme.onSurface,
+                  fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -260,42 +352,82 @@ class _CustomColorButton extends StatelessWidget {
 
   Future<void> _pickColor(BuildContext context) async {
     var pickedColor = color ?? Colors.blue;
-
     final result = await showDialog<Color>(
       context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text('Custom color'),
-              content: SingleChildScrollView(
-                child: ColorPicker(
-                  color: pickedColor,
-                  onColorChanged: (value) {
-                    setState(() {
-                      pickedColor = value;
-                    });
-                  },
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Cancel'),
-                ),
-                FilledButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(pickedColor);
-                  },
-                  child: const Text('Select'),
-                ),
-              ],
-            );
-          },
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(context.l10n.customColor),
+          content: Material(
+            color: Colors.transparent,
+            child: StatefulBuilder(
+              builder: (context, setState) {
+                return SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 150),
+                        width: double.infinity,
+                        height: 72,
+                        decoration: BoxDecoration(
+                          color: pickedColor,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Center(
+                          child: Text(
+                            '#${pickedColor.toARGB32().toRadixString(16).substring(2).toUpperCase()}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: pickedColor.computeLuminance() > 0.5
+                                  ? Colors.black
+                                  : Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      ColorPicker(
+                        color: pickedColor,
+                        onColorChanged: (value) {
+                          setState(() {
+                            pickedColor = value;
+                          });
+                        },
+                        pickersEnabled: const {
+                          ColorPickerType.wheel: true,
+                          ColorPickerType.primary: false,
+                          ColorPickerType.accent: false,
+                        },
+                        enableShadesSelection: true,
+                        enableOpacity: false,
+                        wheelDiameter: 240,
+                        wheelWidth: 24,
+                        showColorCode: false,
+                        showColorName: false,
+                        heading: const SizedBox.shrink(),
+                        subheading: const SizedBox.shrink(),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(context.l10n.cancel),
+            ),
+            FilledButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop(pickedColor);
+              },
+              child: Text(context.l10n.select),
+            ),
+          ],
         );
       },
     );
-
     if (result != null) {
       onColorSelected(result);
     }
