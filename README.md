@@ -1,17 +1,22 @@
-# planner
+# Planner
 
-A new Flutter project.
+An alternative client for the DSB portal.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+### Custom Filters
+- Only display relevant entries on your homepage
 
-A few resources to get you started if this is your first Flutter project:
+### Cleaner Entries
+- Cleanup entries by removing duplicates
+- Make entries easier to understand and more organized
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+### Notifications
+- Frequent background checks for relevant entry changes
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Customizability
+- Translations/ UI-Themes/ ...
+
+
+## Credit
+This project was inspired by the [DSBApi](https://github.com/nerrixde/DSBApi) published by the user [nerrixide](https://github.com/nerrixde) on GitHub.
