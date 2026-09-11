@@ -2,7 +2,7 @@ import 'dart:ui';
 
 //import 'package:planner/core/model/daydate.dart';
 import 'package:planner/features/notifications/model/interval.dart';
-import 'package:planner/features/timetables/model/filter.dart';
+import 'package:planner/features/dsb/timetables/model/filter.dart';
 import 'package:planner/theme.dart';
 
 class SettingsState {

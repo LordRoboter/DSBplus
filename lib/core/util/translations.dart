@@ -1,6 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:planner/core/model/weekday.dart';
-import 'package:planner/features/timetables/model/timetable.dart';
+import 'package:planner/features/dsb/timetables/model/timetable.dart';
 import 'package:planner/l10n/app_localizations.dart';
 import 'package:planner/l10n/l10extension.dart';
 

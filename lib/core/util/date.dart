@@ -1,8 +1,8 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:planner/core/model/weekday.dart';
-import 'package:planner/features/timetables/model/daydate.dart';
-import 'package:planner/features/timetables/model/timetable.dart';
+import 'package:planner/features/dsb/timetables/model/daydate.dart';
+import 'package:planner/features/dsb/timetables/model/timetable.dart';
 import 'package:planner/core/util/translations.dart';
 
 int getRelativeDay(DateTime date) {

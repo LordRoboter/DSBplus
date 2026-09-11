@@ -1,10 +1,10 @@
-import 'dart:convert';
+/*import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/rendering.dart';
 import 'package:html/dom.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart';
-import 'package:planner/features/timetables/model/timetable.dart';
+import 'package:planner/features/dsb/timetables/model/timetable.dart';
 import 'package:planner/core/util/lessons.dart';
 import 'package:uuid/uuid.dart';
 
@@ -73,6 +73,7 @@ class DSBApi {
     final decoded = base64Decode(jsonResponse["d"]);
 
     final decompressed = utf8.decode(gzip.decode(decoded));
+    print(decompressed);
 
     final data = jsonDecode(decompressed);
 
@@ -459,3 +460,4 @@ class _LessonGroup {
 
   _LessonGroup(this.lesson);
 }
+*/

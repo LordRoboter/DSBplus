@@ -7,7 +7,7 @@ import 'package:planner/core/model/weekday.dart';
 import 'package:planner/features/notifications/background_tasks.dart';
 import 'package:planner/features/notifications/model/interval.dart';
 //import 'package:planner/core/model/daydate.dart';
-import 'package:planner/features/timetables/model/filter.dart';
+import 'package:planner/features/dsb/timetables/model/filter.dart';
 import 'package:planner/features/settings/model/settings_state.dart';
 import 'package:planner/core/providers/shared_preferences_provider.dart';
 import 'package:planner/theme.dart';

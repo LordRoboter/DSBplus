@@ -1,14 +1,14 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:planner/core/util/timetable.dart';
-import 'package:planner/features/timetables/model/filter.dart';
-import 'package:planner/features/timetables/model/timetable.dart';
+import 'package:planner/features/dsb/timetables/model/filter.dart';
+import 'package:planner/features/dsb/timetables/model/timetable.dart';
 import 'package:planner/features/settings/model/settings_state.dart';
 import 'package:planner/core/util/translations.dart';
-import '../../../../l10n/l10extension.dart';
+import '../../../../../l10n/l10extension.dart';
 import 'texts.dart';
-import '../../../../core/res/maps.dart';
-import '../../../../core/util/sorter.dart';
+import '../../../../../core/res/maps.dart';
+import '../../../../../core/util/sorter.dart';
 
 class EntryListNoScroll extends StatelessWidget {
   final Timetable timetable;

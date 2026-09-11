@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:planner/features/settings/presentation/widgets/dialogues.dart';
 import 'package:planner/features/settings/presentation/widgets/settings.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
-import 'package:planner/features/timetables/model/filter.dart';
+import 'package:planner/features/dsb/timetables/model/filter.dart';
 import 'package:planner/l10n/l10extension.dart';
 
 class FiltersSettingsPage extends ConsumerStatefulWidget {

@@ -1,5 +1,5 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:planner/features/timetables/model/timetable.dart';
+import 'package:planner/features/dsb/timetables/model/timetable.dart';
 
 Color typeColor(TimetableStatusType? type) {
   switch (type) {

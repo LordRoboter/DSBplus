@@ -6,10 +6,10 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:planner/features/notifications/notification_service.dart';
 import 'package:planner/features/settings/presentation/settings_screen.dart';
-import 'package:planner/features/timetables/model/timetable.dart';
-import 'package:planner/features/timetables/presentation/home_screen.dart';
-import 'package:planner/features/timetables/presentation/plan_screen.dart';
-import 'package:planner/features/timetables/providers/timetable_provider.dart';
+import 'package:planner/features/dsb/timetables/model/timetable.dart';
+import 'package:planner/features/dsb/timetables/presentation/home_screen.dart';
+import 'package:planner/features/dsb/timetables/presentation/plan_screen.dart';
+import 'package:planner/features/dsb/timetables/providers/timetable_provider.dart';
 import 'package:planner/l10n/l10extension.dart';
 
 class NavigatorScreen extends ConsumerStatefulWidget {
