@@ -3,13 +3,14 @@ enum DsbCategory { timetable, resource, news }
 class DsbPage {
   final DsbCategory category;
   final String? title;
-  //final DateTime? date;
+  final DateTime? date;
   final List<DsbSubPage> childs;
 
   const DsbPage({
     required this.category,
     this.title,
-    /*this.date,*/ required this.childs,
+    this.date,
+    required this.childs,
   });
 }
 

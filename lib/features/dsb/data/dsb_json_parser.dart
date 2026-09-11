@@ -94,7 +94,23 @@ class DsbJsonParser {
         continue;
       }
 
-      pages.add(DsbPage(category: resolvedCategory, childs: subPages));
+      final title = page["Title"]?.toString();
+      final dateString = page['Date']?.toString();
+
+      DateTime? date;
+
+      if (dateString != null && dateString.isNotEmpty) {
+        date = _tryParseDate(dateString);
+      }
+
+      pages.add(
+        DsbPage(
+          title: title,
+          category: resolvedCategory,
+          childs: subPages,
+          date: date,
+        ),
+      );
     }
 
     return pages;
@@ -108,10 +124,12 @@ class DsbJsonParser {
         continue;
       }
 
-      final title = child['Title']?.toString() ?? '';
+      final title = child['Title']?.toString();
       final dateString = child['Date']?.toString();
-      final detail = child['Detail']?.toString() ?? '';
-      final preview = child['Preview']?.toString() ?? '';
+      final detail = child['Detail']?.toString();
+      final preview = child['Preview'] != null
+          ? "https://dsbmobile.de/data/${child["Preview"]}"
+          : null;
 
       DateTime? date;
 
@@ -119,7 +137,7 @@ class DsbJsonParser {
         date = _tryParseDate(dateString);
       }
 
-      if (date == null) {
+      if (detail == null) {
         continue;
       }
 
