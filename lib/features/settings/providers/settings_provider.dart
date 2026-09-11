@@ -3,7 +3,6 @@ import 'dart:ui';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:planner/core/model/weekday.dart';
 import 'package:planner/features/notifications/background_tasks.dart';
 import 'package:planner/features/notifications/model/interval.dart';
 //import 'package:planner/core/model/daydate.dart';

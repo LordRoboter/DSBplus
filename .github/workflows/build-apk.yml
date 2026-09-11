@@ -1,0 +1,29 @@
+name: Build Flutter APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.3'
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build APKs
+        run: flutter build apk --release --no-tree-shake-icons --split-per-abi
+
+      - name: Upload APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-apks
+          path: build/app/outputs/flutter-apk/*.apk

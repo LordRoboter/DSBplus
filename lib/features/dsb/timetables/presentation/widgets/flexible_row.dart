@@ -41,10 +41,9 @@ class _PriorityRowRenderObject extends RenderBox
         ContainerRenderObjectMixin<RenderBox, _PriorityRowParentData>,
         RenderBoxContainerDefaultsMixin<RenderBox, _PriorityRowParentData> {
   _PriorityRowRenderObject({
-    required double spacing,
+    required this._spacing,
     required double trailingSpacing,
-  }) : _spacing = spacing,
-       _trailingSpacing = trailingSpacing;
+  }) : _trailingSpacing = trailingSpacing;
 
   double _spacing;
   double _trailingSpacing;

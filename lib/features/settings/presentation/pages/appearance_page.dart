@@ -282,8 +282,7 @@ class _ThemeColorButton extends StatelessWidget {
     required this.color,
     required this.selected,
     required this.onTap,
-    this.icon,
-  });
+  }) : icon = null;
 
   final Color color;
   final bool selected;
