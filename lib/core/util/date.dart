@@ -4,6 +4,7 @@ import 'package:planner/core/model/weekday.dart';
 import 'package:planner/features/dsb/timetables/model/daydate.dart';
 import 'package:planner/features/dsb/timetables/model/timetable.dart';
 import 'package:planner/core/util/translations.dart';
+import 'package:planner/l10n/l10extension.dart';
 
 int getRelativeDay(DateTime date) {
   try {
@@ -42,9 +43,12 @@ String getDayName(DateTime? date, Weekday? day, BuildContext context) {
   final endOfThisWeek = startOfThisWeek.add(const Duration(days: 6));
   if (!targetDate.isBefore(startOfThisWeek) &&
       !targetDate.isAfter(endOfThisWeek)) {
-    return localizedWeekday(context, Weekday.values[targetDate.weekday - 1]);
+    return localizedWeekday(
+      context.l10n,
+      Weekday.values[targetDate.weekday - 1],
+    );
   }
-  return '${localizedWeekday(context, Weekday.values[targetDate.weekday - 1])} (${DateFormat.Md(Localizations.localeOf(context).toString()).format(date)})';
+  return '${localizedWeekday(context.l10n, Weekday.values[targetDate.weekday - 1])} (${DateFormat.Md(Localizations.localeOf(context).toString()).format(date)})';
 }
 
 String getRelativeDayString(
