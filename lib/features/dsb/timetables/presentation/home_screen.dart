@@ -85,7 +85,7 @@ class HomeScreen extends ConsumerWidget {
                           1 => context.l10n.tomorrow,
                           -1 => context.l10n.yesterday,
                           _ =>
-                            "${localizedWeekday(context, dayTimetable.day)} $formattedDate",
+                            "${localizedWeekday(context.l10n, dayTimetable.day)} $formattedDate",
                         };
 
                         return Column(

@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -39,7 +38,6 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await runTimetableBackgroundCheck();
 }
 
-//TODO: Default Locale
 @pragma('vm:entry-point')
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
@@ -61,7 +59,6 @@ Future<bool> runTimetableBackgroundCheck() async {
     final db = AppDatabase();
 
     final localeName = Platform.localeName;
-    print(localeName);
     final locale = localeName.split("_")[0];
     final localeCode = locale != ""
         ? locale
@@ -177,7 +174,7 @@ Future<void> performTimetableCheck(
       0 => l10n.today,
       1 => l10n.tomorrow,
       -1 => l10n.yesterday,
-      _ => "${dayDate.day} ($formattedDate)",
+      _ => "${localizedWeekday(l10n, dayDate.day)} ($formattedDate)",
     };
 
     final title = diff.added.isNotEmpty && diff.removed.isNotEmpty

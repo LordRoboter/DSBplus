@@ -57,15 +57,15 @@ String _ordinalNumber(int number, Locale locale) {
   }
 }
 
-String localizedWeekday(BuildContext context, Weekday? day) {
+String localizedWeekday(AppLocalizations l10n, Weekday? day) {
   return switch (day) {
-    Weekday.monday => context.l10n.monday,
-    Weekday.tuesday => context.l10n.tuesday,
-    Weekday.wednesday => context.l10n.wednesday,
-    Weekday.thursday => context.l10n.thursday,
-    Weekday.friday => context.l10n.friday,
-    Weekday.saturday => context.l10n.saturday,
-    Weekday.sunday => context.l10n.sunday,
+    Weekday.monday => l10n.monday,
+    Weekday.tuesday => l10n.tuesday,
+    Weekday.wednesday => l10n.wednesday,
+    Weekday.thursday => l10n.thursday,
+    Weekday.friday => l10n.friday,
+    Weekday.saturday => l10n.saturday,
+    Weekday.sunday => l10n.sunday,
     _ => "",
   };
 }
