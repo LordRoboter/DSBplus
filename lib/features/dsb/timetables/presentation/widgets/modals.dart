@@ -45,7 +45,7 @@ class PlanDetailsSheet extends StatelessWidget {
                   icon: Icons.event,
                   label: context.l10n.day,
                   value: timetable.day != null
-                      ? localizedWeekday(context, timetable.day)
+                      ? localizedWeekday(context.l10n, timetable.day)
                       : context.l10n.unknown,
                 ),
 
