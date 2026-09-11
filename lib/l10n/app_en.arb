@@ -135,5 +135,9 @@
   "subjectTutorCourse": "Tutor Course",
   "subjectChinese": "Chinese",
   "subjectComputerScience": "Computer Science",
-  "subjectGeography": "Geography"
+  "subjectGeography": "Geography",
+  "resources": "Resources",
+  "noResourcesAvailable": "No Resources available",
+  "couldNotLoadResources": "Could not load Resources",
+  "tryAgain": "Try Again"
 }

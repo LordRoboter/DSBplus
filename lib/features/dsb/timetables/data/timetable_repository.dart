@@ -1,6 +1,5 @@
 import 'package:drift/drift.dart';
-import 'package:planner/features/auth/auth_repository.dart';
-import 'package:planner/features/timetables/model/timetable.dart';
+import 'package:planner/features/dsb/timetables/model/timetable.dart';
 import 'package:planner/core/database/database.dart'
     show
         AppDatabase,
@@ -8,14 +7,11 @@ import 'package:planner/core/database/database.dart'
         ClassEntriesCompanion,
         TimetableEntriesCompanion;
 import 'package:planner/core/database/database.dart' as model;
-import 'package:planner/features/timetables/data/dsb_api.dart';
-import 'package:collection/collection.dart';
 
 class TimetableRepository {
   final AppDatabase db;
-  final AuthRepository auth;
 
-  TimetableRepository(this.db, this.auth);
+  TimetableRepository(this.db);
 
   Future<int> save(Timetable timetable) async {
     return db.transaction(() async {
@@ -216,6 +212,7 @@ class TimetableRepository {
     }).toList();
   }
 
+  /*
   Future<List<Timetable>> fetch() async {
     final username = await auth.getUsername();
     final password = await auth.getPassword();
@@ -319,15 +316,16 @@ class TimetableRepository {
     return newTimetables;
   }
 
+  String _timetableKey({required DateTime? date, required dynamic day}) {
+    return '${date?.year}-${date?.month}-${date?.day}-$day';
+  }
+  */
+
   Future<void> clear() async {
     await db.transaction(() async {
       await db.delete(db.timetableEntries).go();
       await db.delete(db.classEntries).go();
       await db.delete(db.timetables).go();
     });
-  }
-
-  String _timetableKey({required DateTime? date, required dynamic day}) {
-    return '${date?.year}-${date?.month}-${date?.day}-$day';
   }
 }

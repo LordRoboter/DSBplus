@@ -923,6 +923,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Geography'**
   String get subjectGeography;
+
+  /// No description provided for @resources.
+  ///
+  /// In en, this message translates to:
+  /// **'Resources'**
+  String get resources;
+
+  /// No description provided for @noResourcesAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No Resources available'**
+  String get noResourcesAvailable;
+
+  /// No description provided for @couldNotLoadResources.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load Resources'**
+  String get couldNotLoadResources;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try Again'**
+  String get tryAgain;
 }
 
 class _AppLocalizationsDelegate

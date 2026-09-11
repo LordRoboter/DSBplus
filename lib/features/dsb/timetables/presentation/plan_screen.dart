@@ -1,16 +1,16 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:planner/features/timetables/model/daydate.dart';
+import 'package:planner/features/dsb/timetables/model/daydate.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/core/util/date.dart';
-import 'package:planner/features/timetables/presentation/widgets/flexible_row.dart';
+import 'package:planner/features/dsb/timetables/presentation/widgets/flexible_row.dart';
 import 'package:planner/l10n/l10extension.dart';
-import 'package:planner/features/timetables/providers/enhanced_timetables_provider.dart';
-import 'package:planner/features/timetables/providers/timetable_provider.dart';
-import 'package:planner/features/timetables/presentation/widgets/lists.dart';
+import 'package:planner/features/dsb/timetables/providers/enhanced_timetables_provider.dart';
+import 'package:planner/features/dsb/timetables/providers/timetable_provider.dart';
+import 'package:planner/features/dsb/timetables/presentation/widgets/lists.dart';
 import 'package:planner/core/util/sorter.dart';
-import 'package:planner/features/timetables/presentation/widgets/modals.dart';
+import 'package:planner/features/dsb/timetables/presentation/widgets/modals.dart';
 
 class PlanScreen extends ConsumerStatefulWidget {
   const PlanScreen({super.key});

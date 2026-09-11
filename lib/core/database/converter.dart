@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:drift/drift.dart';
 import 'package:planner/core/model/weekday.dart';
-import 'package:planner/features/timetables/model/timetable.dart';
+import 'package:planner/features/dsb/timetables/model/timetable.dart';
 
 class LessonRangeConverter extends TypeConverter<LessonRange, String> {
   const LessonRangeConverter();

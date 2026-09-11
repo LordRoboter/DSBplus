@@ -431,4 +431,16 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get subjectGeography => 'Erdkunde';
+
+  @override
+  String get resources => 'Aushänge';
+
+  @override
+  String get noResourcesAvailable => 'Keine Aushänge vorhanden';
+
+  @override
+  String get couldNotLoadResources => 'Aushänge konnten nicht geladen werden';
+
+  @override
+  String get tryAgain => 'Erneut versuchen';
 }

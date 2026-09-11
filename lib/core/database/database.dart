@@ -4,7 +4,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:planner/core/database/converter.dart';
 import 'package:planner/core/database/timetable.dart';
 import 'package:planner/core/model/weekday.dart';
-import 'package:planner/features/timetables/model/timetable.dart';
+import 'package:planner/features/dsb/timetables/model/timetable.dart';
 
 part 'database.g.dart';
 

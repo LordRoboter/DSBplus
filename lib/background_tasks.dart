@@ -3,16 +3,20 @@ import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:planner/certificates.dart';
-import 'package:planner/core/database/database.dart';
+import 'package:planner/core/database/database.dart' show AppDatabase;
 import 'package:planner/features/auth/auth_repository.dart';
+import 'package:planner/features/dsb/data/dsb_api.dart';
+import 'package:planner/features/dsb/timetables/data/dsb_timetable_parser.dart';
+import 'package:planner/features/dsb/timetables/data/timetable_merger.dart';
+import 'package:planner/features/dsb/timetables/service/dsb_timetable_service.dart';
 import 'package:planner/features/notifications/background_tasks.dart';
 import 'package:planner/features/notifications/model/interval.dart';
-import 'package:planner/features/timetables/model/daydate.dart';
+import 'package:planner/features/dsb/timetables/model/daydate.dart';
 import 'package:planner/features/settings/providers/background_settings.dart';
 import 'package:planner/core/util/date.dart';
 import 'package:planner/core/util/sorter.dart';
@@ -20,9 +24,11 @@ import 'package:planner/core/util/timetable.dart';
 import 'package:planner/core/util/translations.dart';
 import 'package:planner/firebase_options.dart';
 import 'package:planner/l10n/app_localizations.dart';
-import 'package:planner/features/timetables/data/timetable_repository.dart';
+import 'package:planner/features/dsb/timetables/data/timetable_repository.dart';
 import 'package:planner/features/notifications/notification_service.dart';
 import 'package:workmanager/workmanager.dart';
+
+import 'features/dsb/timetables/model/timetable.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -54,9 +60,6 @@ Future<bool> runTimetableBackgroundCheck() async {
 
     final db = AppDatabase();
 
-    final secureStorage = FlutterSecureStorage();
-    final auth = AuthRepository(storage: secureStorage);
-
     final localeName = Platform.localeName;
     print(localeName);
     final locale = localeName.split("_")[0];
@@ -68,11 +71,33 @@ Future<bool> runTimetableBackgroundCheck() async {
     await initializeDateFormatting(localeCode);
 
     try {
-      await performTimetableCheck(
-        TimetableRepository(db, auth),
-        settings,
-        localeCode,
+      final secureStorage = FlutterSecureStorage();
+      final auth = AuthRepository(storage: secureStorage);
+
+      final api = DsbApi(auth);
+
+      final repository = TimetableRepository(db);
+
+      final parser = DsbTimetableParser();
+
+      final merger = TimetableMerger();
+
+      final service = DsbTimetableService(
+        api: api,
+        repository: repository,
+        parser: parser,
+        merger: merger,
       );
+
+      final oldData = await repository.loadAll();
+
+      final oldSnapshot = oldData
+          .map((t) => Timetable.fromJson(t.toJson()))
+          .toList();
+
+      final newData = await service.sync(background: oldData);
+
+      await performTimetableCheck(oldSnapshot, newData, settings, localeCode);
     } finally {
       await db.close();
     }
@@ -114,13 +139,12 @@ Future<void> scheduleNextBackgroundCheck(
 }
 
 Future<void> performTimetableCheck(
-  TimetableRepository repository,
+  List<Timetable> oldData,
+  List<Timetable> newData,
   BackgroundSettingsRepository settings,
   String localeCode,
 ) async {
   debugPrint("Executed");
-  final oldData = await repository.loadAll();
-  final newData = await repository.sync(oldData);
 
   final groupedOld = {
     for (final timetable in oldData)

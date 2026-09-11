@@ -431,4 +431,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get subjectGeography => 'Geography';
+
+  @override
+  String get resources => 'Resources';
+
+  @override
+  String get noResourcesAvailable => 'No Resources available';
+
+  @override
+  String get couldNotLoadResources => 'Could not load Resources';
+
+  @override
+  String get tryAgain => 'Try Again';
 }

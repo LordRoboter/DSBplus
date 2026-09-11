@@ -135,5 +135,9 @@
   "subjectTutorCourse": "Tutorenkurs",
   "subjectChinese": "Chinesisch",
   "subjectComputerScience": "Informatik",
-  "subjectGeography": "Erdkunde"
+  "subjectGeography": "Erdkunde",
+  "resources": "Aushänge",
+  "noResourcesAvailable": "Keine Aushänge vorhanden",
+  "couldNotLoadResources": "Aushänge konnten nicht geladen werden",
+  "tryAgain": "Erneut versuchen"
 }

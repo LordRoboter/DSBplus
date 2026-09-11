@@ -1,5 +1,5 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:planner/features/timetables/model/filter.dart';
+import 'package:planner/features/dsb/timetables/model/filter.dart';
 
 enum SettingsCategoryTilePosition { single, top, middle, bottom }
 

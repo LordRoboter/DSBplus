@@ -1,14 +1,14 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:planner/features/dsb/timetables/providers/timetable_provider.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/core/util/translations.dart';
 import 'package:planner/l10n/l10extension.dart';
-import 'package:planner/features/timetables/providers/enhanced_timetables_provider.dart';
-import 'package:planner/features/timetables/providers/timetable_provider.dart';
-import 'package:planner/features/timetables/presentation/widgets/lists.dart';
+import 'package:planner/features/dsb/timetables/providers/enhanced_timetables_provider.dart';
+import 'package:planner/features/dsb/timetables/presentation/widgets/lists.dart';
 import 'package:planner/core/util/date.dart';
-import 'package:planner/features/timetables/presentation/widgets/modals.dart';
+import 'package:planner/features/dsb/timetables/presentation/widgets/modals.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});

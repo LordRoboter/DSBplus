@@ -2,14 +2,15 @@ import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:planner/features/notifications/notification_service.dart';
 import 'package:planner/features/settings/presentation/settings_screen.dart';
-import 'package:planner/features/timetables/model/timetable.dart';
-import 'package:planner/features/timetables/presentation/home_screen.dart';
-import 'package:planner/features/timetables/presentation/plan_screen.dart';
-import 'package:planner/features/timetables/providers/timetable_provider.dart';
+import 'package:planner/features/dsb/resources/presentation/dsb_resources_screen.dart';
+import 'package:planner/features/dsb/timetables/model/timetable.dart';
+import 'package:planner/features/dsb/timetables/presentation/home_screen.dart';
+import 'package:planner/features/dsb/timetables/presentation/plan_screen.dart';
+import 'package:planner/features/dsb/timetables/providers/timetable_provider.dart';
 import 'package:planner/l10n/l10extension.dart';
 
 class NavigatorScreen extends ConsumerStatefulWidget {
@@ -31,6 +32,13 @@ class _NavigatorScreenState extends ConsumerState<NavigatorScreen> {
     );
   }
 
+  Future<void> openResources() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const DsbResourcesScreen()),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -41,7 +49,9 @@ class _NavigatorScreenState extends ConsumerState<NavigatorScreen> {
       if (message.data["type"] != "timetable_updated") return;
 
       await NotificationService.showUpdateNotification();
+
       if (!mounted) return;
+
       await ref.read(timetableProvider.notifier).refresh();
     });
 
@@ -78,33 +88,92 @@ class _NavigatorScreenState extends ConsumerState<NavigatorScreen> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.l10n.substPlan),
+        title: Text(index == 0 ? context.l10n.substPlan : context.l10n.plan),
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
         actions: [
           IconButton(icon: const Icon(Icons.settings), onPressed: openSettings),
         ],
       ),
-      body: pages[index],
+
+      drawer: Drawer(
+        child: SafeArea(
+          child: Column(
+            children: [
+              DrawerHeader(
+                child: Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Text(
+                    'Planner',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                ),
+              ),
+
+              ListTile(
+                leading: const Icon(Icons.home),
+                title: Text(context.l10n.home),
+                selected: index == 0,
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() => index = 0);
+                },
+              ),
+
+              ListTile(
+                leading: const Icon(Icons.calendar_view_month),
+                title: Text(context.l10n.plan),
+                selected: index == 1,
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() => index = 1);
+                },
+              ),
+
+              ListTile(
+                leading: const Icon(Icons.menu_book_outlined),
+                title: Text(context.l10n.resources),
+                onTap: () {
+                  Navigator.pop(context);
+                  openResources();
+                },
+              ),
+
+              const Spacer(),
+
+              const Divider(),
+
+              ListTile(
+                leading: const Icon(Icons.settings),
+                title: Text(context.l10n.settings),
+                onTap: () {
+                  Navigator.pop(context);
+                  openSettings();
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+
+      body: IndexedStack(index: index, children: pages),
+
       bottomNavigationBar: NavigationBar(
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         selectedIndex: index,
-        onDestinationSelected: (i) => setState(() => index = i),
+        onDestinationSelected: (i) {
+          setState(() => index = i);
+        },
         destinations: <Widget>[
           NavigationDestination(
-            icon: Icon(Icons.home),
+            icon: const Icon(Icons.home),
             label: context.l10n.home,
           ),
           NavigationDestination(
-            icon: Icon(Icons.calendar_view_month),
+            icon: const Icon(Icons.calendar_view_month),
             label: context.l10n.plan,
           ),
         ],
