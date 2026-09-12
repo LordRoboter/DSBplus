@@ -2,6 +2,7 @@
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter/rendering.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -12,9 +13,11 @@ class MyHttpOverrides extends HttpOverrides {
         .badCertificateCallback = (X509Certificate cert, String host, int port) {
       if (host == "dsbmobile.de") {
         final fingerprint = certificateSha256(cert);
+        debugPrint("Bad Certificate");
+        debugPrint(fingerprint);
 
         return fingerprint ==
-            "8C54C334B66BA4E426772AF4A3F9136C19A1AEC729FDB28C535C07A5A4EF22E0";
+            "69025C66C06548B82D32F876F6F4E801454606B9335852173B65BE2A2E2AEB60";
       }
 
       return false;
