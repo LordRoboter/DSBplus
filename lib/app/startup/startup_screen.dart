@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:planner/app/startup/page_overview.dart';
 import 'package:planner/features/auth/auth_repository.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/l10n/l10extension.dart';
@@ -44,11 +45,22 @@ class _StartupPageState extends ConsumerState<StartupPage> {
 
     try {
       final credentials = ref.read(authRepositoryProvider);
-      final settings = ref.read(settingsProvider.notifier);
 
       await credentials.saveCredentials(username: username, password: password);
 
-      await settings.setStartupComplete(true);
+      if (!mounted) return;
+
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => StartupSetupPage(
+            onComplete: () async {
+              await ref
+                  .read(settingsProvider.notifier)
+                  .setStartupComplete(true);
+            },
+          ),
+        ),
+      );
     } finally {
       if (mounted) {
         setState(() {
