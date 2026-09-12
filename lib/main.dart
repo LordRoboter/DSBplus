@@ -29,18 +29,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = MyHttpOverrides();
 
-  if (defaultTargetPlatform == TargetPlatform.android ||
-      defaultTargetPlatform == TargetPlatform.iOS) {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-    await FirebaseMessaging.instance.requestPermission();
-    await FirebaseMessaging.instance.subscribeToTopic("vertretungsplan");
-
-    await Workmanager().initialize(callbackDispatcher);
-  }
-
   final locale = PlatformDispatcher.instance.locale.toString();
   await initializeDateFormatting(locale);
 
@@ -51,9 +39,35 @@ Future<void> main() async {
   runApp(
     ProviderScope(
       overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
+
+  if (defaultTargetPlatform == TargetPlatform.android ||
+      defaultTargetPlatform == TargetPlatform.iOS) {
+    _initializeFirebase();
+  }
+}
+
+Future<void> _initializeFirebase() async {
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
+    final settings = await FirebaseMessaging.instance.requestPermission();
+
+    if (settings.authorizationStatus != AuthorizationStatus.denied) {
+      await FirebaseMessaging.instance.subscribeToTopic('vertretungsplan');
+    }
+
+    await Workmanager().initialize(callbackDispatcher);
+  } catch (e, stack) {
+    debugPrint('Firebase initialization failed: $e');
+    debugPrintStack(stackTrace: stack);
+  }
 }
 
 class MyApp extends ConsumerWidget {
