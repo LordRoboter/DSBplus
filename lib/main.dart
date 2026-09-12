@@ -2,26 +2,18 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:dynamic_color/dynamic_color.dart';
-import 'package:flutter/foundation.dart';
 import 'package:planner/app/root.dart';
-import 'package:planner/background_tasks.dart';
 import 'package:planner/certificates.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/core/providers/shared_preferences_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:workmanager/workmanager.dart';
 import 'l10n/app_localizations.dart';
-
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:planner/features/notifications/notification_service.dart';
 import 'package:planner/theme.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
-
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 
 import 'dart:async';
 
@@ -42,32 +34,6 @@ Future<void> main() async {
       child: const MyApp(),
     ),
   );
-
-  if (defaultTargetPlatform == TargetPlatform.android ||
-      defaultTargetPlatform == TargetPlatform.iOS) {
-    _initializeFirebase();
-  }
-}
-
-Future<void> _initializeFirebase() async {
-  try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-
-    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-
-    final settings = await FirebaseMessaging.instance.requestPermission();
-
-    if (settings.authorizationStatus != AuthorizationStatus.denied) {
-      await FirebaseMessaging.instance.subscribeToTopic('vertretungsplan');
-    }
-
-    await Workmanager().initialize(callbackDispatcher);
-  } catch (e, stack) {
-    debugPrint('Firebase initialization failed: $e');
-    debugPrintStack(stackTrace: stack);
-  }
 }
 
 class MyApp extends ConsumerWidget {

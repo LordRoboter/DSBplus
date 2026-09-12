@@ -79,8 +79,6 @@
   "renameSubjects": "Fächer umbenennen",
   "removeCourseNumbers": "Kursnummern entfernen",
   "notifications": "Benachrichtigungen",
-  "firebase": "Firebase Benachrichtigungen",
-  "firebaseDesc": "Benachrichtigungen über unseren Server erhalten",
   "workManager": "Periodische Überprüfungen",
   "workManagerDesc": "In festen Zeitabständen nach neuen Plänen suchen",
   "backgroundCheckSchedule": "Hintergrund Zeitplan",

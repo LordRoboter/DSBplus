@@ -57,6 +57,10 @@ class _StartupPageState extends ConsumerState<StartupPage> {
               await ref
                   .read(settingsProvider.notifier)
                   .setStartupComplete(true);
+
+              if (!context.mounted) return;
+
+              Navigator.of(context).pop();
             },
           ),
         ),

@@ -1,10 +1,8 @@
 import 'dart:async';
 
 import 'package:collection/collection.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:planner/features/notifications/notification_service.dart';
 import 'package:planner/features/settings/presentation/settings_screen.dart';
 import 'package:planner/features/dsb/resources/presentation/dsb_resources_screen.dart';
 import 'package:planner/features/dsb/timetables/model/timetable.dart';
@@ -44,16 +42,6 @@ class _NavigatorScreenState extends ConsumerState<NavigatorScreen> {
     super.initState();
 
     ref.read(timetableProvider);
-
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      if (message.data["type"] != "timetable_updated") return;
-
-      await NotificationService.showUpdateNotification();
-
-      if (!mounted) return;
-
-      await ref.read(timetableProvider.notifier).refresh();
-    });
 
     ref.listenManual<AsyncValue<List<Timetable>>>(timetableProvider, (
       previous,

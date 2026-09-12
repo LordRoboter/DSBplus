@@ -21,8 +21,6 @@ class SettingsState {
   final bool collapse;
 
   final bool notifications;
-  final bool firebase;
-  final bool workManager;
   final BackgroundCheckSchedule backgroundSchedule;
 
   final List<TimetableFilter> filters;
@@ -46,8 +44,6 @@ class SettingsState {
     this.mapCourses = true,
     this.collapse = false,
     this.notifications = true,
-    this.firebase = true,
-    this.workManager = true,
     this.backgroundSchedule = const BackgroundCheckSchedule(),
     this.filters = const [],
     this.classFilter = const TimetableFilter(),
@@ -72,8 +68,6 @@ class SettingsState {
     bool? mapCourses,
     bool? collapse,
     bool? notifications,
-    bool? firebase,
-    bool? workManager,
     BackgroundCheckSchedule? backgroundSchedule,
     List<TimetableFilter>? filters,
     TimetableFilter? classFilter,
@@ -95,8 +89,6 @@ class SettingsState {
       mapCourses: mapCourses ?? this.mapCourses,
       collapse: collapse ?? this.collapse,
       notifications: notifications ?? this.notifications,
-      firebase: firebase ?? this.firebase,
-      workManager: workManager ?? this.workManager,
       backgroundSchedule: backgroundSchedule ?? this.backgroundSchedule,
       filters: filters ?? this.filters,
       classFilter: classFilter ?? this.classFilter,

@@ -42,8 +42,8 @@ dependencies:
   uuid: ^4.5.3
   shared_preferences: ^2.5.5
   intl: ^0.20.2
-  firebase_core: ^4.11.0
-  firebase_messaging: ^16.4.1
+  #firebase_core: ^4.11.0
+  #firebase_messaging: ^16.4.1
   flutter_local_notifications: ^22.0.1
   smooth_page_indicator: ^2.0.1
   collection: ^1.19.1

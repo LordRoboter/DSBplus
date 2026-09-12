@@ -33,9 +33,7 @@ class SettingsNotifier extends AsyncNotifier<SettingsState> {
       mapCourses: prefs.getBool('mapCourses') ?? true,
       collapse: prefs.getBool('collapse') ?? true,
       notifications: prefs.getBool('notifications') ?? true,
-      firebase: prefs.getBool('firebase') ?? true,
       classFilter: _loadClassFilter(),
-      workManager: prefs.getBool('workManager') ?? true,
       backgroundSchedule: _loadBackgroundSchedule(),
       filters: _loadFilters(),
       theme: _loadTheme(),
@@ -236,23 +234,6 @@ class SettingsNotifier extends AsyncNotifier<SettingsState> {
   Future<void> setNotifications(bool value) async {
     _updateState((state) => state.copyWith(notifications: value));
     await prefs.setBool('notifications', value);
-  }
-
-  Future<void> setFirebase(bool value) async {
-    _updateState((state) => state.copyWith(firebase: value));
-    await prefs.setBool('firebase', value);
-  }
-
-  Future<void> setWorkManager(bool value) async {
-    _updateState((state) => state.copyWith(workManager: value));
-
-    await prefs.setBool('workManager', value);
-
-    if (value) {
-      await ref.read(backgroundTaskManagerProvider).register();
-    } else {
-      await ref.read(backgroundTaskManagerProvider).cancel();
-    }
   }
 
   Future<void> setBackgroundSchedule(BackgroundCheckSchedule value) async {

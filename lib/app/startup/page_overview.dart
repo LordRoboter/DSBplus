@@ -1,7 +1,7 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:planner/features/notifications/notification_service.dart';
 import 'package:planner/features/settings/presentation/widgets/dialogues.dart';
 import 'package:planner/features/settings/presentation/widgets/settings.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
@@ -46,15 +46,12 @@ class _StartupSetupPageState extends ConsumerState<StartupSetupPage> {
 
   Future<void> _loadNotificationStatus() async {
     try {
-      final settings = await FirebaseMessaging.instance
-          .getNotificationSettings();
+      final enabled = await NotificationService.areNotificationsEnabled();
 
       if (!mounted) return;
 
       setState(() {
-        _notificationsEnabled =
-            settings.authorizationStatus == AuthorizationStatus.authorized ||
-            settings.authorizationStatus == AuthorizationStatus.provisional;
+        _notificationsEnabled = enabled;
       });
     } catch (_) {
       // Notification support should never prevent onboarding.
@@ -69,22 +66,7 @@ class _StartupSetupPageState extends ConsumerState<StartupSetupPage> {
     });
 
     try {
-      final messaging = FirebaseMessaging.instance;
-
-      final settings = await messaging.requestPermission(
-        alert: true,
-        badge: true,
-        sound: true,
-        provisional: false,
-      );
-
-      final authorized =
-          settings.authorizationStatus == AuthorizationStatus.authorized ||
-          settings.authorizationStatus == AuthorizationStatus.provisional;
-
-      if (authorized) {
-        await messaging.subscribeToTopic('vertretungsplan');
-      }
+      final authorized = await NotificationService.requestPermission();
 
       if (!mounted) return;
 

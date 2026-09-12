@@ -23,7 +23,6 @@ class BackgroundSettingsRepository {
   }
 
   bool get notifications => prefs.getBool('notifications') ?? true;
-  bool get firebase => prefs.getBool('firebase') ?? true;
   BackgroundCheckSchedule get backgroundSchedule {
     final value = prefs.getString('backgroundSchedule');
 
