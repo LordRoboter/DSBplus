@@ -139,5 +139,17 @@
   "resources": "Resources",
   "noResourcesAvailable": "No Resources available",
   "couldNotLoadResources": "Could not load Resources",
-  "tryAgain": "Try Again"
+  "tryAgain": "Try Again",
+  "notificationsWereNotEnabled": "Notifications were not enabled",
+  "couldNotNotifications": "Could not enable notifications:",
+  "finishSetup": "Finish setup",
+  "customizePlanner": "Customize the App to work the way you want",
+  "filtersDesc": "Choose which classes and changes you want to see",
+  "notificationsDesc": "Get notified when relevant changes are available",
+  "notificationsEnabled": "Notifications are enabled",
+  "notificationsNotEnabled": "Notifications are NOT enabled",
+  "enable": "Enable",
+  "appearanceDesc": "Customize what the app looks like",
+  "completeSetup": "Complete Setup",
+  "youCanChangeSettings": "You can still change these settings later"
 }

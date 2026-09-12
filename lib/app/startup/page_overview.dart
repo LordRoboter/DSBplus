@@ -94,14 +94,16 @@ class _StartupSetupPageState extends ConsumerState<StartupSetupPage> {
 
       if (!authorized) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Notifications were not enabled.')),
+          SnackBar(content: Text(context.l10n.notificationsWereNotEnabled)),
         );
       }
     } catch (error) {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not enable notifications: $error')),
+        SnackBar(
+          content: Text('${context.l10n.couldNotNotifications}: $error'),
+        ),
       );
     } finally {
       if (mounted) {
@@ -287,7 +289,7 @@ class _StartupSetupPageState extends ConsumerState<StartupSetupPage> {
                       const SizedBox(height: 20),
 
                       Text(
-                        'Finish setting up',
+                        context.l10n.finishSetup,
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.headlineMedium
                             ?.copyWith(fontWeight: FontWeight.bold),
@@ -296,8 +298,7 @@ class _StartupSetupPageState extends ConsumerState<StartupSetupPage> {
                       const SizedBox(height: 10),
 
                       Text(
-                        'Customize Vertretungsplan to work the way you want. '
-                        'You can change all of these options later in settings.',
+                        context.l10n.customizePlanner,
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: colorScheme.onSurfaceVariant,
@@ -310,9 +311,8 @@ class _StartupSetupPageState extends ConsumerState<StartupSetupPage> {
                       // FILTERS
                       // ─────────────────────────────────────────────
                       _SetupSection(
-                        title: 'Filters',
-                        description:
-                            'Choose which classes and changes you want to see.',
+                        title: context.l10n.filters,
+                        description: context.l10n.filtersDesc,
                         icon: Icons.filter_alt_outlined,
                         expanded: _expandedSection == 0,
                         onToggle: () => _toggleSection(0),
@@ -383,9 +383,8 @@ class _StartupSetupPageState extends ConsumerState<StartupSetupPage> {
                       // NOTIFICATIONS
                       // ─────────────────────────────────────────────
                       _SetupSection(
-                        title: 'Notifications',
-                        description:
-                            'Get notified when new changes are available.',
+                        title: context.l10n.notifications,
+                        description: context.l10n.notificationsDesc,
                         icon: Icons.notifications_outlined,
                         expanded: _expandedSection == 1,
                         onToggle: () => _toggleSection(1),
@@ -407,8 +406,10 @@ class _StartupSetupPageState extends ConsumerState<StartupSetupPage> {
                                   Expanded(
                                     child: Text(
                                       _notificationsEnabled
-                                          ? 'Notifications are enabled'
-                                          : 'Notifications are not enabled',
+                                          ? context.l10n.notificationsEnabled
+                                          : context
+                                                .l10n
+                                                .notificationsNotEnabled,
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyMedium
@@ -439,7 +440,7 @@ class _StartupSetupPageState extends ConsumerState<StartupSetupPage> {
                                           strokeWidth: 2,
                                         ),
                                       )
-                                    : const Text('Enable'),
+                                    : Text(context.l10n.enable),
                               ),
                           ],
                         ),
@@ -451,9 +452,8 @@ class _StartupSetupPageState extends ConsumerState<StartupSetupPage> {
                       // APPEARANCE
                       // ─────────────────────────────────────────────
                       _SetupSection(
-                        title: 'Appearance',
-                        description:
-                            'Customize the theme, colors and dark mode.',
+                        title: context.l10n.appearance,
+                        description: context.l10n.appearanceDesc,
                         icon: Icons.palette_outlined,
                         expanded: _expandedSection == 2,
                         onToggle: () => _toggleSection(2),
@@ -656,8 +656,8 @@ class _StartupSetupPageState extends ConsumerState<StartupSetupPage> {
                         style: FilledButton.styleFrom(
                           minimumSize: const Size.fromHeight(52),
                         ),
-                        child: const Text(
-                          'Continue to Vertretungsplan',
+                        child: Text(
+                          context.l10n.completeSetup,
                           style: TextStyle(fontWeight: FontWeight.w600),
                         ),
                       ),
@@ -665,7 +665,7 @@ class _StartupSetupPageState extends ConsumerState<StartupSetupPage> {
                       const SizedBox(height: 12),
 
                       Text(
-                        'You can change these settings later.',
+                        context.l10n.youCanChangeSettings,
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurfaceVariant,

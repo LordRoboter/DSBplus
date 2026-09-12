@@ -139,5 +139,17 @@
   "resources": "Aushänge",
   "noResourcesAvailable": "Keine Aushänge vorhanden",
   "couldNotLoadResources": "Aushänge konnten nicht geladen werden",
-  "tryAgain": "Erneut versuchen"
+  "tryAgain": "Erneut versuchen",
+  "notificationsWereNotEnabled": "Benachrichtigungen wurden nicht eingeschaltet",
+  "couldNotNotifications": "Konnte Benachrichtigungen nicht einschalten:",
+  "finishSetup": "Einrichtung abschließen",
+  "customizePlanner": "Passe die App deinen Bedürfnissen an",
+  "filtersDesc": "Filtere Einträge nach deiner Klasse und Kursen",
+  "notificationsDesc": "Erhalte Benachrichtigungen bei relevanten Einträgen",
+  "notificationsEnabled": "Benachrichtigungen sind aktiviert",
+  "notificationsNotEnabled": "Benachrichtigungen sind NICHT aktiviert",
+  "enable": "Aktivieren",
+  "appearanceDesc": "Passe das Aussehen der App an",
+  "completeSetup": "Abschließen",
+  "youCanChangeSettings": "Du kannst diese Einstellungen später noch ändern"
 }

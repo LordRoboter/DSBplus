@@ -947,6 +947,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Try Again'**
   String get tryAgain;
+
+  /// No description provided for @notificationsWereNotEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications were not enabled'**
+  String get notificationsWereNotEnabled;
+
+  /// No description provided for @couldNotNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not enable notifications:'**
+  String get couldNotNotifications;
+
+  /// No description provided for @finishSetup.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish setup'**
+  String get finishSetup;
+
+  /// No description provided for @customizePlanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize the App to work the way you want'**
+  String get customizePlanner;
+
+  /// No description provided for @filtersDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which classes and changes you want to see'**
+  String get filtersDesc;
+
+  /// No description provided for @notificationsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Get notified when relevant changes are available'**
+  String get notificationsDesc;
+
+  /// No description provided for @notificationsEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are enabled'**
+  String get notificationsEnabled;
+
+  /// No description provided for @notificationsNotEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are NOT enabled'**
+  String get notificationsNotEnabled;
+
+  /// No description provided for @enable.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable'**
+  String get enable;
+
+  /// No description provided for @appearanceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize what the app looks like'**
+  String get appearanceDesc;
+
+  /// No description provided for @completeSetup.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete Setup'**
+  String get completeSetup;
+
+  /// No description provided for @youCanChangeSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'You can still change these settings later'**
+  String get youCanChangeSettings;
 }
 
 class _AppLocalizationsDelegate

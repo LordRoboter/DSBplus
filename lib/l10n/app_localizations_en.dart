@@ -443,4 +443,42 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tryAgain => 'Try Again';
+
+  @override
+  String get notificationsWereNotEnabled => 'Notifications were not enabled';
+
+  @override
+  String get couldNotNotifications => 'Could not enable notifications:';
+
+  @override
+  String get finishSetup => 'Finish setup';
+
+  @override
+  String get customizePlanner => 'Customize the App to work the way you want';
+
+  @override
+  String get filtersDesc => 'Choose which classes and changes you want to see';
+
+  @override
+  String get notificationsDesc =>
+      'Get notified when relevant changes are available';
+
+  @override
+  String get notificationsEnabled => 'Notifications are enabled';
+
+  @override
+  String get notificationsNotEnabled => 'Notifications are NOT enabled';
+
+  @override
+  String get enable => 'Enable';
+
+  @override
+  String get appearanceDesc => 'Customize what the app looks like';
+
+  @override
+  String get completeSetup => 'Complete Setup';
+
+  @override
+  String get youCanChangeSettings =>
+      'You can still change these settings later';
 }

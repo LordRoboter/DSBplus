@@ -443,4 +443,45 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get tryAgain => 'Erneut versuchen';
+
+  @override
+  String get notificationsWereNotEnabled =>
+      'Benachrichtigungen wurden nicht eingeschaltet';
+
+  @override
+  String get couldNotNotifications =>
+      'Konnte Benachrichtigungen nicht einschalten:';
+
+  @override
+  String get finishSetup => 'Einrichtung abschließen';
+
+  @override
+  String get customizePlanner => 'Passe die App deinen Bedürfnissen an';
+
+  @override
+  String get filtersDesc => 'Filtere Einträge nach deiner Klasse und Kursen';
+
+  @override
+  String get notificationsDesc =>
+      'Erhalte Benachrichtigungen bei relevanten Einträgen';
+
+  @override
+  String get notificationsEnabled => 'Benachrichtigungen sind aktiviert';
+
+  @override
+  String get notificationsNotEnabled =>
+      'Benachrichtigungen sind NICHT aktiviert';
+
+  @override
+  String get enable => 'Aktivieren';
+
+  @override
+  String get appearanceDesc => 'Passe das Aussehen der App an';
+
+  @override
+  String get completeSetup => 'Abschließen';
+
+  @override
+  String get youCanChangeSettings =>
+      'Du kannst diese Einstellungen später noch ändern';
 }
