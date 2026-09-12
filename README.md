@@ -19,4 +19,4 @@ An alternative client for the DSB portal.
 
 
 ## Credit
-This project was inspired by the [DSBApi](https://github.com/nerrixde/DSBApi) published by the user [nerrixide](https://github.com/nerrixde) on GitHub.
+This project was inspired by the [DSBApi](https://github.com/nerrixde/DSBApi) published by the user [nerrixde](https://github.com/nerrixde) on GitHub.
