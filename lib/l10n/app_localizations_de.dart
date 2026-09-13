@@ -261,12 +261,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get notifications => 'Benachrichtigungen';
 
   @override
-  String get firebase => 'Firebase Benachrichtigungen';
-
-  @override
-  String get firebaseDesc => 'Benachrichtigungen über unseren Server erhalten';
-
-  @override
   String get workManager => 'Periodische Überprüfungen';
 
   @override
@@ -484,4 +478,29 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get youCanChangeSettings =>
       'Du kannst diese Einstellungen später noch ändern';
+
+  @override
+  String get checkingPermission =>
+      'Überprüfe Benachrichtigungsberechtigungen...';
+
+  @override
+  String get notificationsAllowed => 'Benachrichtigungen sind genehmigt';
+
+  @override
+  String get notificationsNotAllowed =>
+      'Benachrichtigungen sind NICHT genehmigt';
+
+  @override
+  String get notificationsCanBeSent =>
+      'Die App kann Benachrichtigungen anzeigen';
+
+  @override
+  String get allowNotificationsExp =>
+      'Erlaube Benachrichtigungen um bei neuen Einträgen benachrichtigt zu werden';
+
+  @override
+  String get requesting => 'Anfrage...';
+
+  @override
+  String get allowNotifications => 'Benachrichtigungen erlauben';
 }

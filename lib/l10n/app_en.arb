@@ -149,5 +149,12 @@
   "enable": "Enable",
   "appearanceDesc": "Customize what the app looks like",
   "completeSetup": "Complete Setup",
-  "youCanChangeSettings": "You can still change these settings later"
+  "youCanChangeSettings": "You can still change these settings later",
+  "checkingPermission": "Checking notification permission...",
+  "notificationsAllowed": "Notifications are allowed",
+  "notificationsNotAllowed": "Notifications are NOT allowed",
+  "notificationsCanBeSent": "The app can send you notifications",
+  "allowNotificationsExp": "Allow notifications to be informed when your timetable changes",
+  "requesting": "Requesting...",
+  "allowNotifications": "Allow notifications"
 }

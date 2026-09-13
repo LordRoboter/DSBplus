@@ -582,18 +582,6 @@ abstract class AppLocalizations {
   /// **'Notifications'**
   String get notifications;
 
-  /// No description provided for @firebase.
-  ///
-  /// In en, this message translates to:
-  /// **'Firebase Notifications'**
-  String get firebase;
-
-  /// No description provided for @firebaseDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Receive notifications when our server detects new plans'**
-  String get firebaseDesc;
-
   /// No description provided for @workManager.
   ///
   /// In en, this message translates to:
@@ -1019,6 +1007,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You can still change these settings later'**
   String get youCanChangeSettings;
+
+  /// No description provided for @checkingPermission.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking notification permission...'**
+  String get checkingPermission;
+
+  /// No description provided for @notificationsAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are allowed'**
+  String get notificationsAllowed;
+
+  /// No description provided for @notificationsNotAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are NOT allowed'**
+  String get notificationsNotAllowed;
+
+  /// No description provided for @notificationsCanBeSent.
+  ///
+  /// In en, this message translates to:
+  /// **'The app can send you notifications'**
+  String get notificationsCanBeSent;
+
+  /// No description provided for @allowNotificationsExp.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow notifications to be informed when your timetable changes'**
+  String get allowNotificationsExp;
+
+  /// No description provided for @requesting.
+  ///
+  /// In en, this message translates to:
+  /// **'Requesting...'**
+  String get requesting;
+
+  /// No description provided for @allowNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow notifications'**
+  String get allowNotifications;
 }
 
 class _AppLocalizationsDelegate

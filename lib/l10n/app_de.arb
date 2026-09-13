@@ -149,5 +149,12 @@
   "enable": "Aktivieren",
   "appearanceDesc": "Passe das Aussehen der App an",
   "completeSetup": "Abschließen",
-  "youCanChangeSettings": "Du kannst diese Einstellungen später noch ändern"
+  "youCanChangeSettings": "Du kannst diese Einstellungen später noch ändern",
+  "checkingPermission": "Überprüfe Benachrichtigungsberechtigungen...",
+  "notificationsAllowed": "Benachrichtigungen sind genehmigt",
+  "notificationsNotAllowed": "Benachrichtigungen sind NICHT genehmigt",
+  "notificationsCanBeSent": "Die App kann Benachrichtigungen anzeigen",
+  "allowNotificationsExp": "Erlaube Benachrichtigungen um bei neuen Einträgen benachrichtigt zu werden",
+  "requesting": "Anfrage...",
+  "allowNotifications": "Benachrichtigungen erlauben"
 }

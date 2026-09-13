@@ -261,13 +261,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifications => 'Notifications';
 
   @override
-  String get firebase => 'Firebase Notifications';
-
-  @override
-  String get firebaseDesc =>
-      'Receive notifications when our server detects new plans';
-
-  @override
   String get workManager => 'Periodical Checks';
 
   @override
@@ -481,4 +474,26 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get youCanChangeSettings =>
       'You can still change these settings later';
+
+  @override
+  String get checkingPermission => 'Checking notification permission...';
+
+  @override
+  String get notificationsAllowed => 'Notifications are allowed';
+
+  @override
+  String get notificationsNotAllowed => 'Notifications are NOT allowed';
+
+  @override
+  String get notificationsCanBeSent => 'The app can send you notifications';
+
+  @override
+  String get allowNotificationsExp =>
+      'Allow notifications to be informed when your timetable changes';
+
+  @override
+  String get requesting => 'Requesting...';
+
+  @override
+  String get allowNotifications => 'Allow notifications';
 }

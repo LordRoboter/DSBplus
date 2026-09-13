@@ -179,17 +179,17 @@ class _NotificationPermissionCard extends StatelessWidget {
 
     if (loading && granted == null) {
       return Card(
-        child: const Padding(
-          padding: EdgeInsets.all(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              SizedBox(
+              const SizedBox(
                 width: 24,
                 height: 24,
                 child: CircularProgressIndicator(strokeWidth: 2),
               ),
-              SizedBox(width: 16),
-              Expanded(child: Text('Checking notification permission...')),
+              const SizedBox(width: 16),
+              Expanded(child: Text(context.l10n.checkingPermission)),
             ],
           ),
         ),
@@ -231,8 +231,8 @@ class _NotificationPermissionCard extends StatelessWidget {
                 children: [
                   Text(
                     isGranted
-                        ? 'Notifications are allowed'
-                        : 'Notifications are disabled',
+                        ? context.l10n.notificationsAllowed
+                        : context.l10n.notificationsNotAllowed,
                     style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
@@ -242,8 +242,8 @@ class _NotificationPermissionCard extends StatelessWidget {
 
                   Text(
                     isGranted
-                        ? 'The app can send you notifications.'
-                        : 'Allow notifications to be informed when your timetable changes.',
+                        ? context.l10n.notificationsCanBeSent
+                        : context.l10n.allowNotificationsExp,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
@@ -262,7 +262,9 @@ class _NotificationPermissionCard extends StatelessWidget {
                             )
                           : const Icon(Icons.notifications_outlined),
                       label: Text(
-                        loading ? 'Requesting...' : 'Allow notifications',
+                        loading
+                            ? context.l10n.requesting
+                            : context.l10n.allowNotifications,
                       ),
                     ),
                   ],
