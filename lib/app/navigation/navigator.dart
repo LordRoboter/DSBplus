@@ -20,6 +20,7 @@ class NavigatorScreen extends ConsumerStatefulWidget {
 
 class _NavigatorScreenState extends ConsumerState<NavigatorScreen> {
   int index = 0;
+  late final PageController _pageController;
 
   final pages = const [HomeScreen(), PlanScreen()];
 
@@ -37,9 +38,20 @@ class _NavigatorScreenState extends ConsumerState<NavigatorScreen> {
     );
   }
 
+  void _navigateToPage(int i) {
+    if (i == index) return;
+
+    _pageController.animateToPage(
+      i,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
+    _pageController = PageController(initialPage: index);
 
     ref.read(timetableProvider);
 
@@ -76,6 +88,12 @@ class _NavigatorScreenState extends ConsumerState<NavigatorScreen> {
   }
 
   @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -107,22 +125,22 @@ class _NavigatorScreenState extends ConsumerState<NavigatorScreen> {
                 selected: index == 0,
                 onTap: () {
                   Navigator.pop(context);
-                  setState(() => index = 0);
+                  _navigateToPage(0);
                 },
               ),
 
               ListTile(
-                leading: const Icon(Icons.calendar_view_month),
+                leading: const Icon(Icons.calendar_month),
                 title: Text(context.l10n.plan),
                 selected: index == 1,
                 onTap: () {
                   Navigator.pop(context);
-                  setState(() => index = 1);
+                  _navigateToPage(1);
                 },
               ),
 
               ListTile(
-                leading: const Icon(Icons.menu_book_outlined),
+                leading: const Icon(Icons.article),
                 title: Text(context.l10n.resources),
                 onTap: () {
                   Navigator.pop(context);
@@ -147,21 +165,25 @@ class _NavigatorScreenState extends ConsumerState<NavigatorScreen> {
         ),
       ),
 
-      body: IndexedStack(index: index, children: pages),
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (i) {
+          setState(() => index = i);
+        },
+        children: pages,
+      ),
 
       bottomNavigationBar: NavigationBar(
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         selectedIndex: index,
-        onDestinationSelected: (i) {
-          setState(() => index = i);
-        },
+        onDestinationSelected: _navigateToPage,
         destinations: <Widget>[
           NavigationDestination(
             icon: const Icon(Icons.home),
             label: context.l10n.home,
           ),
           NavigationDestination(
-            icon: const Icon(Icons.calendar_view_month),
+            icon: const Icon(Icons.calendar_month),
             label: context.l10n.plan,
           ),
         ],

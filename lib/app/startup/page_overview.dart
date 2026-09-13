@@ -9,6 +9,8 @@ import 'package:planner/features/dsb/timetables/model/filter.dart';
 import 'package:planner/l10n/l10extension.dart';
 import 'package:planner/theme.dart';
 
+enum LanguageOption { system, english, german }
+
 class StartupSetupPage extends ConsumerStatefulWidget {
   const StartupSetupPage({super.key, required this.onComplete});
 
@@ -152,97 +154,6 @@ class _StartupSetupPageState extends ConsumerState<StartupSetupPage> {
         .updateFilter(filter, updatedFilter);
   }
 
-  Future<void> _pickCustomColor() async {
-    final settings = ref.read(settingsProvider).requireValue;
-
-    final currentColor = settings.themeColor is CustomColor
-        ? (settings.themeColor as CustomColor).color
-        : Colors.blue;
-
-    var pickedColor = currentColor;
-
-    final result = await showDialog<Color>(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: Text(context.l10n.customColor),
-          content: Material(
-            color: Colors.transparent,
-            child: StatefulBuilder(
-              builder: (context, setState) {
-                return SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 150),
-                        width: double.infinity,
-                        height: 72,
-                        decoration: BoxDecoration(
-                          color: pickedColor,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Center(
-                          child: Text(
-                            '#${pickedColor.toARGB32().toRadixString(16).substring(2).toUpperCase()}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: pickedColor.computeLuminance() > 0.5
-                                  ? Colors.black
-                                  : Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      ColorPicker(
-                        color: pickedColor,
-                        onColorChanged: (value) {
-                          setState(() {
-                            pickedColor = value;
-                          });
-                        },
-                        pickersEnabled: const {
-                          ColorPickerType.wheel: true,
-                          ColorPickerType.primary: false,
-                          ColorPickerType.accent: false,
-                        },
-                        enableShadesSelection: true,
-                        enableOpacity: false,
-                        wheelDiameter: 240,
-                        wheelWidth: 24,
-                        showColorCode: false,
-                        showColorName: false,
-                        heading: const SizedBox.shrink(),
-                        subheading: const SizedBox.shrink(),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(context.l10n.cancel),
-            ),
-            FilledButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop(pickedColor);
-              },
-              child: Text(context.l10n.select),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (result != null) {
-      ref.read(settingsProvider.notifier).setThemeColor(CustomColor(result));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsProvider);
@@ -257,404 +168,431 @@ class _StartupSetupPageState extends ConsumerState<StartupSetupPage> {
         final notifier = ref.read(settingsProvider.notifier);
 
         return Scaffold(
-          body: SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 560),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Icon(Icons.tune_rounded, size: 48),
+          //extendBodyBehindAppBar: true,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            elevation: 0,
+            scrolledUnderElevation: 0,
 
-                      const SizedBox(height: 20),
+            actions: [
+              PopupMenuButton<LanguageOption>(
+                tooltip: context.l10n.language,
+                icon: const Icon(Icons.language_rounded),
+                padding: EdgeInsets.zero,
+                onSelected: (option) {
+                  final locale = switch (option) {
+                    LanguageOption.system => null,
+                    LanguageOption.english => const Locale('en'),
+                    LanguageOption.german => const Locale('de'),
+                  };
 
-                      Text(
-                        context.l10n.finishSetup,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.headlineMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
+                  ref.read(settingsProvider.notifier).setLocale(locale);
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: LanguageOption.system,
+                    child: Text('System default'),
+                  ),
+                  const PopupMenuItem(
+                    value: LanguageOption.english,
+                    child: Text('English'),
+                  ),
+                  const PopupMenuItem(
+                    value: LanguageOption.german,
+                    child: Text('Deutsch'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          body: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 560),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Icon(Icons.tune_rounded, size: 48),
+
+                    const SizedBox(height: 20),
+
+                    Text(
+                      context.l10n.finishSetup,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    Text(
+                      context.l10n.customizePlanner,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
                       ),
+                    ),
 
-                      const SizedBox(height: 10),
+                    const SizedBox(height: 32),
 
-                      Text(
-                        context.l10n.customizePlanner,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
+                    // ─────────────────────────────────────────────
+                    // FILTERS
+                    // ─────────────────────────────────────────────
+                    _SetupSection(
+                      title: context.l10n.filters,
+                      description: context.l10n.filtersDesc,
+                      icon: Icons.filter_alt_outlined,
+                      expanded: _expandedSection == 0,
+                      onToggle: () => _toggleSection(0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          TextField(
+                            controller: classController,
+                            decoration: InputDecoration(
+                              labelText: context.l10n.classFilter,
+                              hintText: context.l10n.classFilterHint,
+                              prefixIcon: const Icon(Icons.class_outlined),
+                              suffixIcon: classController.text.trim().isNotEmpty
+                                  ? IconButton(
+                                      icon: const Icon(Icons.add),
+                                      onPressed: _addClass,
+                                    )
+                                  : null,
+                              border: const OutlineInputBorder(),
+                            ),
+                            onSubmitted: (_) => _addClass(),
+                            onChanged: (_) {
+                              setState(() {});
+                            },
+                          ),
 
-                      const SizedBox(height: 32),
+                          if (settings.classFilter.classes.isNotEmpty) ...[
+                            const SizedBox(height: 12),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: settings.classFilter.classes.map((
+                                className,
+                              ) {
+                                return Chip(
+                                  label: Text(className),
+                                  onDeleted: () => _removeClass(className),
+                                  deleteIcon: const Icon(Icons.close),
+                                );
+                              }).toList(),
+                            ),
+                          ],
 
-                      // ─────────────────────────────────────────────
-                      // FILTERS
-                      // ─────────────────────────────────────────────
-                      _SetupSection(
-                        title: context.l10n.filters,
-                        description: context.l10n.filtersDesc,
-                        icon: Icons.filter_alt_outlined,
-                        expanded: _expandedSection == 0,
-                        onToggle: () => _toggleSection(0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            TextField(
-                              controller: classController,
-                              decoration: InputDecoration(
-                                labelText: context.l10n.classFilter,
-                                hintText: context.l10n.classFilterHint,
-                                prefixIcon: const Icon(Icons.class_outlined),
-                                suffixIcon:
-                                    classController.text.trim().isNotEmpty
-                                    ? IconButton(
-                                        icon: const Icon(Icons.add),
-                                        onPressed: _addClass,
-                                      )
-                                    : null,
-                                border: const OutlineInputBorder(),
+                          const SizedBox(height: 16),
+
+                          if (settings.filters.isNotEmpty)
+                            ...settings.filters.map(
+                              (filter) => SettingsFilterTile(
+                                filter: filter,
+                                onEdit: () => _editFilter(filter),
+                                onDelete: () => notifier.removeFilter(filter),
                               ),
-                              onSubmitted: (_) => _addClass(),
-                              onChanged: (_) {
-                                setState(() {});
-                              },
                             ),
 
-                            if (settings.classFilter.classes.isNotEmpty) ...[
-                              const SizedBox(height: 12),
-                              Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: settings.classFilter.classes.map((
-                                  className,
-                                ) {
-                                  return Chip(
-                                    label: Text(className),
-                                    onDeleted: () => _removeClass(className),
-                                    deleteIcon: const Icon(Icons.close),
-                                  );
-                                }).toList(),
+                          OutlinedButton.icon(
+                            onPressed: _addAdvancedFilter,
+                            icon: const Icon(Icons.add),
+                            label: Text(context.l10n.addFilter),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // ─────────────────────────────────────────────
+                    // NOTIFICATIONS
+                    // ─────────────────────────────────────────────
+                    _SetupSection(
+                      title: context.l10n.notifications,
+                      description: context.l10n.notificationsDesc,
+                      icon: Icons.notifications_outlined,
+                      expanded: _expandedSection == 1,
+                      onToggle: () => _toggleSection(1),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Icon(
+                                  _notificationsEnabled
+                                      ? Icons.check_circle
+                                      : Icons.notifications_none,
+                                  color: _notificationsEnabled
+                                      ? colorScheme.primary
+                                      : colorScheme.onSurfaceVariant,
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    _notificationsEnabled
+                                        ? context.l10n.notificationsEnabled
+                                        : context.l10n.notificationsNotEnabled,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(fontWeight: FontWeight.w500),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          if (_notificationsEnabled)
+                            Icon(
+                              Icons.check_rounded,
+                              color: colorScheme.primary,
+                            )
+                          else
+                            FilledButton.tonal(
+                              onPressed: _notificationsLoading
+                                  ? null
+                                  : _setupNotifications,
+                              child: _notificationsLoading
+                                  ? const SizedBox(
+                                      width: 18,
+                                      height: 18,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : Text(context.l10n.enable),
+                            ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // ─────────────────────────────────────────────
+                    // APPEARANCE
+                    // ─────────────────────────────────────────────
+                    _SetupSection(
+                      title: context.l10n.appearance,
+                      description: context.l10n.appearanceDesc,
+                      icon: Icons.palette_outlined,
+                      expanded: _expandedSection == 2,
+                      onToggle: () => _toggleSection(2),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            context.l10n.appTheme,
+                            style: Theme.of(context).textTheme.labelLarge,
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          SegmentedButton<AppThemes>(
+                            segments: [
+                              ButtonSegment<AppThemes>(
+                                value: AppThemes.system,
+                                icon: const Icon(Icons.brightness_auto),
+                                label: Text(context.l10n.system),
+                              ),
+                              ButtonSegment<AppThemes>(
+                                value: AppThemes.light,
+                                icon: const Icon(Icons.light_mode),
+                                label: Text(context.l10n.light),
+                              ),
+                              ButtonSegment<AppThemes>(
+                                value: AppThemes.dark,
+                                icon: const Icon(Icons.dark_mode),
+                                label: Text(context.l10n.dark),
                               ),
                             ],
+                            selected: {settings.theme},
+                            onSelectionChanged: (selection) {
+                              if (selection.isNotEmpty) {
+                                notifier.setTheme(selection.first);
+                              }
+                            },
+                            style: SegmentedButton.styleFrom(
+                              side: BorderSide.none,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 10,
+                              ),
+                              backgroundColor: Colors.transparent,
+                              selectedBackgroundColor:
+                                  colorScheme.primaryContainer,
+                              selectedForegroundColor: colorScheme.primary,
+                              foregroundColor: colorScheme.onSurface,
+                            ),
+                          ),
 
-                            const SizedBox(height: 16),
+                          const SizedBox(height: 20),
 
-                            if (settings.filters.isNotEmpty)
-                              ...settings.filters.map(
-                                (filter) => SettingsFilterTile(
-                                  filter: filter,
-                                  onEdit: () => _editFilter(filter),
-                                  onDelete: () => notifier.removeFilter(filter),
+                          Text(
+                            context.l10n.darkTheme,
+                            style: Theme.of(context).textTheme.labelLarge,
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          SegmentedButton<DarkTheme>(
+                            segments: [
+                              ButtonSegment<DarkTheme>(
+                                value: DarkTheme.dark,
+                                icon: const Icon(Icons.dark_mode),
+                                label: Text(context.l10n.standard),
+                              ),
+                              ButtonSegment<DarkTheme>(
+                                value: DarkTheme.amoled,
+                                icon: const Icon(Icons.brightness_2),
+                                label: Text(context.l10n.amoled),
+                              ),
+                            ],
+                            selected: {settings.darkTheme},
+                            onSelectionChanged: (selection) {
+                              if (selection.isNotEmpty) {
+                                notifier.setDarkTheme(selection.first);
+                              }
+                            },
+                            style: SegmentedButton.styleFrom(
+                              side: BorderSide.none,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 10,
+                              ),
+                              backgroundColor: Colors.transparent,
+                              selectedBackgroundColor:
+                                  colorScheme.primaryContainer,
+                              selectedForegroundColor: colorScheme.primary,
+                              foregroundColor: colorScheme.onSurface,
+                            ),
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          Text(
+                            context.l10n.themeColor,
+                            style: Theme.of(context).textTheme.labelLarge,
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _ThemeChoice(
+                                  title: context.l10n.defaultt,
+                                  icon: Icons.palette_outlined,
+                                  selected:
+                                      settings.themeColor is StandardColor,
+                                  onTap: () {
+                                    notifier.setThemeColor(
+                                      const StandardColor(),
+                                    );
+                                  },
                                 ),
                               ),
-
-                            OutlinedButton.icon(
-                              onPressed: _addAdvancedFilter,
-                              icon: const Icon(Icons.add),
-                              label: Text(context.l10n.addFilter),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // ─────────────────────────────────────────────
-                      // NOTIFICATIONS
-                      // ─────────────────────────────────────────────
-                      _SetupSection(
-                        title: context.l10n.notifications,
-                        description: context.l10n.notificationsDesc,
-                        icon: Icons.notifications_outlined,
-                        expanded: _expandedSection == 1,
-                        onToggle: () => _toggleSection(1),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    _notificationsEnabled
-                                        ? Icons.check_circle
-                                        : Icons.notifications_none,
-                                    color: _notificationsEnabled
-                                        ? colorScheme.primary
-                                        : colorScheme.onSurfaceVariant,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      _notificationsEnabled
-                                          ? context.l10n.notificationsEnabled
-                                          : context
-                                                .l10n
-                                                .notificationsNotEnabled,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                    ),
-                                  ),
-                                ],
+                              Expanded(
+                                child: _ThemeChoice(
+                                  title: context.l10n.dynamicc,
+                                  icon: Icons.auto_awesome,
+                                  selected: settings.themeColor is DynamicColor,
+                                  onTap: () {
+                                    notifier.setThemeColor(
+                                      const DynamicColor(),
+                                    );
+                                  },
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 12),
-                            if (_notificationsEnabled)
-                              Icon(
-                                Icons.check_rounded,
-                                color: colorScheme.primary,
-                              )
-                            else
-                              FilledButton.tonal(
-                                onPressed: _notificationsLoading
-                                    ? null
-                                    : _setupNotifications,
-                                child: _notificationsLoading
-                                    ? const SizedBox(
-                                        width: 18,
-                                        height: 18,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                        ),
-                                      )
-                                    : Text(context.l10n.enable),
-                              ),
-                          ],
-                        ),
-                      ),
+                            ],
+                          ),
 
-                      const SizedBox(height: 16),
+                          const SizedBox(height: 16),
 
-                      // ─────────────────────────────────────────────
-                      // APPEARANCE
-                      // ─────────────────────────────────────────────
-                      _SetupSection(
-                        title: context.l10n.appearance,
-                        description: context.l10n.appearanceDesc,
-                        icon: Icons.palette_outlined,
-                        expanded: _expandedSection == 2,
-                        onToggle: () => _toggleSection(2),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              context.l10n.appTheme,
-                              style: Theme.of(context).textTheme.labelLarge,
-                            ),
-
-                            const SizedBox(height: 8),
-
-                            SegmentedButton<AppThemes>(
-                              segments: [
-                                ButtonSegment<AppThemes>(
-                                  value: AppThemes.system,
-                                  icon: const Icon(Icons.brightness_auto),
-                                  label: Text(context.l10n.system),
+                          GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 5,
+                                  mainAxisSpacing: 12,
+                                  crossAxisSpacing: 12,
+                                  childAspectRatio: 1,
                                 ),
-                                ButtonSegment<AppThemes>(
-                                  value: AppThemes.light,
-                                  icon: const Icon(Icons.light_mode),
-                                  label: Text(context.l10n.light),
-                                ),
-                                ButtonSegment<AppThemes>(
-                                  value: AppThemes.dark,
-                                  icon: const Icon(Icons.dark_mode),
-                                  label: Text(context.l10n.dark),
-                                ),
-                              ],
-                              selected: {settings.theme},
-                              onSelectionChanged: (selection) {
-                                if (selection.isNotEmpty) {
-                                  notifier.setTheme(selection.first);
-                                }
-                              },
-                              style: SegmentedButton.styleFrom(
-                                side: BorderSide.none,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 10,
-                                ),
-                                backgroundColor: Colors.transparent,
-                                selectedBackgroundColor:
-                                    colorScheme.primaryContainer,
-                                selectedForegroundColor: colorScheme.primary,
-                                foregroundColor: colorScheme.onSurface,
-                              ),
-                            ),
-
-                            const SizedBox(height: 20),
-
-                            Text(
-                              context.l10n.darkTheme,
-                              style: Theme.of(context).textTheme.labelLarge,
-                            ),
-
-                            const SizedBox(height: 8),
-
-                            SegmentedButton<DarkTheme>(
-                              segments: [
-                                ButtonSegment<DarkTheme>(
-                                  value: DarkTheme.dark,
-                                  icon: const Icon(Icons.dark_mode),
-                                  label: Text(context.l10n.standard),
-                                ),
-                                ButtonSegment<DarkTheme>(
-                                  value: DarkTheme.amoled,
-                                  icon: const Icon(Icons.brightness_2),
-                                  label: Text(context.l10n.amoled),
-                                ),
-                              ],
-                              selected: {settings.darkTheme},
-                              onSelectionChanged: (selection) {
-                                if (selection.isNotEmpty) {
-                                  notifier.setDarkTheme(selection.first);
-                                }
-                              },
-                              style: SegmentedButton.styleFrom(
-                                side: BorderSide.none,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 10,
-                                ),
-                                backgroundColor: Colors.transparent,
-                                selectedBackgroundColor:
-                                    colorScheme.primaryContainer,
-                                selectedForegroundColor: colorScheme.primary,
-                                foregroundColor: colorScheme.onSurface,
-                              ),
-                            ),
-
-                            const SizedBox(height: 20),
-
-                            Text(
-                              context.l10n.themeColor,
-                              style: Theme.of(context).textTheme.labelLarge,
-                            ),
-
-                            const SizedBox(height: 8),
-
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _ThemeChoice(
-                                    title: context.l10n.defaultt,
-                                    icon: Icons.palette_outlined,
-                                    selected:
-                                        settings.themeColor is StandardColor,
-                                    onTap: () {
-                                      notifier.setThemeColor(
-                                        const StandardColor(),
-                                      );
-                                    },
-                                  ),
-                                ),
-                                Expanded(
-                                  child: _ThemeChoice(
-                                    title: context.l10n.dynamicc,
-                                    icon: Icons.auto_awesome,
-                                    selected:
-                                        settings.themeColor is DynamicColor,
-                                    onTap: () {
-                                      notifier.setThemeColor(
-                                        const DynamicColor(),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            const SizedBox(height: 16),
-
-                            GridView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 5,
-                                    mainAxisSpacing: 12,
-                                    crossAxisSpacing: 12,
-                                    childAspectRatio: 1,
-                                  ),
-                              itemCount: themeColors.length + 1,
-                              itemBuilder: (context, index) {
-                                if (index < themeColors.length) {
-                                  final color = themeColors[index];
-                                  return Center(
-                                    child: _ThemeColorButton(
-                                      color: color,
-                                      selected:
-                                          settings.themeColor is CustomColor &&
-                                          (settings.themeColor as CustomColor)
-                                                  .color
-                                                  .toARGB32() ==
-                                              color.toARGB32(),
-                                      onTap: () {
-                                        notifier.setThemeColor(
-                                          CustomColor(color),
-                                        );
-                                      },
-                                    ),
-                                  );
-                                }
+                            itemCount: themeColors.length + 1,
+                            itemBuilder: (context, index) {
+                              if (index < themeColors.length) {
+                                final color = themeColors[index];
                                 return Center(
-                                  child: _CustomColorButton(
-                                    color: settings.themeColor is CustomColor
-                                        ? (settings.themeColor as CustomColor)
-                                              .color
-                                        : null,
+                                  child: _ThemeColorButton(
+                                    color: color,
                                     selected:
                                         settings.themeColor is CustomColor &&
-                                        !themeColors.any(
-                                          (color) =>
-                                              color.toARGB32() ==
-                                              (settings.themeColor
-                                                      as CustomColor)
-                                                  .color
-                                                  .toARGB32(),
-                                        ),
-                                    onColorSelected: (color) {
+                                        (settings.themeColor as CustomColor)
+                                                .color
+                                                .toARGB32() ==
+                                            color.toARGB32(),
+                                    onTap: () {
                                       notifier.setThemeColor(
                                         CustomColor(color),
                                       );
                                     },
                                   ),
                                 );
-                              },
-                            ),
-                          ],
-                        ),
+                              }
+                              return Center(
+                                child: _CustomColorButton(
+                                  color: settings.themeColor is CustomColor
+                                      ? (settings.themeColor as CustomColor)
+                                            .color
+                                      : null,
+                                  selected:
+                                      settings.themeColor is CustomColor &&
+                                      !themeColors.any(
+                                        (color) =>
+                                            color.toARGB32() ==
+                                            (settings.themeColor as CustomColor)
+                                                .color
+                                                .toARGB32(),
+                                      ),
+                                  onColorSelected: (color) {
+                                    notifier.setThemeColor(CustomColor(color));
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
+                    ),
 
-                      const SizedBox(height: 28),
+                    const SizedBox(height: 28),
 
-                      FilledButton(
-                        onPressed: widget.onComplete,
-                        style: FilledButton.styleFrom(
-                          minimumSize: const Size.fromHeight(52),
-                        ),
-                        child: Text(
-                          context.l10n.completeSetup,
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
+                    FilledButton(
+                      onPressed: widget.onComplete,
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size.fromHeight(52),
                       ),
-
-                      const SizedBox(height: 12),
-
-                      Text(
-                        context.l10n.youCanChangeSettings,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
+                      child: Text(
+                        context.l10n.completeSetup,
+                        style: TextStyle(fontWeight: FontWeight.w600),
                       ),
-                    ],
-                  ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    Text(
+                      context.l10n.youCanChangeSettings,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -783,7 +721,7 @@ class _SetupSectionState extends State<_SetupSection>
 
                           SizeTransition(
                             sizeFactor: _expandAnimation,
-                            axisAlignment: -1,
+                            axis: Axis.vertical,
                             child: FadeTransition(
                               opacity: _fadeAnimation,
                               child: Padding(
@@ -820,7 +758,7 @@ class _SetupSectionState extends State<_SetupSection>
             ClipRect(
               child: SizeTransition(
                 sizeFactor: _expandAnimation,
-                axisAlignment: -1,
+                axis: Axis.vertical,
                 child: FadeTransition(
                   opacity: _fadeAnimation,
                   child: Padding(

@@ -1,6 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:planner/app/navigator.dart';
+import 'package:planner/app/navigation/navigator.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/app/startup/startup_screen.dart';
 
