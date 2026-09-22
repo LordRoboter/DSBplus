@@ -129,25 +129,23 @@ class AppearanceSettingsPage extends ConsumerWidget {
                       child: Row(
                         children: [
                           Expanded(
-                            child: _ThemeColorSplitButton(
+                            child: _ThemeChoice(
                               title: context.l10n.defaultt,
                               icon: Icons.palette_outlined,
                               selected: settings.themeColor is StandardColor,
                               onTap: () {
                                 notifier.setThemeColor(const StandardColor());
                               },
-                              isLeft: true,
                             ),
                           ),
                           Expanded(
-                            child: _ThemeColorSplitButton(
+                            child: _ThemeChoice(
                               title: context.l10n.dynamicc,
                               icon: Icons.auto_awesome,
                               selected: settings.themeColor is DynamicColor,
                               onTap: () {
                                 notifier.setThemeColor(const DynamicColor());
                               },
-                              isLeft: false,
                             ),
                           ),
                         ],
@@ -609,6 +607,70 @@ class _CustomColorButton extends StatelessWidget {
                         : Colors.white,
                   )
                 : null,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ThemeChoice extends StatelessWidget {
+  const _ThemeChoice({
+    required this.title,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String title;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 2),
+      child: Material(
+        color: selected
+            ? colorScheme.primaryContainer
+            : colorScheme.surfaceContainerLow,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(
+            color: selected ? colorScheme.primary : colorScheme.outlineVariant,
+            width: selected ? 2 : 1,
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  selected ? Icons.check : icon,
+                  size: 18,
+                  color: selected
+                      ? colorScheme.primary
+                      : colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: selected
+                        ? colorScheme.primary
+                        : colorScheme.onSurface,
+                    fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
