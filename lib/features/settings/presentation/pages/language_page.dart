@@ -40,7 +40,7 @@ class LanguageSettingsPage extends ConsumerWidget {
                   ),
                   const SizedBox(height: 8),
                   _LanguageOption(
-                    title: 'English',
+                    title: context.l10n.english,
                     subtitle: 'English',
                     value: const Locale('en'),
                     isSelected: settings.locale == const Locale('en'),
@@ -48,7 +48,7 @@ class LanguageSettingsPage extends ConsumerWidget {
                   ),
                   const SizedBox(height: 8),
                   _LanguageOption(
-                    title: 'Deutsch',
+                    title: context.l10n.german,
                     subtitle: 'Deutsch',
                     value: const Locale('de'),
                     isSelected: settings.locale == const Locale('de'),

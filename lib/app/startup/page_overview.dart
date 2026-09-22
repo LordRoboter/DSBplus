@@ -2,6 +2,7 @@ import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:planner/features/notifications/notification_service.dart';
+import 'package:planner/features/settings/presentation/pages/language_page.dart';
 import 'package:planner/features/settings/presentation/widgets/dialogues.dart';
 import 'package:planner/features/settings/presentation/widgets/settings.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
@@ -157,6 +158,7 @@ class _StartupSetupPageState extends ConsumerState<StartupSetupPage> {
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsProvider);
+    final systemLocale = WidgetsBinding.instance.platformDispatcher.locale;
 
     return settings.when(
       loading: () =>
@@ -190,17 +192,27 @@ class _StartupSetupPageState extends ConsumerState<StartupSetupPage> {
                   ref.read(settingsProvider.notifier).setLocale(locale);
                 },
                 itemBuilder: (context) => [
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: LanguageOption.system,
-                    child: Text('System default'),
+                    child: Text(
+                      "${context.l10n.systemDefault} (${nativeLanguageNames[systemLocale.languageCode] ?? 'English'})",
+                    ),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: LanguageOption.english,
-                    child: Text('English'),
+                    child: Text(
+                      context.l10n.english == 'English'
+                          ? 'English'
+                          : '${context.l10n.english} (English)',
+                    ),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: LanguageOption.german,
-                    child: Text('Deutsch'),
+                    child: Text(
+                      context.l10n.german == 'Deutsch'
+                          ? 'Deutsch'
+                          : '${context.l10n.german} (Deutsch)',
+                    ),
                   ),
                 ],
               ),
