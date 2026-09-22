@@ -1,12 +1,15 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:planner/app/navigation/model/navigation_item.dart';
 import 'package:planner/features/notifications/background_tasks.dart';
 import 'package:planner/features/notifications/model/interval.dart';
 //import 'package:planner/core/model/daydate.dart';
 import 'package:planner/features/dsb/timetables/model/filter.dart';
+import 'package:planner/features/settings/model/navigation_settings.dart';
 import 'package:planner/features/settings/model/settings_state.dart';
 import 'package:planner/core/providers/shared_preferences_provider.dart';
 import 'package:planner/theme.dart';
@@ -23,6 +26,7 @@ class SettingsNotifier extends AsyncNotifier<SettingsState> {
       startupComplete: prefs.getBool('startupComplete') ?? false,
       locale: _loadLocale(),
       //selectedDayDate: _loadSelectedDayDate(),
+      bottomNavigationItems: _loadBottomNavigationItems(),
       clean: prefs.getBool('clean') ?? true,
       simplify: prefs.getBool('simplify') ?? true,
       disposeTut: prefs.getBool('disposeTut') ?? true,
@@ -52,6 +56,44 @@ class SettingsNotifier extends AsyncNotifier<SettingsState> {
     }
 
     return Locale.fromSubtags(languageCode: value.split('-').first);
+  }
+
+  List<NavigationItemSettings> _loadBottomNavigationItems() {
+    final values = prefs.getStringList('navigationItems');
+
+    if (values == null) {
+      return const [
+        NavigationItemSettings(item: NavigationItem.home, visible: true),
+        NavigationItemSettings(item: NavigationItem.plan, visible: true),
+        NavigationItemSettings(item: NavigationItem.resources, visible: false),
+      ];
+    }
+
+    final loaded = <NavigationItemSettings>[];
+
+    for (final value in values) {
+      final parts = value.split(':');
+
+      if (parts.length != 2) continue;
+
+      final item = NavigationItem.values.firstWhereOrNull(
+        (item) => item.name == parts[0],
+      );
+
+      if (item == null) continue;
+
+      loaded.add(
+        NavigationItemSettings(item: item, visible: parts[1] == 'true'),
+      );
+    }
+
+    for (final item in NavigationItem.values) {
+      if (!loaded.any((entry) => entry.item == item)) {
+        loaded.add(NavigationItemSettings(item: item, visible: true));
+      }
+    }
+
+    return loaded;
   }
 
   TimetableFilter _loadClassFilter() {
@@ -121,6 +163,16 @@ class SettingsNotifier extends AsyncNotifier<SettingsState> {
     } catch (_) {
       return const BackgroundCheckSchedule();
     }
+  }
+
+  Future<void> setBottomNavigationItems(
+    List<NavigationItemSettings> items,
+  ) async {
+    _updateState((state) => state.copyWith(bottomNavigationItems: items));
+    await prefs.setStringList(
+      'navigationItems',
+      items.map((entry) => '${entry.item.name}:${entry.visible}').toList(),
+    );
   }
 
   Future<void> setStartupComplete(bool value) async {

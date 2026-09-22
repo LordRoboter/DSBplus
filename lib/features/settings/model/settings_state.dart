@@ -1,14 +1,18 @@
 import 'dart:ui';
 
 //import 'package:planner/core/model/daydate.dart';
+import 'package:planner/app/navigation/model/navigation_item.dart';
 import 'package:planner/features/notifications/model/interval.dart';
 import 'package:planner/features/dsb/timetables/model/filter.dart';
+import 'package:planner/features/settings/model/navigation_settings.dart';
 import 'package:planner/theme.dart';
 
 class SettingsState {
   final bool startupComplete;
   final Locale? locale;
   //final DayDate? selectedDayDate;
+
+  final List<NavigationItemSettings> bottomNavigationItems;
 
   final bool clean;
   final bool simplify;
@@ -34,6 +38,11 @@ class SettingsState {
     this.startupComplete = false,
     this.locale,
     //this.selectedDayDate,
+    this.bottomNavigationItems = const [
+      NavigationItemSettings(item: NavigationItem.home, visible: true),
+      NavigationItemSettings(item: NavigationItem.plan, visible: true),
+      NavigationItemSettings(item: NavigationItem.resources, visible: false),
+    ],
     this.clean = true,
     this.simplify = true,
     this.disposeTut = true,
@@ -58,6 +67,7 @@ class SettingsState {
     bool? startupComplete,
     Object? locale = _unset,
     //DayDate? selectedDayDate,
+    List<NavigationItemSettings>? bottomNavigationItems,
     bool? clean,
     bool? simplify,
     bool? disposeTut,
@@ -79,6 +89,8 @@ class SettingsState {
       startupComplete: startupComplete ?? this.startupComplete,
       locale: locale == _unset ? this.locale : locale as Locale?,
       //selectedDayDate: selectedDayDate ?? this.selectedDayDate,
+      bottomNavigationItems:
+          bottomNavigationItems ?? this.bottomNavigationItems,
       clean: clean ?? this.clean,
       simplify: simplify ?? this.simplify,
       disposeTut: disposeTut ?? this.disposeTut,

@@ -7,14 +7,15 @@ import 'package:planner/features/dsb/resources/provider/dsb_resources_provider.d
 import 'package:planner/l10n/l10extension.dart';
 
 class DsbResourcesScreen extends ConsumerWidget {
-  const DsbResourcesScreen({super.key});
+  const DsbResourcesScreen({super.key, this.showAppBar = false});
+  final bool showAppBar;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final resources = ref.watch(dsbResourcesProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.resources)),
+      appBar: showAppBar ? AppBar(title: Text(context.l10n.resources)) : null,
       body: resources.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) =>
