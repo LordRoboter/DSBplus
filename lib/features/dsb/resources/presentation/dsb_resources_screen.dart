@@ -5,16 +5,18 @@ import 'package:planner/features/dsb/resources/model/resource.dart';
 import 'package:planner/features/dsb/resources/presentation/widgets/resource_image_screen.dart';
 import 'package:planner/features/dsb/resources/provider/dsb_resources_provider.dart';
 import 'package:planner/l10n/l10extension.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class DsbResourcesScreen extends ConsumerWidget {
-  const DsbResourcesScreen({super.key});
+  const DsbResourcesScreen({super.key, this.showAppBar = false});
+  final bool showAppBar;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final resources = ref.watch(dsbResourcesProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.resources)),
+      appBar: showAppBar ? AppBar(title: Text(context.l10n.resources)) : null,
       body: resources.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) =>
@@ -42,32 +44,85 @@ class DsbResourcesScreen extends ConsumerWidget {
   }
 }
 
-class _ResourceBundleSection extends StatelessWidget {
+class _ResourceBundleSection extends StatefulWidget {
   final ResourceBundle bundle;
 
   const _ResourceBundleSection({required this.bundle});
 
   @override
+  State<_ResourceBundleSection> createState() => _ResourceBundleSectionState();
+}
+
+class _ResourceBundleSectionState extends State<_ResourceBundleSection> {
+  late final PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(viewportFraction: 1);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final resources = widget.bundle.resources;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (bundle.title != null)
+          if (widget.bundle.title != null)
             Padding(
               padding: const EdgeInsets.only(left: 4, bottom: 10),
               child: Text(
-                bundle.title!,
+                widget.bundle.title!,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ),
-          ...bundle.resources.map(
-            (resource) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: _ResourceCard(resource: resource),
+
+          SizedBox(
+            height: 320,
+            child: PageView.builder(
+              controller: _pageController,
+              itemCount: resources.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: _ResourceCard(
+                    resource: resources[index],
+                    resources: resources,
+                    index: index,
+                  ),
+                );
+              },
             ),
           ),
+
+          if (resources.length > 1) ...[
+            const SizedBox(height: 12),
+            Center(
+              child: SmoothPageIndicator(
+                controller: _pageController,
+                count: resources.length,
+                effect: ExpandingDotsEffect(
+                  dotHeight: 7,
+                  dotWidth: 7,
+                  expansionFactor: 2.5,
+                  spacing: 5,
+                  activeDotColor: Theme.of(context).colorScheme.primary,
+                  dotColor: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.2),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -76,8 +131,14 @@ class _ResourceBundleSection extends StatelessWidget {
 
 class _ResourceCard extends StatelessWidget {
   final Resource resource;
+  final List<Resource> resources;
+  final int index;
 
-  const _ResourceCard({required this.resource});
+  const _ResourceCard({
+    required this.resource,
+    required this.resources,
+    required this.index,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +148,10 @@ class _ResourceCard extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (_) => ResourceImageScreen(imageUrl: resource.url),
+              builder: (_) => ResourceImageScreen(
+                resources: resources,
+                initialIndex: index,
+              ),
             ),
           );
         },

@@ -261,13 +261,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifications => 'Notifications';
 
   @override
-  String get firebase => 'Firebase Notifications';
-
-  @override
-  String get firebaseDesc =>
-      'Receive notifications when our server detects new plans';
-
-  @override
   String get workManager => 'Periodical Checks';
 
   @override
@@ -443,4 +436,86 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tryAgain => 'Try Again';
+
+  @override
+  String get notificationsWereNotEnabled => 'Notifications were not enabled';
+
+  @override
+  String get couldNotNotifications => 'Could not enable notifications:';
+
+  @override
+  String get finishSetup => 'Finish setup';
+
+  @override
+  String get customizePlanner => 'Customize the App to work the way you want';
+
+  @override
+  String get filtersDesc => 'Choose which classes and changes you want to see';
+
+  @override
+  String get notificationsDesc =>
+      'Get notified when relevant changes are available';
+
+  @override
+  String get notificationsEnabled => 'Notifications are enabled';
+
+  @override
+  String get notificationsNotEnabled => 'Notifications are NOT enabled';
+
+  @override
+  String get enable => 'Enable';
+
+  @override
+  String get appearanceDesc => 'Customize what the app looks like';
+
+  @override
+  String get completeSetup => 'Complete Setup';
+
+  @override
+  String get youCanChangeSettings =>
+      'You can still change these settings later';
+
+  @override
+  String get checkingPermission => 'Checking notification permission...';
+
+  @override
+  String get notificationsAllowed => 'Notifications are allowed';
+
+  @override
+  String get notificationsNotAllowed => 'Notifications are NOT allowed';
+
+  @override
+  String get notificationsCanBeSent => 'The app can send you notifications';
+
+  @override
+  String get allowNotificationsExp =>
+      'Allow notifications to be informed when your timetable changes';
+
+  @override
+  String get requesting => 'Requesting...';
+
+  @override
+  String get allowNotifications => 'Allow notifications';
+
+  @override
+  String get notificationSettingsHint =>
+      'You can fine-tune notifications in settings';
+
+  @override
+  String get batteryOptimizationHint =>
+      'Battery optimization might restrict background checks';
+
+  @override
+  String get batterySettings => 'Open Settings';
+
+  @override
+  String get batteryOptimizationDisabled =>
+      'Battery optimization is disabled for this app';
+
+  @override
+  String get batteryOptimizationEnabled => 'Battery optimization is enabled';
+
+  @override
+  String get workManagerCanRunFreely =>
+      'Background checks should work without restrictions';
 }

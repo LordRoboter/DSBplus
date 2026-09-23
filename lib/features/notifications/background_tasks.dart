@@ -18,7 +18,7 @@ class BackgroundTaskManager {
   Future<void> register() async {
     final settings = await ref.read(settingsProvider.future);
 
-    if (!settings.workManager) {
+    if (!settings.notifications) {
       await cancel();
       return;
     }

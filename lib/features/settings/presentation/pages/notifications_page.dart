@@ -1,18 +1,158 @@
+import 'dart:io';
+
+import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:planner/core/model/weekday.dart';
 import 'package:planner/core/util/translations.dart';
 import 'package:planner/features/notifications/model/interval.dart';
+import 'package:planner/features/notifications/notification_service.dart';
 import 'package:planner/features/settings/presentation/widgets/settings.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/l10n/l10extension.dart';
 
-class NotificationsSettingsPage extends ConsumerWidget {
+class NotificationsSettingsPage extends ConsumerStatefulWidget {
   const NotificationsSettingsPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<NotificationsSettingsPage> createState() =>
+      _NotificationsSettingsPageState();
+}
+
+class _NotificationsSettingsPageState
+    extends ConsumerState<NotificationsSettingsPage>
+    with WidgetsBindingObserver {
+  bool? _permissionGranted;
+  bool _permissionLoading = true;
+
+  static const _batterySettingsChannel = MethodChannel(
+    'com.plos.planner/battery_settings',
+  );
+
+  bool _batteryOptimizationDisabled = false;
+  bool _batteryOptimizationLoading = true;
+
+  Future<void> _loadBatteryOptimizationStatus() async {
+    if (!Platform.isAndroid) {
+      setState(() {
+        _batteryOptimizationLoading = false;
+      });
+      return;
+    }
+
+    try {
+      final disabled =
+          await _batterySettingsChannel.invokeMethod<bool>(
+            'isBatteryOptimizationDisabled',
+          ) ??
+          false;
+
+      if (!mounted) return;
+
+      setState(() {
+        _batteryOptimizationDisabled = disabled;
+        _batteryOptimizationLoading = false;
+      });
+    } on PlatformException {
+      if (!mounted) return;
+
+      setState(() {
+        _batteryOptimizationLoading = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addObserver(this);
+
+    _loadPermissionStatus();
+    _loadBatteryOptimizationStatus();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    debugPrint('Lifecycle state: $state');
+    if (state == AppLifecycleState.resumed) {
+      _loadPermissionStatus();
+
+      Future.delayed(const Duration(milliseconds: 1300), () {
+        if (!mounted) return;
+        _loadBatteryOptimizationStatus();
+      });
+    }
+  }
+
+  Future<void> _openBatterySettings() async {
+    if (!Platform.isAndroid) return;
+
+    try {
+      await _batterySettingsChannel.invokeMethod('openBatterySettings');
+    } on PlatformException {
+      //TODO: Fallback
+    }
+  }
+
+  Future<void> _loadPermissionStatus() async {
+    try {
+      final granted = await NotificationService.areNotificationsEnabled();
+
+      if (!mounted) return;
+
+      setState(() {
+        _permissionGranted = granted;
+        _permissionLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _permissionGranted = false;
+        _permissionLoading = false;
+      });
+    }
+  }
+
+  Future<void> _requestPermission() async {
+    if (_permissionLoading) return;
+
+    setState(() {
+      _permissionLoading = true;
+    });
+
+    try {
+      final granted = await NotificationService.requestPermission();
+
+      if (!mounted) return;
+
+      setState(() {
+        _permissionGranted = granted;
+      });
+
+      if (granted) {
+        await ref.read(settingsProvider.notifier).setNotifications(true);
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _permissionLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final settings = ref.watch(settingsProvider);
+    final permissionGranted = _permissionGranted == true;
 
     return settings.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -24,41 +164,56 @@ class NotificationsSettingsPage extends ConsumerWidget {
           title: context.l10n.notifications,
           child: Column(
             children: [
-              SettingsSwitchCard(
-                title: context.l10n.notifications,
-                value: settings.notifications,
-                onChanged: notifier.setNotifications,
+              _NotificationPermissionCard(
+                granted: _permissionGranted,
+                loading: _permissionLoading,
+                onRequestPermission: _requestPermission,
               ),
 
-              Card(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SwitchListTile(
-                      title: Text(context.l10n.firebase),
-                      subtitle: Text(context.l10n.firebaseDesc),
-                      value: settings.firebase,
-                      onChanged: notifier.setFirebase,
-                    ),
-
-                    SwitchListTile(
-                      title: Text(context.l10n.workManager),
-                      subtitle: Text(context.l10n.workManagerDesc),
-                      value: settings.workManager,
-                      onChanged: notifier.setWorkManager,
-                    ),
-                  ],
-                ),
-              ),
+              const SizedBox(height: 12),
 
               AnimatedOpacity(
                 duration: const Duration(milliseconds: 150),
-                opacity: settings.workManager ? 1 : 0.5,
+                opacity: permissionGranted ? 1.0 : 0.45,
                 child: IgnorePointer(
-                  ignoring: !settings.workManager,
-                  child: _BackgroundScheduleCard(
-                    schedule: settings.backgroundSchedule,
-                    onChanged: notifier.setBackgroundSchedule,
+                  ignoring: !permissionGranted,
+                  child: Column(
+                    children: [
+                      SettingsSwitchCard(
+                        title: context.l10n.notifications,
+                        value: settings.notifications,
+                        onChanged: (enabled) async {
+                          if (enabled && _permissionGranted != true) {
+                            await _requestPermission();
+
+                            if (_permissionGranted != true) {
+                              return;
+                            }
+                          }
+
+                          await notifier.setNotifications(enabled);
+                        },
+                      ),
+
+                      AnimatedOpacity(
+                        duration: const Duration(milliseconds: 150),
+                        opacity: settings.notifications ? 1.0 : 0.5,
+                        child: IgnorePointer(
+                          ignoring: !settings.notifications,
+                          child: _BackgroundScheduleCard(
+                            schedule: settings.backgroundSchedule,
+                            onChanged: notifier.setBackgroundSchedule,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      if (Platform.isAndroid && !_batteryOptimizationLoading)
+                        _BatteryOptimizationCard(
+                          disabled: _batteryOptimizationDisabled,
+                          onOpenSettings: _openBatterySettings,
+                        ),
+                    ],
                   ),
                 ),
               ),
@@ -66,6 +221,130 @@ class NotificationsSettingsPage extends ConsumerWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _NotificationPermissionCard extends StatelessWidget {
+  const _NotificationPermissionCard({
+    required this.granted,
+    required this.loading,
+    required this.onRequestPermission,
+  });
+
+  final bool? granted;
+  final bool loading;
+  final VoidCallback onRequestPermission;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    if (loading && granted == null) {
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+              const SizedBox(width: 16),
+              Expanded(child: Text(context.l10n.checkingPermission)),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final isGranted = granted == true;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: isGranted
+                    ? colorScheme.primaryContainer
+                    : colorScheme.errorContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                isGranted
+                    ? Icons.notifications_active_outlined
+                    : Icons.notifications_off_outlined,
+                color: isGranted
+                    ? colorScheme.onPrimaryContainer
+                    : colorScheme.onErrorContainer,
+              ),
+            ),
+
+            const SizedBox(width: 14),
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isGranted
+                        ? context.l10n.notificationsAllowed
+                        : context.l10n.notificationsNotAllowed,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+
+                  const SizedBox(height: 4),
+
+                  Text(
+                    isGranted
+                        ? context.l10n.notificationsCanBeSent
+                        : context.l10n.allowNotificationsExp,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+
+                  if (!isGranted) ...[
+                    const SizedBox(height: 12),
+
+                    FilledButton.tonalIcon(
+                      onPressed: loading ? null : onRequestPermission,
+                      icon: loading
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.notifications_outlined),
+                      label: Text(
+                        loading
+                            ? context.l10n.requesting
+                            : context.l10n.allowNotifications,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+
+            const SizedBox(width: 8),
+
+            Icon(
+              isGranted ? Icons.check_circle_rounded : Icons.warning_rounded,
+              color: isGranted ? colorScheme.primary : colorScheme.error,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -529,5 +808,95 @@ class _IntervalSelector extends StatelessWidget {
     final minutes = duration.inMinutes;
 
     return localizedMinutes(context, minutes);
+  }
+}
+
+class _BatteryOptimizationCard extends StatelessWidget {
+  const _BatteryOptimizationCard({
+    required this.disabled,
+    required this.onOpenSettings,
+  });
+
+  final bool disabled;
+  final VoidCallback onOpenSettings;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: disabled
+                    ? colorScheme.primaryContainer
+                    : colorScheme.tertiaryContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                disabled
+                    ? Icons.battery_saver_outlined
+                    : Icons.battery_alert_outlined,
+                color: disabled
+                    ? colorScheme.onPrimaryContainer
+                    : colorScheme.onTertiaryContainer,
+              ),
+            ),
+
+            const SizedBox(width: 14),
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    disabled
+                        ? context.l10n.batteryOptimizationDisabled
+                        : context.l10n.batteryOptimizationEnabled,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+
+                  const SizedBox(height: 4),
+
+                  Text(
+                    disabled
+                        ? context.l10n.workManagerCanRunFreely
+                        : context.l10n.batteryOptimizationHint,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+
+                  if (!disabled) ...[
+                    const SizedBox(height: 12),
+                    FilledButton.tonalIcon(
+                      onPressed: onOpenSettings,
+                      icon: const Icon(Icons.settings_outlined),
+                      label: Text(context.l10n.batterySettings),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+
+            const SizedBox(width: 8),
+
+            Icon(
+              disabled ? Icons.check_circle_rounded : Icons.warning_rounded,
+              color: disabled ? colorScheme.primary : colorScheme.tertiary,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

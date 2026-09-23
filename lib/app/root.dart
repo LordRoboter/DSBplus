@@ -1,14 +1,29 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:planner/app/navigator.dart';
+import 'package:planner/app/navigation/navigator.dart';
+import 'package:planner/features/notifications/background_tasks.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
-import 'package:planner/app/startup_screen.dart';
+import 'package:planner/app/startup/startup_screen.dart';
 
-class AppRoot extends ConsumerWidget {
+class AppRoot extends ConsumerStatefulWidget {
   const AppRoot({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AppRoot> createState() => _AppRootState();
+}
+
+class _AppRootState extends ConsumerState<AppRoot> {
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      ref.read(backgroundTaskManagerProvider).register();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final settings = ref.watch(settingsProvider);
 
     return settings.when(

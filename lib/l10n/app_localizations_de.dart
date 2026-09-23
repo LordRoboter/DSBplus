@@ -261,12 +261,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get notifications => 'Benachrichtigungen';
 
   @override
-  String get firebase => 'Firebase Benachrichtigungen';
-
-  @override
-  String get firebaseDesc => 'Benachrichtigungen über unseren Server erhalten';
-
-  @override
   String get workManager => 'Periodische Überprüfungen';
 
   @override
@@ -443,4 +437,92 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get tryAgain => 'Erneut versuchen';
+
+  @override
+  String get notificationsWereNotEnabled =>
+      'Benachrichtigungen wurden nicht eingeschaltet';
+
+  @override
+  String get couldNotNotifications =>
+      'Konnte Benachrichtigungen nicht einschalten:';
+
+  @override
+  String get finishSetup => 'Einrichtung abschließen';
+
+  @override
+  String get customizePlanner => 'Passe die App deinen Bedürfnissen an';
+
+  @override
+  String get filtersDesc => 'Filtere Einträge nach deiner Klasse und Kursen';
+
+  @override
+  String get notificationsDesc =>
+      'Erhalte Benachrichtigungen bei relevanten Einträgen';
+
+  @override
+  String get notificationsEnabled => 'Benachrichtigungen sind aktiviert';
+
+  @override
+  String get notificationsNotEnabled =>
+      'Benachrichtigungen sind NICHT aktiviert';
+
+  @override
+  String get enable => 'Aktivieren';
+
+  @override
+  String get appearanceDesc => 'Passe das Aussehen der App an';
+
+  @override
+  String get completeSetup => 'Abschließen';
+
+  @override
+  String get youCanChangeSettings =>
+      'Du kannst diese Einstellungen später noch ändern';
+
+  @override
+  String get checkingPermission =>
+      'Überprüfe Benachrichtigungsberechtigungen...';
+
+  @override
+  String get notificationsAllowed => 'Benachrichtigungen sind genehmigt';
+
+  @override
+  String get notificationsNotAllowed =>
+      'Benachrichtigungen sind NICHT genehmigt';
+
+  @override
+  String get notificationsCanBeSent =>
+      'Die App kann Benachrichtigungen anzeigen';
+
+  @override
+  String get allowNotificationsExp =>
+      'Erlaube Benachrichtigungen um bei neuen Einträgen benachrichtigt zu werden';
+
+  @override
+  String get requesting => 'Anfrage...';
+
+  @override
+  String get allowNotifications => 'Benachrichtigungen erlauben';
+
+  @override
+  String get notificationSettingsHint =>
+      'Du kannst Benachrichtigungen in den Einstellungen anpassen';
+
+  @override
+  String get batteryOptimizationHint =>
+      'Akku-Optimierung könnte Hintergrundchecks einschränken';
+
+  @override
+  String get batterySettings => 'Einstellungen öffnen';
+
+  @override
+  String get batteryOptimizationDisabled =>
+      'Akku-Optimierung ist für diese App ausgeschaltet';
+
+  @override
+  String get batteryOptimizationEnabled => 'Akku-Optimierung ist eingeschaltet';
+
+  @override
+  String get workManagerCanRunFreely =>
+      'Hintergrundchecks sollten ohne Einschränkungen laufen';
 }

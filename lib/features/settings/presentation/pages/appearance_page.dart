@@ -1,6 +1,8 @@
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:planner/app/navigation/model/navigation_item.dart';
+import 'package:planner/features/settings/model/navigation_settings.dart';
 import 'package:planner/features/settings/presentation/widgets/settings.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/l10n/l10extension.dart';
@@ -127,25 +129,23 @@ class AppearanceSettingsPage extends ConsumerWidget {
                       child: Row(
                         children: [
                           Expanded(
-                            child: _ThemeColorSplitButton(
+                            child: _ThemeChoice(
                               title: context.l10n.defaultt,
                               icon: Icons.palette_outlined,
                               selected: settings.themeColor is StandardColor,
                               onTap: () {
                                 notifier.setThemeColor(const StandardColor());
                               },
-                              isLeft: true,
                             ),
                           ),
                           Expanded(
-                            child: _ThemeColorSplitButton(
+                            child: _ThemeChoice(
                               title: context.l10n.dynamicc,
                               icon: Icons.auto_awesome,
                               selected: settings.themeColor is DynamicColor,
                               onTap: () {
                                 notifier.setThemeColor(const DynamicColor());
                               },
-                              isLeft: false,
                             ),
                           ),
                         ],
@@ -203,11 +203,143 @@ class AppearanceSettingsPage extends ConsumerWidget {
                   ],
                 ),
               ),
+              const SizedBox(height: 24),
+              SettingsSectionCard(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Text("context.l10n.navigation"),
+                    ),
+                    _NavigationOrderEditor(
+                      items: settings.bottomNavigationItems,
+                      onChanged: notifier.setBottomNavigationItems,
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         );
       },
     );
+  }
+}
+
+class _NavigationOrderEditor extends StatefulWidget {
+  const _NavigationOrderEditor({required this.items, required this.onChanged});
+
+  final List<NavigationItemSettings> items;
+  final ValueChanged<List<NavigationItemSettings>> onChanged;
+
+  @override
+  State<_NavigationOrderEditor> createState() => _NavigationOrderEditorState();
+}
+
+class _NavigationOrderEditorState extends State<_NavigationOrderEditor> {
+  late List<NavigationItemSettings> items;
+
+  @override
+  void initState() {
+    super.initState();
+    items = [...widget.items];
+  }
+
+  @override
+  void didUpdateWidget(covariant _NavigationOrderEditor oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.items != widget.items) {
+      items = [...widget.items];
+    }
+  }
+
+  void _reorder(int oldIndex, int newIndex) {
+    setState(() {
+      if (newIndex > oldIndex) {
+        newIndex--;
+      }
+
+      final item = items.removeAt(oldIndex);
+      items.insert(newIndex, item);
+    });
+
+    widget.onChanged(items);
+  }
+
+  void _toggle(int index, bool value) {
+    // Don't allow the user to hide everything.
+    final visibleCount = items.where((item) => item.visible).length;
+
+    if (!value && visibleCount <= 1) {
+      return;
+    }
+
+    setState(() {
+      items[index] = NavigationItemSettings(
+        item: items[index].item,
+        visible: value,
+      );
+    });
+
+    widget.onChanged(items);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ReorderableListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      buildDefaultDragHandles: false,
+      itemCount: items.length,
+      onReorder: _reorder,
+      itemBuilder: (context, index) {
+        final item = items[index];
+
+        return ListTile(
+          key: ValueKey(item.item),
+          leading: Icon(_iconFor(item.item)),
+          title: Text(_labelFor(context, item.item)),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Switch(
+                value: item.visible,
+                onChanged: (value) => _toggle(index, value),
+              ),
+              ReorderableDragStartListener(
+                index: index,
+                child: const Padding(
+                  padding: EdgeInsets.only(left: 8),
+                  child: Icon(Icons.drag_handle),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  IconData _iconFor(NavigationItem item) {
+    return switch (item) {
+      NavigationItem.home => Icons.home_outlined,
+      NavigationItem.plan => Icons.calendar_month_outlined,
+      NavigationItem.resources => Icons.article_outlined,
+    };
+  }
+
+  String _labelFor(BuildContext context, NavigationItem item) {
+    return switch (item) {
+      NavigationItem.home => context.l10n.home,
+      NavigationItem.plan => context.l10n.plan,
+      NavigationItem.resources => context.l10n.resources,
+    };
   }
 }
 
@@ -475,6 +607,70 @@ class _CustomColorButton extends StatelessWidget {
                         : Colors.white,
                   )
                 : null,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ThemeChoice extends StatelessWidget {
+  const _ThemeChoice({
+    required this.title,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String title;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 2),
+      child: Material(
+        color: selected
+            ? colorScheme.primaryContainer
+            : colorScheme.surfaceContainerLow,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(
+            color: selected ? colorScheme.primary : colorScheme.outlineVariant,
+            width: selected ? 2 : 1,
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  selected ? Icons.check : icon,
+                  size: 18,
+                  color: selected
+                      ? colorScheme.primary
+                      : colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: selected
+                        ? colorScheme.primary
+                        : colorScheme.onSurface,
+                    fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

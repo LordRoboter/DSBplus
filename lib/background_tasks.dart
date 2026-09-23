@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -21,22 +19,12 @@ import 'package:planner/core/util/date.dart';
 import 'package:planner/core/util/sorter.dart';
 import 'package:planner/core/util/timetable.dart';
 import 'package:planner/core/util/translations.dart';
-import 'package:planner/firebase_options.dart';
 import 'package:planner/l10n/app_localizations.dart';
 import 'package:planner/features/dsb/timetables/data/timetable_repository.dart';
 import 'package:planner/features/notifications/notification_service.dart';
 import 'package:workmanager/workmanager.dart';
 
 import 'features/dsb/timetables/model/timetable.dart';
-
-@pragma('vm:entry-point')
-Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  if (message.data["type"] != "timetable_updated") return;
-
-  await runTimetableBackgroundCheck();
-}
 
 @pragma('vm:entry-point')
 void callbackDispatcher() {
