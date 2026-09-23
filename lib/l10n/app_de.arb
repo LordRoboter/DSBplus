@@ -156,5 +156,9 @@
   "notificationsCanBeSent": "Die App kann Benachrichtigungen anzeigen",
   "allowNotificationsExp": "Erlaube Benachrichtigungen um bei neuen Einträgen benachrichtigt zu werden",
   "requesting": "Anfrage...",
-  "allowNotifications": "Benachrichtigungen erlauben"
+  "allowNotifications": "Benachrichtigungen erlauben",
+  "notificationSettingsHint": "Du kannst Benachrichtigungen in den Einstellungen anpassen",
+  "batteryOptimizationHint": "Akku-Optimierung könnte Hintergrundchecks einschränken",
+  "batterySettings": "Einstellungen öffnen",
+  "batteryOptimizationDisabled": "Akku-Optimierung ist für diese App ausgeschaltet"
 }

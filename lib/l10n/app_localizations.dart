@@ -1049,6 +1049,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Allow notifications'**
   String get allowNotifications;
+
+  /// No description provided for @notificationSettingsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'You can fine-tune notifications in settings'**
+  String get notificationSettingsHint;
+
+  /// No description provided for @batteryOptimizationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Battery optimization might restrict background checks'**
+  String get batteryOptimizationHint;
+
+  /// No description provided for @batterySettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Settings'**
+  String get batterySettings;
+
+  /// No description provided for @batteryOptimizationDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Battery optimization is disabled for this app'**
+  String get batteryOptimizationDisabled;
 }
 
 class _AppLocalizationsDelegate

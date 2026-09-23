@@ -3,10 +3,13 @@ import 'dart:ui';
 
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:planner/app/root.dart';
+import 'package:planner/background_tasks.dart';
 import 'package:planner/certificates.dart';
+import 'package:planner/features/settings/providers/background_settings.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/core/providers/shared_preferences_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:workmanager/workmanager.dart';
 import 'l10n/app_localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:planner/features/notifications/notification_service.dart';
@@ -25,6 +28,12 @@ Future<void> main() async {
   await initializeDateFormatting(locale);
 
   await NotificationService.init();
+  await Workmanager().initialize(callbackDispatcher);
+
+  final backgroundSettings = BackgroundSettingsRepository();
+  await backgroundSettings.init();
+
+  await scheduleNextBackgroundCheck(backgroundSettings.backgroundSchedule);
 
   final prefs = await SharedPreferences.getInstance();
 

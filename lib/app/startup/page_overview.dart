@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:planner/features/notifications/notification_service.dart';
 import 'package:planner/features/settings/presentation/pages/language_page.dart';
@@ -21,18 +24,70 @@ class StartupSetupPage extends ConsumerStatefulWidget {
   ConsumerState<StartupSetupPage> createState() => _StartupSetupPageState();
 }
 
-class _StartupSetupPageState extends ConsumerState<StartupSetupPage> {
+class _StartupSetupPageState extends ConsumerState<StartupSetupPage>
+    with WidgetsBindingObserver {
   final classController = TextEditingController();
 
   bool _notificationsLoading = false;
   bool _notificationsEnabled = false;
+  bool _batteryOptimizationDisabled = false;
 
   int? _expandedSection;
+
+  static const _batterySettingsChannel = MethodChannel(
+    'com.plos.planner/battery_settings',
+  );
+
+  Future<void> _openBatterySettings() async {
+    if (!Platform.isAndroid) return;
+
+    try {
+      await _batterySettingsChannel.invokeMethod('openBatterySettings');
+    } on PlatformException {
+      //TODO: Fallback
+    }
+  }
+
+  Future<void> _loadBatteryOptimizationStatus() async {
+    if (!Platform.isAndroid) return;
+
+    final disabled = await _isBatteryOptimizationDisabled();
+
+    if (!mounted) return;
+
+    setState(() {
+      _batteryOptimizationDisabled = disabled;
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _loadBatteryOptimizationStatus();
+      _loadNotificationStatus();
+    }
+  }
+
+  Future<bool> _isBatteryOptimizationDisabled() async {
+    if (!Platform.isAndroid) return false;
+
+    try {
+      return await _batterySettingsChannel.invokeMethod<bool>(
+            'isBatteryOptimizationDisabled',
+          ) ??
+          false;
+    } on PlatformException {
+      return false;
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+
     _loadNotificationStatus();
+    _loadBatteryOptimizationStatus();
   }
 
   void _toggleSection(int index) {
@@ -43,6 +98,7 @@ class _StartupSetupPageState extends ConsumerState<StartupSetupPage> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     classController.dispose();
     super.dispose();
   }
@@ -329,56 +385,156 @@ class _StartupSetupPageState extends ConsumerState<StartupSetupPage> {
                       icon: Icons.notifications_outlined,
                       expanded: _expandedSection == 1,
                       onToggle: () => _toggleSection(1),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Icon(
-                                  _notificationsEnabled
-                                      ? Icons.check_circle
-                                      : Icons.notifications_none,
-                                  color: _notificationsEnabled
-                                      ? colorScheme.primary
-                                      : colorScheme.onSurfaceVariant,
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      _notificationsEnabled
+                                          ? Icons.check_circle
+                                          : Icons.notifications_none,
+                                      color: _notificationsEnabled
+                                          ? colorScheme.primary
+                                          : colorScheme.onSurfaceVariant,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Text(
+                                        _notificationsEnabled
+                                            ? context.l10n.notificationsEnabled
+                                            : context
+                                                  .l10n
+                                                  .notificationsNotEnabled,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(width: 12),
+                              ),
+                              const SizedBox(width: 12),
+                              if (!_notificationsEnabled)
+                                FilledButton.tonal(
+                                  onPressed: _notificationsLoading
+                                      ? null
+                                      : _setupNotifications,
+                                  child: _notificationsLoading
+                                      ? const SizedBox(
+                                          width: 18,
+                                          height: 18,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                      : Text(context.l10n.enable),
+                                ),
+                            ],
+                          ),
+
+                          if (Platform.isAndroid &&
+                              _notificationsEnabled &&
+                              !_batteryOptimizationDisabled) ...[
+                            const SizedBox(height: 12),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 28,
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.battery_alert_outlined,
+                                      size: 18,
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    _notificationsEnabled
-                                        ? context.l10n.notificationsEnabled
-                                        : context.l10n.notificationsNotEnabled,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(fontWeight: FontWeight.w500),
+                                    context.l10n.batteryOptimizationHint,
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(
+                                          color: colorScheme.onSurfaceVariant,
+                                        ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                TextButton(
+                                  onPressed: _openBatterySettings,
+                                  child: Text(context.l10n.batterySettings),
+                                ),
+                              ],
+                            ),
+                          ],
+
+                          if (Platform.isAndroid &&
+                              _notificationsEnabled &&
+                              _batteryOptimizationDisabled) ...[
+                            const SizedBox(height: 12),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 28,
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.check_circle_outline,
+                                      size: 18,
+                                      color: colorScheme.primary,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    context.l10n.batteryOptimizationDisabled,
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(
+                                          color: colorScheme.onSurfaceVariant,
+                                        ),
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          if (_notificationsEnabled)
-                            Icon(
-                              Icons.check_rounded,
-                              color: colorScheme.primary,
-                            )
-                          else
-                            FilledButton.tonal(
-                              onPressed: _notificationsLoading
-                                  ? null
-                                  : _setupNotifications,
-                              child: _notificationsLoading
-                                  ? const SizedBox(
-                                      width: 18,
-                                      height: 18,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : Text(context.l10n.enable),
+                          ],
+
+                          if (_notificationsEnabled) ...[
+                            const SizedBox(height: 12),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 28,
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.tune_rounded,
+                                      size: 18,
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    context.l10n.notificationSettingsHint,
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(
+                                          color: colorScheme.onSurfaceVariant,
+                                        ),
+                                  ),
+                                ),
+                              ],
                             ),
+                          ],
                         ],
                       ),
                     ),

@@ -503,4 +503,19 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get allowNotifications => 'Benachrichtigungen erlauben';
+
+  @override
+  String get notificationSettingsHint =>
+      'Du kannst Benachrichtigungen in den Einstellungen anpassen';
+
+  @override
+  String get batteryOptimizationHint =>
+      'Akku-Optimierung könnte Hintergrundchecks einschränken';
+
+  @override
+  String get batterySettings => 'Einstellungen öffnen';
+
+  @override
+  String get batteryOptimizationDisabled =>
+      'Akku-Optimierung ist für diese App ausgeschaltet';
 }

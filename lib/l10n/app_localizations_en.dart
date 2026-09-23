@@ -496,4 +496,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allowNotifications => 'Allow notifications';
+
+  @override
+  String get notificationSettingsHint =>
+      'You can fine-tune notifications in settings';
+
+  @override
+  String get batteryOptimizationHint =>
+      'Battery optimization might restrict background checks';
+
+  @override
+  String get batterySettings => 'Open Settings';
+
+  @override
+  String get batteryOptimizationDisabled =>
+      'Battery optimization is disabled for this app';
 }
