@@ -29,7 +29,7 @@ class TimetableRepository {
     await (db.delete(db.timetables)..where((t) => t.id.equals(id))).go();
   }
 
-  Future<List<int>> _saveAll(List<Timetable> timetables) async {
+  /*Future<List<int>> _saveAll(List<Timetable> timetables) async {
     final ids = <int>[];
 
     for (final timetable in timetables) {
@@ -43,11 +43,24 @@ class TimetableRepository {
     }
 
     return ids;
-  }
+  }*/
 
-  Future<List<int>> saveAll(List<Timetable> timetables) {
-    return db.transaction(() => _saveAll(timetables));
-  }
+  Future<List<int>> saveAll(List<Timetable> timetables) async {
+      return db.transaction(() async {
+        await db.delete(db.timetableEntries).go();
+        await db.delete(db.classEntries).go();
+        await db.delete(db.timetables).go();
+    
+        final ids = <int>[];
+    
+        for (final timetable in timetables) {
+          ids.add(await _insert(timetable));
+        }
+    
+        return ids;
+      });
+    }
+
 
   Future<model.Timetable?> _findExisting(Timetable timetable) async {
     final query = db.select(db.timetables);
