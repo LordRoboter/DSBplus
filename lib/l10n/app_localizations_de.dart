@@ -518,4 +518,11 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get batteryOptimizationDisabled =>
       'Akku-Optimierung ist für diese App ausgeschaltet';
+
+  @override
+  String get batteryOptimizationEnabled => 'Akku-Optimierung ist eingeschaltet';
+
+  @override
+  String get workManagerCanRunFreely =>
+      'Hintergrundchecks sollten ohne Einschränkungen laufen';
 }

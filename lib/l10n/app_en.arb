@@ -160,5 +160,7 @@
   "notificationSettingsHint": "You can fine-tune notifications in settings",
   "batteryOptimizationHint": "Battery optimization might restrict background checks",
   "batterySettings": "Open Settings",
-  "batteryOptimizationDisabled": "Battery optimization is disabled for this app"
+  "batteryOptimizationDisabled": "Battery optimization is disabled for this app",
+  "batteryOptimizationEnabled": "Battery optimization is enabled",
+  "workManagerCanRunFreely": "Background checks should work without restrictions"
 }

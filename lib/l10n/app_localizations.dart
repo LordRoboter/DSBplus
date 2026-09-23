@@ -1073,6 +1073,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Battery optimization is disabled for this app'**
   String get batteryOptimizationDisabled;
+
+  /// No description provided for @batteryOptimizationEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Battery optimization is enabled'**
+  String get batteryOptimizationEnabled;
+
+  /// No description provided for @workManagerCanRunFreely.
+  ///
+  /// In en, this message translates to:
+  /// **'Background checks should work without restrictions'**
+  String get workManagerCanRunFreely;
 }
 
 class _AppLocalizationsDelegate

@@ -511,4 +511,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get batteryOptimizationDisabled =>
       'Battery optimization is disabled for this app';
+
+  @override
+  String get batteryOptimizationEnabled => 'Battery optimization is enabled';
+
+  @override
+  String get workManagerCanRunFreely =>
+      'Background checks should work without restrictions';
 }

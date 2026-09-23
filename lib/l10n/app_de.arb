@@ -160,5 +160,7 @@
   "notificationSettingsHint": "Du kannst Benachrichtigungen in den Einstellungen anpassen",
   "batteryOptimizationHint": "Akku-Optimierung könnte Hintergrundchecks einschränken",
   "batterySettings": "Einstellungen öffnen",
-  "batteryOptimizationDisabled": "Akku-Optimierung ist für diese App ausgeschaltet"
+  "batteryOptimizationDisabled": "Akku-Optimierung ist für diese App ausgeschaltet",
+  "batteryOptimizationEnabled": "Akku-Optimierung ist eingeschaltet",
+  "workManagerCanRunFreely": "Hintergrundchecks sollten ohne Einschränkungen laufen"
 }

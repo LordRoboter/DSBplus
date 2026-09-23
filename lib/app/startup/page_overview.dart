@@ -64,7 +64,11 @@ class _StartupSetupPageState extends ConsumerState<StartupSetupPage>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _loadBatteryOptimizationStatus();
-      _loadNotificationStatus();
+
+      Future.delayed(const Duration(milliseconds: 1300), () {
+        if (!mounted) return;
+        _loadBatteryOptimizationStatus();
+      });
     }
   }
 

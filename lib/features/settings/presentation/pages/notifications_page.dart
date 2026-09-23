@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:planner/core/model/weekday.dart';
@@ -22,11 +25,51 @@ class _NotificationsSettingsPageState
   bool? _permissionGranted;
   bool _permissionLoading = true;
 
+  static const _batterySettingsChannel = MethodChannel(
+    'com.plos.planner/battery_settings',
+  );
+
+  bool _batteryOptimizationDisabled = false;
+  bool _batteryOptimizationLoading = true;
+
+  Future<void> _loadBatteryOptimizationStatus() async {
+    if (!Platform.isAndroid) {
+      setState(() {
+        _batteryOptimizationLoading = false;
+      });
+      return;
+    }
+
+    try {
+      final disabled =
+          await _batterySettingsChannel.invokeMethod<bool>(
+            'isBatteryOptimizationDisabled',
+          ) ??
+          false;
+
+      if (!mounted) return;
+
+      setState(() {
+        _batteryOptimizationDisabled = disabled;
+        _batteryOptimizationLoading = false;
+      });
+    } on PlatformException {
+      if (!mounted) return;
+
+      setState(() {
+        _batteryOptimizationLoading = false;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addObserver(this);
+
     _loadPermissionStatus();
+    _loadBatteryOptimizationStatus();
   }
 
   @override
@@ -37,9 +80,24 @@ class _NotificationsSettingsPageState
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // Useful when the user goes to Android/iOS settings and comes back.
+    debugPrint('Lifecycle state: $state');
     if (state == AppLifecycleState.resumed) {
       _loadPermissionStatus();
+
+      Future.delayed(const Duration(milliseconds: 1300), () {
+        if (!mounted) return;
+        _loadBatteryOptimizationStatus();
+      });
+    }
+  }
+
+  Future<void> _openBatterySettings() async {
+    if (!Platform.isAndroid) return;
+
+    try {
+      await _batterySettingsChannel.invokeMethod('openBatterySettings');
+    } on PlatformException {
+      //TODO: Fallback
     }
   }
 
@@ -80,7 +138,6 @@ class _NotificationsSettingsPageState
       });
 
       if (granted) {
-        // Optionally enable your app setting automatically.
         await ref.read(settingsProvider.notifier).setNotifications(true);
       }
     } finally {
@@ -149,6 +206,13 @@ class _NotificationsSettingsPageState
                           ),
                         ),
                       ),
+                      const SizedBox(height: 12),
+
+                      if (Platform.isAndroid && !_batteryOptimizationLoading)
+                        _BatteryOptimizationCard(
+                          disabled: _batteryOptimizationDisabled,
+                          onOpenSettings: _openBatterySettings,
+                        ),
                     ],
                   ),
                 ),
@@ -744,5 +808,95 @@ class _IntervalSelector extends StatelessWidget {
     final minutes = duration.inMinutes;
 
     return localizedMinutes(context, minutes);
+  }
+}
+
+class _BatteryOptimizationCard extends StatelessWidget {
+  const _BatteryOptimizationCard({
+    required this.disabled,
+    required this.onOpenSettings,
+  });
+
+  final bool disabled;
+  final VoidCallback onOpenSettings;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: disabled
+                    ? colorScheme.primaryContainer
+                    : colorScheme.tertiaryContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                disabled
+                    ? Icons.battery_saver_outlined
+                    : Icons.battery_alert_outlined,
+                color: disabled
+                    ? colorScheme.onPrimaryContainer
+                    : colorScheme.onTertiaryContainer,
+              ),
+            ),
+
+            const SizedBox(width: 14),
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    disabled
+                        ? context.l10n.batteryOptimizationDisabled
+                        : context.l10n.batteryOptimizationEnabled,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+
+                  const SizedBox(height: 4),
+
+                  Text(
+                    disabled
+                        ? context.l10n.workManagerCanRunFreely
+                        : context.l10n.batteryOptimizationHint,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+
+                  if (!disabled) ...[
+                    const SizedBox(height: 12),
+                    FilledButton.tonalIcon(
+                      onPressed: onOpenSettings,
+                      icon: const Icon(Icons.settings_outlined),
+                      label: Text(context.l10n.batterySettings),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+
+            const SizedBox(width: 8),
+
+            Icon(
+              disabled ? Icons.check_circle_rounded : Icons.warning_rounded,
+              color: disabled ? colorScheme.primary : colorScheme.tertiary,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
