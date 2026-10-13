@@ -616,4 +616,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get openCertificateSettings => 'Einstellungen öffnen';
+
+  @override
+  String get noConnection => 'Kein Internet';
+
+  @override
+  String get backOnline => 'Wieder online';
 }

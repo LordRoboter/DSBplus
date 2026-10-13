@@ -216,5 +216,7 @@
   "androidCertificateCompatibilityTitle": "Android-Kompatibilität",
   "androidCertificateCompatibilityDisclaimer": "Ältere Android-Geräte erkennen oft die neueren Zertifikate von DSB nicht. Dies kann zu fehlgeschlagenen Zertifikatsprüfungen führen und somit kann keine Verbindung hergestellt werden. Diese Probleme lassen sich hier umgehen. Es wird empfohlen, die Fingerabdrücke auf Gültigkeit zu überprüfen um Angriffe zu verhindern.",
   "certificateErrorSnackbar": "Ein Zertifikatsfehler ist aufgetreten. Überprüfe deine Einstellungen.",
-  "openCertificateSettings": "Einstellungen öffnen"
+  "openCertificateSettings": "Einstellungen öffnen",
+  "noConnection": "Kein Internet",
+  "backOnline": "Wieder online"
 }

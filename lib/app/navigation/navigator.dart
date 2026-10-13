@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:planner/app/navigation/model/navigation_item.dart';
 import 'package:planner/core/widgets/error_view.dart';
+import 'package:planner/core/widgets/offline_badge.dart';
 import 'package:planner/features/dsb/resources/presentation/dsb_resources_screen.dart';
 import 'package:planner/features/dsb/timetables/model/timetable.dart';
 import 'package:planner/features/dsb/timetables/presentation/home_screen.dart';
@@ -304,21 +305,34 @@ class _NavigatorScreenState extends ConsumerState<NavigatorScreen> {
               ),
             ),
           ),
-          body: bottomItems.length >= 2
-              ? PageView(
-                  controller: _pageController,
-                  onPageChanged: (index) {
-                    if (index >= bottomItems.length) {
-                      return;
-                    }
 
-                    setState(() {
-                      _currentItem = bottomItems[index].item;
-                    });
-                  },
-                  children: pages,
-                )
-              : pages.first,
+          body: Stack(
+            children: [
+              Positioned.fill(
+                child: bottomItems.length >= 2
+                    ? PageView(
+                        controller: _pageController,
+                        onPageChanged: (index) {
+                          if (index >= bottomItems.length) return;
+
+                          setState(() {
+                            _currentItem = bottomItems[index].item;
+                          });
+                        },
+                        children: pages,
+                      )
+                    : pages.first,
+              ),
+
+              const Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: OfflineBadge(),
+              ),
+            ],
+          ),
+
           bottomNavigationBar: bottomItems.length >= 2
               ? NavigationBar(
                   selectedIndex: selectedIndex,

@@ -609,4 +609,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openCertificateSettings => 'Open settings';
+
+  @override
+  String get noConnection => 'No connection';
+
+  @override
+  String get backOnline => 'Back online';
 }

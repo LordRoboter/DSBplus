@@ -124,8 +124,16 @@ class _CertificateErrorSnackBarListenerState
     });
   }
 
-  void _handleCertificateError(String? fingerprint) {
-    if (_hasShownCertificateError || fingerprint == null) return;
+  void _handleCertificateError(
+    String? fingerprint,
+    String? trustedFingerprint,
+    bool autoTrust,
+  ) {
+    if (_hasShownCertificateError ||
+        fingerprint == null ||
+        fingerprint == trustedFingerprint ||
+        autoTrust)
+      return;
 
     _hasShownCertificateError = true;
 
@@ -138,7 +146,11 @@ class _CertificateErrorSnackBarListenerState
 
     ref.listen(errorProvider, (previous, next) {
       next.whenData((errors) {
-        _handleCertificateError(errors.lastFailedFingerprint);
+        _handleCertificateError(
+          errors.lastFailedFingerprint,
+          errors.trustedFingerprint,
+          errors.autoTrustCertificates,
+        );
       });
     });
 
@@ -147,7 +159,11 @@ class _CertificateErrorSnackBarListenerState
       if (!_hasShownCertificateError && errors.lastFailedFingerprint != null) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            _handleCertificateError(errors.lastFailedFingerprint);
+            _handleCertificateError(
+              errors.lastFailedFingerprint,
+              errors.trustedFingerprint,
+              errors.autoTrustCertificates,
+            );
           }
         });
       }

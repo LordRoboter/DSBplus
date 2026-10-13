@@ -216,5 +216,7 @@
   "androidCertificateCompatibilityTitle": "Android compatibility",
   "androidCertificateCompatibilityDisclaimer": "Older Android devices may not recognize DSB's newer certificates. This can cause certificate validation failures or prevent the app from connecting. It is strongly recommended to only trust a certificate after independently verifying its fingerprint.",
   "certificateErrorSnackbar": "A certificate error occurred. Check your certificate settings.",
-  "openCertificateSettings": "Open settings"
+  "openCertificateSettings": "Open settings",
+  "noConnection": "No connection",
+  "backOnline": "Back online"
 }
