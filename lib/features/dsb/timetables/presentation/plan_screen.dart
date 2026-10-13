@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:planner/core/widgets/error_view.dart';
 import 'package:planner/core/widgets/no_entries_view.dart';
+import 'package:planner/core/widgets/useless/crazy_kaomoji_page.dart';
 import 'package:planner/features/dsb/timetables/model/daydate.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/core/util/date.dart';
@@ -471,36 +472,9 @@ class _PlanScreenState extends ConsumerState<PlanScreen>
                                             physics:
                                                 const AlwaysScrollableScrollPhysics(),
                                             children: [
-                                              ConstrainedBox(
-                                                constraints: BoxConstraints(
-                                                  minHeight:
-                                                      constraints.maxHeight,
-                                                ),
-                                                child: Center(
-                                                  child: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      Text(
-                                                        '(｡•́︿•̀｡)',
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .headlineMedium,
-                                                      ),
-                                                      const SizedBox(
-                                                        height: 12,
-                                                      ),
-                                                      Text(
-                                                        context.l10n.noEntries,
-                                                        style: Theme.of(
-                                                          context,
-                                                        ).textTheme.titleMedium,
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
+                                              SizedBox(
+                                                height: constraints.maxHeight,
+                                                child: const CrazyKaomojiPage(),
                                               ),
                                             ],
                                           );
