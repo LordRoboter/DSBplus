@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:planner/app/navigation/model/navigation_item.dart';
+import 'package:planner/core/widgets/error_view.dart';
 import 'package:planner/features/dsb/resources/presentation/dsb_resources_screen.dart';
 import 'package:planner/features/dsb/timetables/model/timetable.dart';
 import 'package:planner/features/dsb/timetables/presentation/home_screen.dart';
@@ -181,8 +182,14 @@ class _NavigatorScreenState extends ConsumerState<NavigatorScreen> {
     return settingsAsync.when(
       loading: () =>
           const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (error, stackTrace) =>
-          Scaffold(body: Center(child: Text('Error: $error'))),
+      error: (error, stackTrace) => Scaffold(
+        body: Center(
+          child: ErrorView(
+            title: 'Something went wrong',
+            message: 'Flutter raised the following error: $error',
+          ),
+        ),
+      ),
       data: (settings) {
         final bottomItems = settings.bottomNavigationItems
             .where((item) => item.visible)

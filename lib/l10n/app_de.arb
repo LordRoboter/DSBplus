@@ -162,5 +162,59 @@
   "batterySettings": "Einstellungen öffnen",
   "batteryOptimizationDisabled": "Akku-Optimierung ist für diese App ausgeschaltet",
   "batteryOptimizationEnabled": "Akku-Optimierung ist eingeschaltet",
-  "workManagerCanRunFreely": "Hintergrundchecks sollten ohne Einschränkungen laufen"
+  "workManagerCanRunFreely": "Hintergrundchecks sollten ohne Einschränkungen laufen",
+  "certificateTitle": "Zertifikat",
+  "certificateSecurityTitle": "Sicherheitseinstellungen",
+  "errors": "Fehler",
+  "errorsExp": "Fehlerbehebung und Weiteres",
+  "autoTrustCertificates": "Allen Zertifikaten vertrauen",
+  "autoTrustCertificatesDescription": "Zertifikaten, deren Validierung fehlschlägt, automatisch vertrauen. Dadurch wird die Sicherheit verringert, da ein ungültiges Zertifikat zu einem Angreifer gehören könnte.",
+  "lastFailedCertificate": "Letzter Zertifikatsfehler",
+  "noFailedCertificate": "Keine aufgezeichneten Zertifikatsfehler",
+  "certificateFailedValidation": "Invalides Zertifikat:",
+  "certificateIsTrusted": "Dem Zertifikat wird vertraut",
+  "trustCertificate": "Zertifikat vertrauen",
+  "trustedCertificate": "Vertrautes Zertifikat",
+  "removeTrust": "Vertrauen entfernen",
+  "trustCertificateTitle": "Zertifikat vertrauen?",
+  "trustCertificateWarning": "Es wird empfohlen, den Fingerabdruck des Zertifikats unabhängig auf Gültigkeit zu überprüfen.",
+  "trust": "Vertrauen",
+  "certificateTrusted": "Zertifikat als vertrauenswürdig eingestuft",
+  "trustedCertificateRemoved": "Vertrauen in das Zertifikat entfernt",
+  "failedToTrustCertificate": "Zertifikat konnte nicht als vertrauenswürdig eingestuft werden: {error}",
+  "@failedToTrustCertificate": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRemoveTrust": "Vertrauen konnte nicht entfernt werden: {error}",
+  "@failedToRemoveTrust": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdateAutoTrust": "Einstellung für automatisches Vertrauen konnte nicht aktualisiert werden: {error}",
+  "@failedToUpdateAutoTrust": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingCertificateSettings": "Zertifikatseinstellungen konnten nicht geladen werden: {error}",
+  "@errorLoadingCertificateSettings": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "androidCertificateCompatibilityTitle": "Android-Kompatibilität",
+  "androidCertificateCompatibilityDisclaimer": "Ältere Android-Geräte erkennen oft die neueren Zertifikate von DSB nicht. Dies kann zu fehlgeschlagenen Zertifikatsprüfungen führen und somit kann keine Verbindung hergestellt werden. Diese Probleme lassen sich hier umgehen. Es wird empfohlen, die Fingerabdrücke auf Gültigkeit zu überprüfen um Angriffe zu verhindern.",
+  "certificateErrorSnackbar": "Ein Zertifikatsfehler ist aufgetreten. Überprüfe deine Einstellungen.",
+  "openCertificateSettings": "Einstellungen öffnen"
 }

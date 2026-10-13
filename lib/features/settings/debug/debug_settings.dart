@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:planner/background_tasks.dart';
 import 'package:planner/features/dsb/timetables/providers/timetable_components_provider.dart';
+import 'package:planner/features/settings/errors/providers/error_provider.dart';
 import 'package:planner/features/settings/presentation/widgets/settings.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/features/dsb/timetables/providers/timetable_provider.dart';
@@ -90,6 +91,17 @@ class DebugSettingsPage extends ConsumerWidget {
                   ref.invalidate(timetableProvider);
                 },
               ),
+            ),
+
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.delete_sweep_rounded),
+              title: const Text('Clear errors'),
+              subtitle: const Text('Remove the error settings.'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () async => {
+                await ref.read(errorProvider.notifier).clear(),
+              },
             ),
 
             const Divider(),

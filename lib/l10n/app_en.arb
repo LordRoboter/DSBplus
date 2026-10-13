@@ -162,5 +162,59 @@
   "batterySettings": "Open Settings",
   "batteryOptimizationDisabled": "Battery optimization is disabled for this app",
   "batteryOptimizationEnabled": "Battery optimization is enabled",
-  "workManagerCanRunFreely": "Background checks should work without restrictions"
+  "workManagerCanRunFreely": "Background checks should work without restrictions",
+  "certificateTitle": "Certificate",
+  "certificateSecurityTitle": "Security settings",
+  "errors": "Errors",
+  "errorsExp": "Troubleshooting and more",
+  "autoTrustCertificates": "Automatically trust certificates",
+  "autoTrustCertificatesDescription": "Automatically trust certificates that fail validation. This reduces security because an invalid certificate could belong to an attacker.",
+  "lastFailedCertificate": "Last failed certificate",
+  "noFailedCertificate": "No failed certificate has been recorded.",
+  "certificateFailedValidation": "The following certificate failed validation:",
+  "certificateIsTrusted": "Certificate is trusted",
+  "trustCertificate": "Trust certificate",
+  "trustedCertificate": "Trusted certificate",
+  "removeTrust": "Remove trust",
+  "trustCertificateTitle": "Trust certificate?",
+  "trustCertificateWarning": "Only trust this certificate if you have independently verified that its fingerprint belongs to the expected server.",
+  "trust": "Trust",
+  "certificateTrusted": "Certificate trusted",
+  "trustedCertificateRemoved": "Trusted certificate removed",
+  "failedToTrustCertificate": "Failed to trust certificate: {error}",
+  "@failedToTrustCertificate": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRemoveTrust": "Failed to remove trust: {error}",
+  "@failedToRemoveTrust": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdateAutoTrust": "Failed to update auto-trust setting: {error}",
+  "@failedToUpdateAutoTrust": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingCertificateSettings": "Error loading certificate settings: {error}",
+  "@errorLoadingCertificateSettings": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "androidCertificateCompatibilityTitle": "Android compatibility",
+  "androidCertificateCompatibilityDisclaimer": "Older Android devices may not recognize DSB's newer certificates. This can cause certificate validation failures or prevent the app from connecting. It is strongly recommended to only trust a certificate after independently verifying its fingerprint.",
+  "certificateErrorSnackbar": "A certificate error occurred. Check your certificate settings.",
+  "openCertificateSettings": "Open settings"
 }

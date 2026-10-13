@@ -518,4 +518,95 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get workManagerCanRunFreely =>
       'Background checks should work without restrictions';
+
+  @override
+  String get certificateTitle => 'Certificate';
+
+  @override
+  String get certificateSecurityTitle => 'Security settings';
+
+  @override
+  String get errors => 'Errors';
+
+  @override
+  String get errorsExp => 'Troubleshooting and more';
+
+  @override
+  String get autoTrustCertificates => 'Automatically trust certificates';
+
+  @override
+  String get autoTrustCertificatesDescription =>
+      'Automatically trust certificates that fail validation. This reduces security because an invalid certificate could belong to an attacker.';
+
+  @override
+  String get lastFailedCertificate => 'Last failed certificate';
+
+  @override
+  String get noFailedCertificate => 'No failed certificate has been recorded.';
+
+  @override
+  String get certificateFailedValidation =>
+      'The following certificate failed validation:';
+
+  @override
+  String get certificateIsTrusted => 'Certificate is trusted';
+
+  @override
+  String get trustCertificate => 'Trust certificate';
+
+  @override
+  String get trustedCertificate => 'Trusted certificate';
+
+  @override
+  String get removeTrust => 'Remove trust';
+
+  @override
+  String get trustCertificateTitle => 'Trust certificate?';
+
+  @override
+  String get trustCertificateWarning =>
+      'Only trust this certificate if you have independently verified that its fingerprint belongs to the expected server.';
+
+  @override
+  String get trust => 'Trust';
+
+  @override
+  String get certificateTrusted => 'Certificate trusted';
+
+  @override
+  String get trustedCertificateRemoved => 'Trusted certificate removed';
+
+  @override
+  String failedToTrustCertificate(String error) {
+    return 'Failed to trust certificate: $error';
+  }
+
+  @override
+  String failedToRemoveTrust(String error) {
+    return 'Failed to remove trust: $error';
+  }
+
+  @override
+  String failedToUpdateAutoTrust(String error) {
+    return 'Failed to update auto-trust setting: $error';
+  }
+
+  @override
+  String errorLoadingCertificateSettings(String error) {
+    return 'Error loading certificate settings: $error';
+  }
+
+  @override
+  String get androidCertificateCompatibilityTitle => 'Android compatibility';
+
+  @override
+  String get androidCertificateCompatibilityDisclaimer =>
+      'Older Android devices may not recognize DSB\'s newer certificates. This can cause certificate validation failures or prevent the app from connecting. It is strongly recommended to only trust a certificate after independently verifying its fingerprint.';
+
+  @override
+  String get certificateErrorSnackbar =>
+      'A certificate error occurred. Check your certificate settings.';
+
+  @override
+  String get openCertificateSettings => 'Open settings';
 }

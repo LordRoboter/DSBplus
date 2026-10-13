@@ -14,6 +14,7 @@ import 'package:planner/features/dsb/timetables/service/dsb_timetable_service.da
 import 'package:planner/features/notifications/background_tasks.dart';
 import 'package:planner/features/notifications/model/interval.dart';
 import 'package:planner/features/dsb/timetables/model/daydate.dart';
+import 'package:planner/features/settings/errors/providers/background_error.dart';
 import 'package:planner/features/settings/providers/background_settings.dart';
 import 'package:planner/core/util/date.dart';
 import 'package:planner/core/util/sorter.dart';
@@ -37,7 +38,15 @@ Future<bool> runTimetableBackgroundCheck() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
 
-    HttpOverrides.global = MyHttpOverrides();
+    final errors = BackgroundErrorRepository();
+    await errors.init();
+
+    HttpOverrides.global = MyHttpOverrides(
+      trustedFingerprint: errors.trustedFingerprint,
+      autoTrustCertificates: errors.autoTrustCertificates,
+      onFailedFingerprint: errors.saveLastFailedFingerprint,
+      onTrustFingerprint: errors.saveTrustedFingerprint,
+    );
 
     await NotificationService.init();
 

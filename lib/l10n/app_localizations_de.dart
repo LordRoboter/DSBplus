@@ -525,4 +525,95 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get workManagerCanRunFreely =>
       'Hintergrundchecks sollten ohne Einschränkungen laufen';
+
+  @override
+  String get certificateTitle => 'Zertifikat';
+
+  @override
+  String get certificateSecurityTitle => 'Sicherheitseinstellungen';
+
+  @override
+  String get errors => 'Fehler';
+
+  @override
+  String get errorsExp => 'Fehlerbehebung und Weiteres';
+
+  @override
+  String get autoTrustCertificates => 'Allen Zertifikaten vertrauen';
+
+  @override
+  String get autoTrustCertificatesDescription =>
+      'Zertifikaten, deren Validierung fehlschlägt, automatisch vertrauen. Dadurch wird die Sicherheit verringert, da ein ungültiges Zertifikat zu einem Angreifer gehören könnte.';
+
+  @override
+  String get lastFailedCertificate => 'Letzter Zertifikatsfehler';
+
+  @override
+  String get noFailedCertificate => 'Keine aufgezeichneten Zertifikatsfehler';
+
+  @override
+  String get certificateFailedValidation => 'Invalides Zertifikat:';
+
+  @override
+  String get certificateIsTrusted => 'Dem Zertifikat wird vertraut';
+
+  @override
+  String get trustCertificate => 'Zertifikat vertrauen';
+
+  @override
+  String get trustedCertificate => 'Vertrautes Zertifikat';
+
+  @override
+  String get removeTrust => 'Vertrauen entfernen';
+
+  @override
+  String get trustCertificateTitle => 'Zertifikat vertrauen?';
+
+  @override
+  String get trustCertificateWarning =>
+      'Es wird empfohlen, den Fingerabdruck des Zertifikats unabhängig auf Gültigkeit zu überprüfen.';
+
+  @override
+  String get trust => 'Vertrauen';
+
+  @override
+  String get certificateTrusted => 'Zertifikat als vertrauenswürdig eingestuft';
+
+  @override
+  String get trustedCertificateRemoved =>
+      'Vertrauen in das Zertifikat entfernt';
+
+  @override
+  String failedToTrustCertificate(String error) {
+    return 'Zertifikat konnte nicht als vertrauenswürdig eingestuft werden: $error';
+  }
+
+  @override
+  String failedToRemoveTrust(String error) {
+    return 'Vertrauen konnte nicht entfernt werden: $error';
+  }
+
+  @override
+  String failedToUpdateAutoTrust(String error) {
+    return 'Einstellung für automatisches Vertrauen konnte nicht aktualisiert werden: $error';
+  }
+
+  @override
+  String errorLoadingCertificateSettings(String error) {
+    return 'Zertifikatseinstellungen konnten nicht geladen werden: $error';
+  }
+
+  @override
+  String get androidCertificateCompatibilityTitle => 'Android-Kompatibilität';
+
+  @override
+  String get androidCertificateCompatibilityDisclaimer =>
+      'Ältere Android-Geräte erkennen oft die neueren Zertifikate von DSB nicht. Dies kann zu fehlgeschlagenen Zertifikatsprüfungen führen und somit kann keine Verbindung hergestellt werden. Diese Probleme lassen sich hier umgehen. Es wird empfohlen, die Fingerabdrücke auf Gültigkeit zu überprüfen um Angriffe zu verhindern.';
+
+  @override
+  String get certificateErrorSnackbar =>
+      'Ein Zertifikatsfehler ist aufgetreten. Überprüfe deine Einstellungen.';
+
+  @override
+  String get openCertificateSettings => 'Einstellungen öffnen';
 }

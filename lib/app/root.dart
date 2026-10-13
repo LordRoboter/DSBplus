@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:planner/app/navigation/navigator.dart';
+import 'package:planner/core/widgets/error_view.dart';
 import 'package:planner/features/notifications/background_tasks.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/app/startup/startup_screen.dart';
@@ -30,7 +31,12 @@ class _AppRootState extends ConsumerState<AppRoot> {
       loading: () => const Center(child: CircularProgressIndicator()),
 
       error: (error, stackTrace) {
-        return Center(child: Text('Error: $error'));
+        return Center(
+          child: ErrorView(
+            title: 'Something went wrong',
+            message: 'Flutter raised the following error: $error',
+          ),
+        );
       },
 
       data: (settingsState) {

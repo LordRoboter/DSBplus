@@ -3,7 +3,8 @@ import 'package:material_ui/material_ui.dart';
 import 'package:planner/features/settings/presentation/pages/appearance_page.dart';
 import 'package:planner/features/settings/presentation/pages/auth_page.dart';
 import 'package:planner/features/settings/presentation/pages/cleanup_page.dart';
-import 'package:planner/features/settings/presentation/pages/debug/debug_settings.dart';
+import 'package:planner/features/settings/debug/debug_settings.dart';
+import 'package:planner/features/settings/errors/presentation/error_page.dart';
 import 'package:planner/features/settings/presentation/pages/filter_page.dart';
 import 'package:planner/features/settings/presentation/pages/language_page.dart';
 import 'package:planner/features/settings/presentation/pages/notifications_page.dart';
@@ -93,6 +94,16 @@ class SettingsCategoriesPage extends StatelessWidget {
               icon: Icons.filter_alt_outlined,
               position: SettingsCategoryTilePosition.bottom,
               onTap: () => _open(context, const FiltersSettingsPage()),
+            ),
+          ]),
+          const SizedBox(height: 16),
+          _stackedCategories([
+            SettingsCategoryTile(
+              title: context.l10n.errors,
+              subtitle: context.l10n.errorsExp,
+              icon: Icons.error_outlined,
+              position: SettingsCategoryTilePosition.single,
+              onTap: () => _open(context, const ErrorSettingsPage()),
             ),
           ]),
           if (kDebugMode) ...[
