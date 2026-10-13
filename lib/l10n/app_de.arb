@@ -7,7 +7,6 @@
   "plan": "Vertretungsplan",
   "substPlan": "Vertretungsplan",
   "noRelevantEntries": "Keine relevanten Einträge •︵•",
-  "noEntries": "Keine Einträge ( – ⤙ – )",
   "newEntries": "Neue Einträge!",
   "outdatedEntry": "Dieser Eintrag ist wahrscheinlich veraltet",
   "entryInfo": "{lessonOrdinal} Stunde: {type} {subject} {teacher}",
@@ -219,5 +218,11 @@
   "certificateErrorSnackbar": "Ein Zertifikatsfehler ist aufgetreten. Überprüfe deine Einstellungen.",
   "openCertificateSettings": "Einstellungen öffnen",
   "noConnection": "Kein Internet",
-  "backOnline": "Wieder online"
+  "backOnline": "Wieder online",
+  "somethingWentWrong": "Etwas ist schiefgelaufen!",
+  "errorRaised": "Folgender Fehler ist aufgetreten:",
+  "allCaughtUp": "Du bist auf dem neusten Stand!",
+  "nothingRelevant": "Keine relevanten Einträge für dich. — Schau später vorbei, um neue Einträge zu sehen!",
+  "noEntries": "Noch keine Einträge",
+  "noEntriesDesc": "Hier scheint es momentan nichts zu geben."
 }

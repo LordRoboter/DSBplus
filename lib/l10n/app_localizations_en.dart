@@ -28,12 +28,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get substPlan => 'Substitution Plan';
 
   @override
-  String get noRelevantEntries => 'No relevant Entries •︵•';
-
-  @override
-  String get noEntries => 'No Entries ( – ⤙ – )';
-
-  @override
   String get newEntries => 'New Entries!';
 
   @override
@@ -618,4 +612,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backOnline => 'Back online';
+
+  @override
+  String get somethingWentWrong => 'Something went wrong!';
+
+  @override
+  String get errorRaised => 'The following error occured:';
+
+  @override
+  String get allCaughtUp => 'You\'re all caught up!';
+
+  @override
+  String get nothingRelevant =>
+      'Nothing relevant for you right now. — Come back later to see new entries.';
+
+  @override
+  String get noEntries => 'No entries yet';
+
+  @override
+  String get noEntriesDesc => 'Looks like there is nothing here right now.';
 }

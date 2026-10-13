@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:planner/core/widgets/error_view.dart';
+import 'package:planner/core/widgets/no_entries_view.dart';
 import 'package:planner/features/dsb/timetables/model/daydate.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/core/util/date.dart';
@@ -63,8 +64,8 @@ class _PlanScreenState extends ConsumerState<PlanScreen>
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) => Center(
           child: ErrorView(
-            title: 'Something went wrong',
-            message: 'Flutter raised the following error: $error',
+            title: context.l10n.somethingWentWrong,
+            message: '${context.l10n.errorRaised} $error',
           ),
         ),
         data: (settingsState) {
@@ -72,8 +73,8 @@ class _PlanScreenState extends ConsumerState<PlanScreen>
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (error, stackTrace) => Center(
               child: ErrorView(
-                title: 'Something went wrong',
-                message: 'Flutter raised the following error: $error',
+                title: context.l10n.somethingWentWrong,
+                message: '${context.l10n.errorRaised} $error',
               ),
             ),
             data: (availableDayDates) {
@@ -97,8 +98,8 @@ class _PlanScreenState extends ConsumerState<PlanScreen>
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (error, stackTrace) => Center(
                   child: ErrorView(
-                    title: 'Something went wrong',
-                    message: 'Flutter raised the following error: $error',
+                    title: context.l10n.somethingWentWrong,
+                    message: '${context.l10n.errorRaised} $error',
                   ),
                 ),
                 data: (enhancedTimetables) {
@@ -141,10 +142,18 @@ class _PlanScreenState extends ConsumerState<PlanScreen>
                         )
                       : visibleTimetable;
 
-                  return (filteredTimetable == null ||
-                              filteredTimetable.entries.isEmpty) &&
-                          isRefreshing
-                      ? const Center(child: CircularProgressIndicator())
+                  final hasNoEntries =
+                      filteredTimetable == null ||
+                      filteredTimetable.entries.isEmpty;
+
+                  return (enhancedTimetables.isEmpty)
+                      ? NoEntriesView(
+                          title: context.l10n.noEntries,
+                          message: context.l10n.noEntriesDesc,
+                          onRetry: () =>
+                              ref.read(timetableProvider.notifier).refresh(),
+                          isLoading: isRefreshing,
+                        )
                       : Column(
                           children: [
                             AnimatedSwitcher(
@@ -455,27 +464,50 @@ class _PlanScreenState extends ConsumerState<PlanScreen>
                                       .read(timetableProvider.notifier)
                                       .refresh();
                                 },
-                                child:
-                                    filteredTimetable == null ||
-                                        filteredTimetable.entries.isEmpty
+                                child: hasNoEntries
                                     ? LayoutBuilder(
                                         builder: (context, constraints) {
-                                          return SingleChildScrollView(
+                                          return ListView(
                                             physics:
                                                 const AlwaysScrollableScrollPhysics(),
-                                            child: SizedBox(
-                                              height: constraints.maxHeight,
-                                              child: Center(
-                                                child: Text(
-                                                  context.l10n.noEntries,
+                                            children: [
+                                              ConstrainedBox(
+                                                constraints: BoxConstraints(
+                                                  minHeight:
+                                                      constraints.maxHeight,
+                                                ),
+                                                child: Center(
+                                                  child: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      Text(
+                                                        '(｡•́︿•̀｡)',
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .headlineMedium,
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 12,
+                                                      ),
+                                                      Text(
+                                                        context.l10n.noEntries,
+                                                        style: Theme.of(
+                                                          context,
+                                                        ).textTheme.titleMedium,
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
-                                            ),
+                                            ],
                                           );
                                         },
                                       )
                                     : EntryList(
-                                        timetable: filteredTimetable,
+                                        timetable: filteredTimetable!,
                                         settings: settingsState,
                                         filters: settingsState.filters,
                                         classFilter: settingsState.classFilter,

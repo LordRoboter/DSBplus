@@ -178,7 +178,7 @@ class _CertificateErrorSnackBarListenerState
         home: Scaffold(
           body: Center(
             child: ErrorView(
-              title: 'Something went wrong',
+              title: context.l10n.somethingWentWrong,
               message: 'Settings could not be loaded. ',
             ),
           ),

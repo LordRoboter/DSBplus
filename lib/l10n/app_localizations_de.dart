@@ -28,12 +28,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get substPlan => 'Vertretungsplan';
 
   @override
-  String get noRelevantEntries => 'Keine relevanten Einträge •︵•';
-
-  @override
-  String get noEntries => 'Keine Einträge ( – ⤙ – )';
-
-  @override
   String get newEntries => 'Neue Einträge!';
 
   @override
@@ -625,4 +619,23 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get backOnline => 'Wieder online';
+
+  @override
+  String get somethingWentWrong => 'Etwas ist schiefgelaufen!';
+
+  @override
+  String get errorRaised => 'Folgender Fehler ist aufgetreten:';
+
+  @override
+  String get allCaughtUp => 'Du bist auf dem neusten Stand!';
+
+  @override
+  String get nothingRelevant =>
+      'Keine relevanten Einträge für dich. — Schau später vorbei, um neue Einträge zu sehen!';
+
+  @override
+  String get noEntries => 'Noch keine Einträge';
+
+  @override
+  String get noEntriesDesc => 'Hier scheint es momentan nichts zu geben.';
 }

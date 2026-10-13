@@ -6,8 +6,6 @@
   "home": "Home",
   "plan": "Plan",
   "substPlan": "Substitution Plan",
-  "noRelevantEntries": "No relevant Entries •︵•",
-  "noEntries": "No Entries ( – ⤙ – )",
   "newEntries": "New Entries!",
   "outdatedEntry": "This entry is probably outdated",
   "entryInfo": "{lessonOrdinal} lesson: {type} {subject} {teacher}",
@@ -219,5 +217,11 @@
   "certificateErrorSnackbar": "A certificate error occurred. Check your certificate settings.",
   "openCertificateSettings": "Open settings",
   "noConnection": "No connection",
-  "backOnline": "Back online"
+  "backOnline": "Back online",
+  "somethingWentWrong": "Something went wrong!",
+  "errorRaised": "The following error occured:",
+  "allCaughtUp": "You're all caught up!",
+  "nothingRelevant": "Nothing relevant for you right now. — Come back later to see new entries.",
+  "noEntries": "No entries yet",
+  "noEntriesDesc": "Looks like there is nothing here right now."
 }

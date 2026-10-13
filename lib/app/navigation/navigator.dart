@@ -186,8 +186,8 @@ class _NavigatorScreenState extends ConsumerState<NavigatorScreen> {
       error: (error, stackTrace) => Scaffold(
         body: Center(
           child: ErrorView(
-            title: 'Something went wrong',
-            message: 'Flutter raised the following error: $error',
+            title: context.l10n.somethingWentWrong,
+            message: '${context.l10n.errorRaised} $error',
           ),
         ),
       ),

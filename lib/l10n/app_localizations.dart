@@ -134,18 +134,6 @@ abstract class AppLocalizations {
   /// **'Substitution Plan'**
   String get substPlan;
 
-  /// No description provided for @noRelevantEntries.
-  ///
-  /// In en, this message translates to:
-  /// **'No relevant Entries •︵•'**
-  String get noRelevantEntries;
-
-  /// No description provided for @noEntries.
-  ///
-  /// In en, this message translates to:
-  /// **'No Entries ( – ⤙ – )'**
-  String get noEntries;
-
   /// No description provided for @newEntries.
   ///
   /// In en, this message translates to:
@@ -1259,6 +1247,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Back online'**
   String get backOnline;
+
+  /// No description provided for @somethingWentWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong!'**
+  String get somethingWentWrong;
+
+  /// No description provided for @errorRaised.
+  ///
+  /// In en, this message translates to:
+  /// **'The following error occured:'**
+  String get errorRaised;
+
+  /// No description provided for @allCaughtUp.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re all caught up!'**
+  String get allCaughtUp;
+
+  /// No description provided for @nothingRelevant.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing relevant for you right now. — Come back later to see new entries.'**
+  String get nothingRelevant;
+
+  /// No description provided for @noEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'No entries yet'**
+  String get noEntries;
+
+  /// No description provided for @noEntriesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Looks like there is nothing here right now.'**
+  String get noEntriesDesc;
 }
 
 class _AppLocalizationsDelegate

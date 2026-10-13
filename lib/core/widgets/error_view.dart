@@ -5,7 +5,7 @@ class ErrorView extends StatelessWidget {
     super.key,
     required this.title,
     required this.message,
-    this.icon = Icons.cloud_off_rounded,
+    this.icon = Icons.error_rounded,
     this.onRetry,
     this.retryLabel = 'Try again',
     this.onSecondaryAction,

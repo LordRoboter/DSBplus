@@ -5,6 +5,7 @@ import 'package:planner/core/widgets/error_view.dart';
 import 'package:planner/features/notifications/background_tasks.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/app/startup/startup_screen.dart';
+import 'package:planner/l10n/l10extension.dart';
 
 class AppRoot extends ConsumerStatefulWidget {
   const AppRoot({super.key});
@@ -33,8 +34,8 @@ class _AppRootState extends ConsumerState<AppRoot> {
       error: (error, stackTrace) {
         return Center(
           child: ErrorView(
-            title: 'Something went wrong',
-            message: 'Flutter raised the following error: $error',
+            title: context.l10n.somethingWentWrong,
+            message: '${context.l10n.errorRaised} $error',
           ),
         );
       },
