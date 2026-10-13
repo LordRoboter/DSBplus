@@ -361,6 +361,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get rescheduling => 'Verlegung';
 
   @override
+  String get exam => 'Klausur';
+
+  @override
   String get subjectGerman => 'Deutsch';
 
   @override

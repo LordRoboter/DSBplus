@@ -105,6 +105,8 @@ String localizedStatus(
     TimetableStatusType.rescheduling =>
       original ? "Verlegung" : l10n.rescheduling,
 
+    TimetableStatusType.exam => original ? "Klausur" : l10n.exam,
+
     null => "",
   };
 }

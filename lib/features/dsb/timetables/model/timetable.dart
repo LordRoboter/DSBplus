@@ -59,6 +59,7 @@ enum TimetableStatusType {
   supervision,
   specialAssignment,
   rescheduling,
+  exam,
 }
 
 class Timetable {

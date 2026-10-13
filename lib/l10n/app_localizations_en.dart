@@ -360,6 +360,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rescheduling => 'Rescheduling';
 
   @override
+  String get exam => 'Exam';
+
+  @override
   String get subjectGerman => 'German';
 
   @override

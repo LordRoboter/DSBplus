@@ -111,6 +111,9 @@ TimetableStatusType? parseStatus(String? value) {
     case "verlegung":
       return TimetableStatusType.rescheduling;
 
+    case "klausur":
+      return TimetableStatusType.exam;
+
     default:
       return null;
   }

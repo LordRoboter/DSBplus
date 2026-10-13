@@ -132,8 +132,9 @@ class _CertificateErrorSnackBarListenerState
     if (_hasShownCertificateError ||
         fingerprint == null ||
         fingerprint == trustedFingerprint ||
-        autoTrust)
+        autoTrust) {
       return;
+    }
 
     _hasShownCertificateError = true;
 

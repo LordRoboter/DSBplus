@@ -780,6 +780,12 @@ abstract class AppLocalizations {
   /// **'Rescheduling'**
   String get rescheduling;
 
+  /// No description provided for @exam.
+  ///
+  /// In en, this message translates to:
+  /// **'Exam'**
+  String get exam;
+
   /// No description provided for @subjectGerman.
   ///
   /// In en, this message translates to:
