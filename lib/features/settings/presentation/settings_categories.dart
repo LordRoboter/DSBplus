@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:planner/app/about/about_page.dart';
 import 'package:planner/features/settings/presentation/pages/appearance_page.dart';
 import 'package:planner/features/settings/presentation/pages/auth_page.dart';
 import 'package:planner/features/settings/presentation/pages/cleanup_page.dart';
@@ -101,9 +102,19 @@ class SettingsCategoriesPage extends StatelessWidget {
             SettingsCategoryTile(
               title: context.l10n.errors,
               subtitle: context.l10n.errorsExp,
-              icon: Icons.error_outlined,
+              icon: Icons.error_outline,
               position: SettingsCategoryTilePosition.single,
               onTap: () => _open(context, const ErrorSettingsPage()),
+            ),
+          ]),
+          const SizedBox(height: 16),
+          _stackedCategories([
+            SettingsCategoryTile(
+              title: context.l10n.about,
+              subtitle: context.l10n.aboutDesc,
+              icon: Icons.info,
+              position: SettingsCategoryTilePosition.single,
+              onTap: () => _open(context, const AboutPage()),
             ),
           ]),
           if (kDebugMode) ...[

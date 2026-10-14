@@ -223,5 +223,20 @@
   "allCaughtUp": "You're all caught up!",
   "nothingRelevant": "Nothing relevant for you right now. — Come back later to see new entries.",
   "noEntries": "No entries yet",
-  "noEntriesDesc": "Looks like there is nothing here right now."
+  "noEntriesDesc": "Looks like there is nothing here right now.",
+  "about": "About",
+  "aboutDesc": "More information about Planner",
+  "projectDesc": "An alternative client for the DSB portal",
+  "openSource": "Open source",
+  "version": "Version",
+  "viewOnGitHub": "View on GitHub",
+  "gitHubDesc": "Source code and issues",
+  "reportBug": "Report a bug",
+  "featureRequest": "Request a feature",
+  "featureRequestDesc": "Suggest an idea to improve Planner",
+  "contributors": "Contributors",
+  "contributorsDesc": "Contributors to the project",
+  "license": "License",
+  "licenseName": "GPL v3.0",
+  "madeWithFlutter": "Made with Flutter 💙"
 }

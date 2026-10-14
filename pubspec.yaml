@@ -61,6 +61,12 @@ dependencies:
   flex_color_picker: ^3.8.0
   cached_network_image: ^4.0.0
   connectivity_plus: ^7.3.2
+  package_info_plus: ^10.2.2
+  url_launcher: ^6.3.3
+  flutter_svg: ^2.3.0
+  crazy_kaomojis:
+    git:
+      url: https://github.com/LordRoboter/CrazyKaomojis.git
 
 dev_dependencies:
   flutter_test:
@@ -261,6 +267,7 @@ flutter:
   assets:
     - assets/bg.png
     - assets/fg.png
+    - assets/github.svg
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

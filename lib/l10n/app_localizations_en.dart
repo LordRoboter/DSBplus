@@ -631,4 +631,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noEntriesDesc => 'Looks like there is nothing here right now.';
+
+  @override
+  String get about => 'About';
+
+  @override
+  String get aboutDesc => 'More information about Planner';
+
+  @override
+  String get projectDesc => 'An alternative client for the DSB portal';
+
+  @override
+  String get openSource => 'Open source';
+
+  @override
+  String get version => 'Version';
+
+  @override
+  String get viewOnGitHub => 'View on GitHub';
+
+  @override
+  String get gitHubDesc => 'Source code and issues';
+
+  @override
+  String get reportBug => 'Report a bug';
+
+  @override
+  String get featureRequest => 'Request a feature';
+
+  @override
+  String get featureRequestDesc => 'Suggest an idea to improve Planner';
+
+  @override
+  String get contributors => 'Contributors';
+
+  @override
+  String get contributorsDesc => 'Contributors to the project';
+
+  @override
+  String get license => 'License';
+
+  @override
+  String get licenseName => 'GPL v3.0';
+
+  @override
+  String get madeWithFlutter => 'Made with Flutter 💙';
 }

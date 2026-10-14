@@ -224,5 +224,20 @@
   "allCaughtUp": "Du bist auf dem neusten Stand!",
   "nothingRelevant": "Keine relevanten Einträge für dich. — Schau später vorbei, um neue Einträge zu sehen!",
   "noEntries": "Noch keine Einträge",
-  "noEntriesDesc": "Hier scheint es momentan nichts zu geben."
+  "noEntriesDesc": "Hier scheint es momentan nichts zu geben.",
+  "about": "Über Planner",
+  "aboutDesc": "Mehr Informationen über die App",
+  "projectDesc": "Ein alternativer client für das DSB Portal",
+  "openSource": "Open Source",
+  "version": "Version",
+  "viewOnGitHub": "Auf GitHub ansehen",
+  "gitHubDesc": "Quellcode und issues",
+  "reportBug": "Bugs melden",
+  "featureRequest": "Funktion vorschlagen",
+  "featureRequestDesc": "Schlage eine Verbesserung für Planner vor",
+  "contributors": "Mitwirkende",
+  "contributorsDesc": "Mitwirkende am Projekt",
+  "license": "Lizenz",
+  "licenseName": "GPL v3.0",
+  "madeWithFlutter": "Mit Flutter erstellt 💙"
 }

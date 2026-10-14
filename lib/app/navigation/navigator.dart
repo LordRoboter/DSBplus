@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:planner/app/about/about_page.dart';
 import 'package:planner/app/navigation/model/navigation_item.dart';
 import 'package:planner/core/widgets/error_view.dart';
 import 'package:planner/core/widgets/offline_badge.dart';
@@ -75,6 +76,12 @@ class _NavigatorScreenState extends ConsumerState<NavigatorScreen> {
     await Navigator.of(
       context,
     ).push(MaterialPageRoute(builder: (_) => const SettingsScreen()));
+  }
+
+  Future<void> openAbout() async {
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const AboutPage()));
   }
 
   void _navigateToPage(int index) {
@@ -293,8 +300,9 @@ class _NavigatorScreenState extends ConsumerState<NavigatorScreen> {
                   ),
                   const Spacer(),
                   const Divider(),
+
                   ListTile(
-                    leading: const Icon(Icons.settings),
+                    leading: const Icon(Icons.settings_outlined),
                     title: Text(context.l10n.settings),
                     onTap: () {
                       Navigator.of(context).pop();

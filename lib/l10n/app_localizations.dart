@@ -1283,6 +1283,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Looks like there is nothing here right now.'**
   String get noEntriesDesc;
+
+  /// No description provided for @about.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get about;
+
+  /// No description provided for @aboutDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'More information about Planner'**
+  String get aboutDesc;
+
+  /// No description provided for @projectDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'An alternative client for the DSB portal'**
+  String get projectDesc;
+
+  /// No description provided for @openSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Open source'**
+  String get openSource;
+
+  /// No description provided for @version.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get version;
+
+  /// No description provided for @viewOnGitHub.
+  ///
+  /// In en, this message translates to:
+  /// **'View on GitHub'**
+  String get viewOnGitHub;
+
+  /// No description provided for @gitHubDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Source code and issues'**
+  String get gitHubDesc;
+
+  /// No description provided for @reportBug.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a bug'**
+  String get reportBug;
+
+  /// No description provided for @featureRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Request a feature'**
+  String get featureRequest;
+
+  /// No description provided for @featureRequestDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggest an idea to improve Planner'**
+  String get featureRequestDesc;
+
+  /// No description provided for @contributors.
+  ///
+  /// In en, this message translates to:
+  /// **'Contributors'**
+  String get contributors;
+
+  /// No description provided for @contributorsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Contributors to the project'**
+  String get contributorsDesc;
+
+  /// No description provided for @license.
+  ///
+  /// In en, this message translates to:
+  /// **'License'**
+  String get license;
+
+  /// No description provided for @licenseName.
+  ///
+  /// In en, this message translates to:
+  /// **'GPL v3.0'**
+  String get licenseName;
+
+  /// No description provided for @madeWithFlutter.
+  ///
+  /// In en, this message translates to:
+  /// **'Made with Flutter 💙'**
+  String get madeWithFlutter;
 }
 
 class _AppLocalizationsDelegate

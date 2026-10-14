@@ -1,9 +1,9 @@
+import 'package:crazy_kaomojis/crazy_kaomoji_page.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:planner/core/widgets/error_view.dart';
 import 'package:planner/core/widgets/no_entries_view.dart';
-import 'package:planner/core/widgets/useless/crazy_kaomoji_page.dart';
 import 'package:planner/features/dsb/timetables/model/daydate.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/core/util/date.dart';
@@ -474,7 +474,9 @@ class _PlanScreenState extends ConsumerState<PlanScreen>
                                             children: [
                                               SizedBox(
                                                 height: constraints.maxHeight,
-                                                child: const CrazyKaomojiPage(),
+                                                child: CrazyKaomojiPage(
+                                                  text: context.l10n.noEntries,
+                                                ),
                                               ),
                                             ],
                                           );
