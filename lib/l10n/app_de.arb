@@ -239,5 +239,6 @@
   "contributorsDesc": "Mitwirkende am Projekt",
   "license": "Lizenz",
   "licenseName": "GPL v3.0",
-  "madeWithFlutter": "Mit Flutter erstellt 💙"
+  "madeWithFlutter": "Mit Flutter erstellt 💙",
+  "loading": "Laden..."
 }

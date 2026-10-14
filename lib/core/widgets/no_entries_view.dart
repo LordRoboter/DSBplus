@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:planner/l10n/l10extension.dart';
 
 class NoEntriesView extends StatelessWidget {
   const NoEntriesView({
@@ -50,7 +51,9 @@ class NoEntriesView extends StatelessWidget {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(Icons.refresh),
-                label: Text(isLoading ? 'Loading...' : 'Try again'),
+                label: Text(
+                  isLoading ? context.l10n.loading : context.l10n.tryAgain,
+                ),
               ),
             ],
           ],

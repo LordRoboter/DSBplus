@@ -683,4 +683,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get madeWithFlutter => 'Mit Flutter erstellt 💙';
+
+  @override
+  String get loading => 'Laden...';
 }
