@@ -28,12 +28,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get substPlan => 'Substitution Plan';
 
   @override
-  String get noRelevantEntries => 'No relevant Entries •︵•';
-
-  @override
-  String get noEntries => 'No Entries ( – ⤙ – )';
-
-  @override
   String get newEntries => 'New Entries!';
 
   @override
@@ -360,6 +354,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rescheduling => 'Rescheduling';
 
   @override
+  String get exam => 'Exam';
+
+  @override
   String get subjectGerman => 'German';
 
   @override
@@ -518,4 +515,165 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get workManagerCanRunFreely =>
       'Background checks should work without restrictions';
+
+  @override
+  String get certificateTitle => 'Certificate';
+
+  @override
+  String get certificateSecurityTitle => 'Security settings';
+
+  @override
+  String get errors => 'Errors';
+
+  @override
+  String get errorsExp => 'Troubleshooting and more';
+
+  @override
+  String get autoTrustCertificates => 'Automatically trust certificates';
+
+  @override
+  String get autoTrustCertificatesDescription =>
+      'Automatically trust certificates that fail validation. This reduces security because an invalid certificate could belong to an attacker.';
+
+  @override
+  String get lastFailedCertificate => 'Last failed certificate';
+
+  @override
+  String get noFailedCertificate => 'No failed certificate has been recorded.';
+
+  @override
+  String get certificateFailedValidation =>
+      'The following certificate failed validation:';
+
+  @override
+  String get certificateIsTrusted => 'Certificate is trusted';
+
+  @override
+  String get trustCertificate => 'Trust certificate';
+
+  @override
+  String get trustedCertificate => 'Trusted certificate';
+
+  @override
+  String get removeTrust => 'Remove trust';
+
+  @override
+  String get trustCertificateTitle => 'Trust certificate?';
+
+  @override
+  String get trustCertificateWarning =>
+      'Only trust this certificate if you have independently verified that its fingerprint belongs to the expected server.';
+
+  @override
+  String get trust => 'Trust';
+
+  @override
+  String get certificateTrusted => 'Certificate trusted';
+
+  @override
+  String get trustedCertificateRemoved => 'Trusted certificate removed';
+
+  @override
+  String failedToTrustCertificate(String error) {
+    return 'Failed to trust certificate: $error';
+  }
+
+  @override
+  String failedToRemoveTrust(String error) {
+    return 'Failed to remove trust: $error';
+  }
+
+  @override
+  String failedToUpdateAutoTrust(String error) {
+    return 'Failed to update auto-trust setting: $error';
+  }
+
+  @override
+  String errorLoadingCertificateSettings(String error) {
+    return 'Error loading certificate settings: $error';
+  }
+
+  @override
+  String get androidCertificateCompatibilityTitle => 'Android compatibility';
+
+  @override
+  String get androidCertificateCompatibilityDisclaimer =>
+      'Older Android devices may not recognize DSB\'s newer certificates. This can cause certificate validation failures or prevent the app from connecting. It is strongly recommended to only trust a certificate after independently verifying its fingerprint.';
+
+  @override
+  String get certificateErrorSnackbar =>
+      'A certificate error occurred. Check your certificate settings.';
+
+  @override
+  String get openCertificateSettings => 'Open settings';
+
+  @override
+  String get noConnection => 'No connection';
+
+  @override
+  String get backOnline => 'Back online';
+
+  @override
+  String get somethingWentWrong => 'Something went wrong!';
+
+  @override
+  String get errorRaised => 'The following error occured:';
+
+  @override
+  String get allCaughtUp => 'You\'re all caught up!';
+
+  @override
+  String get nothingRelevant =>
+      'Nothing relevant for you right now. — Come back later to see new entries.';
+
+  @override
+  String get noEntries => 'No entries yet';
+
+  @override
+  String get noEntriesDesc => 'Looks like there is nothing here right now.';
+
+  @override
+  String get about => 'About';
+
+  @override
+  String get aboutDesc => 'More information about Planner';
+
+  @override
+  String get projectDesc => 'An alternative client for the DSB portal';
+
+  @override
+  String get openSource => 'Open source';
+
+  @override
+  String get version => 'Version';
+
+  @override
+  String get viewOnGitHub => 'View on GitHub';
+
+  @override
+  String get gitHubDesc => 'Source code and issues';
+
+  @override
+  String get reportBug => 'Report a bug';
+
+  @override
+  String get featureRequest => 'Request a feature';
+
+  @override
+  String get featureRequestDesc => 'Suggest an idea to improve Planner';
+
+  @override
+  String get contributors => 'Contributors';
+
+  @override
+  String get contributorsDesc => 'Contributors to the project';
+
+  @override
+  String get license => 'License';
+
+  @override
+  String get licenseName => 'GPL v3.0';
+
+  @override
+  String get madeWithFlutter => 'Made with Flutter 💙';
 }

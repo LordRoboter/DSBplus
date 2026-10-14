@@ -1,6 +1,9 @@
+import 'package:crazy_kaomojis/crazy_kaomoji_page.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:planner/core/widgets/error_view.dart';
+import 'package:planner/core/widgets/no_entries_view.dart';
 import 'package:planner/features/dsb/timetables/model/daydate.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/core/util/date.dart';
@@ -60,11 +63,21 @@ class _PlanScreenState extends ConsumerState<PlanScreen>
       appBar: showAppBar ? AppBar(title: Text(context.l10n.substPlan)) : null,
       body: settings.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) => Center(child: Text('Error: $error')),
+        error: (error, stackTrace) => Center(
+          child: ErrorView(
+            title: context.l10n.somethingWentWrong,
+            message: '${context.l10n.errorRaised} $error',
+          ),
+        ),
         data: (settingsState) {
           return dayDates.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, stackTrace) => Center(child: Text('Error: $error')),
+            error: (error, stackTrace) => Center(
+              child: ErrorView(
+                title: context.l10n.somethingWentWrong,
+                message: '${context.l10n.errorRaised} $error',
+              ),
+            ),
             data: (availableDayDates) {
               final currentSelectedDayDate =
                   selectedDayDate ??
@@ -84,8 +97,12 @@ class _PlanScreenState extends ConsumerState<PlanScreen>
 
               return timetables.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stackTrace) =>
-                    Center(child: Text('Error: $error')),
+                error: (error, stackTrace) => Center(
+                  child: ErrorView(
+                    title: context.l10n.somethingWentWrong,
+                    message: '${context.l10n.errorRaised} $error',
+                  ),
+                ),
                 data: (enhancedTimetables) {
                   if (isRefreshing) {
                     if (!_rotationController.isAnimating) {
@@ -126,10 +143,18 @@ class _PlanScreenState extends ConsumerState<PlanScreen>
                         )
                       : visibleTimetable;
 
-                  return (filteredTimetable == null ||
-                              filteredTimetable.entries.isEmpty) &&
-                          isRefreshing
-                      ? const Center(child: CircularProgressIndicator())
+                  final hasNoEntries =
+                      filteredTimetable == null ||
+                      filteredTimetable.entries.isEmpty;
+
+                  return (enhancedTimetables.isEmpty)
+                      ? NoEntriesView(
+                          title: context.l10n.noEntries,
+                          message: context.l10n.noEntriesDesc,
+                          onRetry: () =>
+                              ref.read(timetableProvider.notifier).refresh(),
+                          isLoading: isRefreshing,
+                        )
                       : Column(
                           children: [
                             AnimatedSwitcher(
@@ -440,27 +465,25 @@ class _PlanScreenState extends ConsumerState<PlanScreen>
                                       .read(timetableProvider.notifier)
                                       .refresh();
                                 },
-                                child:
-                                    filteredTimetable == null ||
-                                        filteredTimetable.entries.isEmpty
+                                child: hasNoEntries
                                     ? LayoutBuilder(
                                         builder: (context, constraints) {
-                                          return SingleChildScrollView(
+                                          return ListView(
                                             physics:
                                                 const AlwaysScrollableScrollPhysics(),
-                                            child: SizedBox(
-                                              height: constraints.maxHeight,
-                                              child: Center(
-                                                child: Text(
-                                                  context.l10n.noEntries,
+                                            children: [
+                                              SizedBox(
+                                                height: constraints.maxHeight,
+                                                child: CrazyKaomojiPage(
+                                                  text: context.l10n.noEntries,
                                                 ),
                                               ),
-                                            ),
+                                            ],
                                           );
                                         },
                                       )
                                     : EntryList(
-                                        timetable: filteredTimetable,
+                                        timetable: filteredTimetable!,
                                         settings: settingsState,
                                         filters: settingsState.filters,
                                         classFilter: settingsState.classFilter,

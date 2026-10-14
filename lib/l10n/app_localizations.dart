@@ -134,18 +134,6 @@ abstract class AppLocalizations {
   /// **'Substitution Plan'**
   String get substPlan;
 
-  /// No description provided for @noRelevantEntries.
-  ///
-  /// In en, this message translates to:
-  /// **'No relevant Entries •︵•'**
-  String get noRelevantEntries;
-
-  /// No description provided for @noEntries.
-  ///
-  /// In en, this message translates to:
-  /// **'No Entries ( – ⤙ – )'**
-  String get noEntries;
-
   /// No description provided for @newEntries.
   ///
   /// In en, this message translates to:
@@ -780,6 +768,12 @@ abstract class AppLocalizations {
   /// **'Rescheduling'**
   String get rescheduling;
 
+  /// No description provided for @exam.
+  ///
+  /// In en, this message translates to:
+  /// **'Exam'**
+  String get exam;
+
   /// No description provided for @subjectGerman.
   ///
   /// In en, this message translates to:
@@ -1085,6 +1079,300 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Background checks should work without restrictions'**
   String get workManagerCanRunFreely;
+
+  /// No description provided for @certificateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Certificate'**
+  String get certificateTitle;
+
+  /// No description provided for @certificateSecurityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Security settings'**
+  String get certificateSecurityTitle;
+
+  /// No description provided for @errors.
+  ///
+  /// In en, this message translates to:
+  /// **'Errors'**
+  String get errors;
+
+  /// No description provided for @errorsExp.
+  ///
+  /// In en, this message translates to:
+  /// **'Troubleshooting and more'**
+  String get errorsExp;
+
+  /// No description provided for @autoTrustCertificates.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically trust certificates'**
+  String get autoTrustCertificates;
+
+  /// No description provided for @autoTrustCertificatesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically trust certificates that fail validation. This reduces security because an invalid certificate could belong to an attacker.'**
+  String get autoTrustCertificatesDescription;
+
+  /// No description provided for @lastFailedCertificate.
+  ///
+  /// In en, this message translates to:
+  /// **'Last failed certificate'**
+  String get lastFailedCertificate;
+
+  /// No description provided for @noFailedCertificate.
+  ///
+  /// In en, this message translates to:
+  /// **'No failed certificate has been recorded.'**
+  String get noFailedCertificate;
+
+  /// No description provided for @certificateFailedValidation.
+  ///
+  /// In en, this message translates to:
+  /// **'The following certificate failed validation:'**
+  String get certificateFailedValidation;
+
+  /// No description provided for @certificateIsTrusted.
+  ///
+  /// In en, this message translates to:
+  /// **'Certificate is trusted'**
+  String get certificateIsTrusted;
+
+  /// No description provided for @trustCertificate.
+  ///
+  /// In en, this message translates to:
+  /// **'Trust certificate'**
+  String get trustCertificate;
+
+  /// No description provided for @trustedCertificate.
+  ///
+  /// In en, this message translates to:
+  /// **'Trusted certificate'**
+  String get trustedCertificate;
+
+  /// No description provided for @removeTrust.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove trust'**
+  String get removeTrust;
+
+  /// No description provided for @trustCertificateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trust certificate?'**
+  String get trustCertificateTitle;
+
+  /// No description provided for @trustCertificateWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Only trust this certificate if you have independently verified that its fingerprint belongs to the expected server.'**
+  String get trustCertificateWarning;
+
+  /// No description provided for @trust.
+  ///
+  /// In en, this message translates to:
+  /// **'Trust'**
+  String get trust;
+
+  /// No description provided for @certificateTrusted.
+  ///
+  /// In en, this message translates to:
+  /// **'Certificate trusted'**
+  String get certificateTrusted;
+
+  /// No description provided for @trustedCertificateRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Trusted certificate removed'**
+  String get trustedCertificateRemoved;
+
+  /// No description provided for @failedToTrustCertificate.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to trust certificate: {error}'**
+  String failedToTrustCertificate(String error);
+
+  /// No description provided for @failedToRemoveTrust.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to remove trust: {error}'**
+  String failedToRemoveTrust(String error);
+
+  /// No description provided for @failedToUpdateAutoTrust.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update auto-trust setting: {error}'**
+  String failedToUpdateAutoTrust(String error);
+
+  /// No description provided for @errorLoadingCertificateSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading certificate settings: {error}'**
+  String errorLoadingCertificateSettings(String error);
+
+  /// No description provided for @androidCertificateCompatibilityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Android compatibility'**
+  String get androidCertificateCompatibilityTitle;
+
+  /// No description provided for @androidCertificateCompatibilityDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Older Android devices may not recognize DSB\'s newer certificates. This can cause certificate validation failures or prevent the app from connecting. It is strongly recommended to only trust a certificate after independently verifying its fingerprint.'**
+  String get androidCertificateCompatibilityDisclaimer;
+
+  /// No description provided for @certificateErrorSnackbar.
+  ///
+  /// In en, this message translates to:
+  /// **'A certificate error occurred. Check your certificate settings.'**
+  String get certificateErrorSnackbar;
+
+  /// No description provided for @openCertificateSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get openCertificateSettings;
+
+  /// No description provided for @noConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'No connection'**
+  String get noConnection;
+
+  /// No description provided for @backOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Back online'**
+  String get backOnline;
+
+  /// No description provided for @somethingWentWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong!'**
+  String get somethingWentWrong;
+
+  /// No description provided for @errorRaised.
+  ///
+  /// In en, this message translates to:
+  /// **'The following error occured:'**
+  String get errorRaised;
+
+  /// No description provided for @allCaughtUp.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re all caught up!'**
+  String get allCaughtUp;
+
+  /// No description provided for @nothingRelevant.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing relevant for you right now. — Come back later to see new entries.'**
+  String get nothingRelevant;
+
+  /// No description provided for @noEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'No entries yet'**
+  String get noEntries;
+
+  /// No description provided for @noEntriesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Looks like there is nothing here right now.'**
+  String get noEntriesDesc;
+
+  /// No description provided for @about.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get about;
+
+  /// No description provided for @aboutDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'More information about Planner'**
+  String get aboutDesc;
+
+  /// No description provided for @projectDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'An alternative client for the DSB portal'**
+  String get projectDesc;
+
+  /// No description provided for @openSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Open source'**
+  String get openSource;
+
+  /// No description provided for @version.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get version;
+
+  /// No description provided for @viewOnGitHub.
+  ///
+  /// In en, this message translates to:
+  /// **'View on GitHub'**
+  String get viewOnGitHub;
+
+  /// No description provided for @gitHubDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Source code and issues'**
+  String get gitHubDesc;
+
+  /// No description provided for @reportBug.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a bug'**
+  String get reportBug;
+
+  /// No description provided for @featureRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Request a feature'**
+  String get featureRequest;
+
+  /// No description provided for @featureRequestDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggest an idea to improve Planner'**
+  String get featureRequestDesc;
+
+  /// No description provided for @contributors.
+  ///
+  /// In en, this message translates to:
+  /// **'Contributors'**
+  String get contributors;
+
+  /// No description provided for @contributorsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Contributors to the project'**
+  String get contributorsDesc;
+
+  /// No description provided for @license.
+  ///
+  /// In en, this message translates to:
+  /// **'License'**
+  String get license;
+
+  /// No description provided for @licenseName.
+  ///
+  /// In en, this message translates to:
+  /// **'GPL v3.0'**
+  String get licenseName;
+
+  /// No description provided for @madeWithFlutter.
+  ///
+  /// In en, this message translates to:
+  /// **'Made with Flutter 💙'**
+  String get madeWithFlutter;
 }
 
 class _AppLocalizationsDelegate

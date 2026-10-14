@@ -1,6 +1,8 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:planner/core/widgets/error_view.dart';
+import 'package:planner/core/widgets/no_relevant_entries_view.dart';
 import 'package:planner/features/dsb/timetables/providers/timetable_provider.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/core/util/translations.dart';
@@ -38,11 +40,21 @@ class HomeScreen extends ConsumerWidget {
       appBar: showAppBar ? AppBar(title: Text(context.l10n.home)) : null,
       body: settings.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) => Center(child: Text('Error: $error')),
+        error: (error, stackTrace) => Center(
+          child: ErrorView(
+            title: context.l10n.somethingWentWrong,
+            message: '${context.l10n.errorRaised} $error',
+          ),
+        ),
         data: (settingsState) {
           return timetables.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, stackTrace) => Center(child: Text('Error: $error')),
+            error: (error, stackTrace) => Center(
+              child: ErrorView(
+                title: context.l10n.somethingWentWrong,
+                message: '${context.l10n.errorRaised} $error',
+              ),
+            ),
             data: (enhancedTimetables) {
               return RefreshIndicator(
                 onRefresh: () async {
@@ -57,10 +69,9 @@ class HomeScreen extends ConsumerWidget {
                                       const AlwaysScrollableScrollPhysics(),
                                   child: SizedBox(
                                     height: constraints.maxHeight,
-                                    child: Center(
-                                      child: Text(
-                                        context.l10n.noRelevantEntries,
-                                      ),
+                                    child: NoRelevantEntriesView(
+                                      title: context.l10n.allCaughtUp,
+                                      message: context.l10n.nothingRelevant,
                                     ),
                                   ),
                                 );

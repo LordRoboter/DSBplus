@@ -1,7 +1,10 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:planner/app/about/about_page.dart';
 import 'package:planner/app/navigation/model/navigation_item.dart';
+import 'package:planner/core/widgets/error_view.dart';
+import 'package:planner/core/widgets/offline_badge.dart';
 import 'package:planner/features/dsb/resources/presentation/dsb_resources_screen.dart';
 import 'package:planner/features/dsb/timetables/model/timetable.dart';
 import 'package:planner/features/dsb/timetables/presentation/home_screen.dart';
@@ -73,6 +76,12 @@ class _NavigatorScreenState extends ConsumerState<NavigatorScreen> {
     await Navigator.of(
       context,
     ).push(MaterialPageRoute(builder: (_) => const SettingsScreen()));
+  }
+
+  Future<void> openAbout() async {
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const AboutPage()));
   }
 
   void _navigateToPage(int index) {
@@ -181,8 +190,14 @@ class _NavigatorScreenState extends ConsumerState<NavigatorScreen> {
     return settingsAsync.when(
       loading: () =>
           const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (error, stackTrace) =>
-          Scaffold(body: Center(child: Text('Error: $error'))),
+      error: (error, stackTrace) => Scaffold(
+        body: Center(
+          child: ErrorView(
+            title: context.l10n.somethingWentWrong,
+            message: '${context.l10n.errorRaised} $error',
+          ),
+        ),
+      ),
       data: (settings) {
         final bottomItems = settings.bottomNavigationItems
             .where((item) => item.visible)
@@ -285,8 +300,9 @@ class _NavigatorScreenState extends ConsumerState<NavigatorScreen> {
                   ),
                   const Spacer(),
                   const Divider(),
+
                   ListTile(
-                    leading: const Icon(Icons.settings),
+                    leading: const Icon(Icons.settings_outlined),
                     title: Text(context.l10n.settings),
                     onTap: () {
                       Navigator.of(context).pop();
@@ -297,21 +313,34 @@ class _NavigatorScreenState extends ConsumerState<NavigatorScreen> {
               ),
             ),
           ),
-          body: bottomItems.length >= 2
-              ? PageView(
-                  controller: _pageController,
-                  onPageChanged: (index) {
-                    if (index >= bottomItems.length) {
-                      return;
-                    }
 
-                    setState(() {
-                      _currentItem = bottomItems[index].item;
-                    });
-                  },
-                  children: pages,
-                )
-              : pages.first,
+          body: Stack(
+            children: [
+              Positioned.fill(
+                child: bottomItems.length >= 2
+                    ? PageView(
+                        controller: _pageController,
+                        onPageChanged: (index) {
+                          if (index >= bottomItems.length) return;
+
+                          setState(() {
+                            _currentItem = bottomItems[index].item;
+                          });
+                        },
+                        children: pages,
+                      )
+                    : pages.first,
+              ),
+
+              const Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: OfflineBadge(),
+              ),
+            ],
+          ),
+
           bottomNavigationBar: bottomItems.length >= 2
               ? NavigationBar(
                   selectedIndex: selectedIndex,

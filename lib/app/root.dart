@@ -1,9 +1,11 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:planner/app/navigation/navigator.dart';
+import 'package:planner/core/widgets/error_view.dart';
 import 'package:planner/features/notifications/background_tasks.dart';
 import 'package:planner/features/settings/providers/settings_provider.dart';
 import 'package:planner/app/startup/startup_screen.dart';
+import 'package:planner/l10n/l10extension.dart';
 
 class AppRoot extends ConsumerStatefulWidget {
   const AppRoot({super.key});
@@ -30,7 +32,12 @@ class _AppRootState extends ConsumerState<AppRoot> {
       loading: () => const Center(child: CircularProgressIndicator()),
 
       error: (error, stackTrace) {
-        return Center(child: Text('Error: $error'));
+        return Center(
+          child: ErrorView(
+            title: context.l10n.somethingWentWrong,
+            message: '${context.l10n.errorRaised} $error',
+          ),
+        );
       },
 
       data: (settingsState) {
